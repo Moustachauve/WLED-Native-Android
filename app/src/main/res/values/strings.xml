@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">WLED-Native-Android</string>
+    <string name="add_a_light">Add a Light</string>
+</resources>
