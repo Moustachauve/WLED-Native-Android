@@ -22,19 +22,19 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_delete_outline_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val wledList = loadWledList()
-        val wledListRecyclerView = findViewById<RecyclerView>(R.id.wled_list_recycler_view)
+        val deviceList = loadDeviceList()
+        val deviceListRecyclerView = findViewById<RecyclerView>(R.id.device_list_recycler_view)
         val layoutManager = LinearLayoutManager(this)
 
-        wledListRecyclerView.adapter = WledListAdapter(wledList)
-        wledListRecyclerView.layoutManager = layoutManager
-        wledListRecyclerView.setHasFixedSize(true)
+        deviceListRecyclerView.adapter = DeviceListAdapter(deviceList)
+        deviceListRecyclerView.layoutManager = layoutManager
+        deviceListRecyclerView.setHasFixedSize(true)
 
         val dividerItemDecoration = DividerItemDecoration(
-            wledListRecyclerView.context,
+            deviceListRecyclerView.context,
             layoutManager.orientation
         )
-        wledListRecyclerView.addItemDecoration(dividerItemDecoration)
+        deviceListRecyclerView.addItemDecoration(dividerItemDecoration)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -42,12 +42,12 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun loadWledList(): List<WledListItem> {
-        val list = ArrayList<WledListItem>()
+    private fun loadDeviceList(): List<DeviceListItem> {
+        val list = ArrayList<DeviceListItem>()
 
         for (i in 0 until 66) {
             val fakeIp = i + 104
-            val item = WledListItem("Wled $i", "192.168.1.$fakeIp", 127, i % 3 <= 1)
+            val item = DeviceListItem("Wled $i", "192.168.1.$fakeIp", 127, i % 3 <= 1)
             list += item
         }
 

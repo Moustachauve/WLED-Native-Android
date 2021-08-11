@@ -16,7 +16,7 @@
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/wled_list_recycler_view"
+        android:id="@+id/device_list_recycler_view"
         android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
