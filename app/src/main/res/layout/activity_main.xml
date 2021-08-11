@@ -17,8 +17,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/wled_list_recycler_view"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager" />
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/wled_list_item" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

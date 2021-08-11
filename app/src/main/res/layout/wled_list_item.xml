@@ -1,45 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:padding="6dp">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="250dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toStartOf="@+id/switch1"
+        android:layout_marginStart="8dp"
+        android:text="WLED"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/ip_address_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toStartOf="@+id/switch1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        android:layout_marginTop="4dp"
+        android:text="0.0.0.0"
+        app:layout_constraintStart_toStartOf="@+id/name_text_view"
+        app:layout_constraintTop_toBottomOf="@+id/name_text_view" />
 
     <SeekBar
-        android:id="@+id/seekBar"
+        android:id="@+id/brightness_seekbar"
         style="@style/Widget.AppCompat.SeekBar"
         android:layout_width="0dp"
-        android:layout_height="13dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintEnd_toStartOf="@+id/switch1"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="10"
+        app:layout_constraintEnd_toStartOf="@+id/power_status_switch"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/ip_address_text_view" />
 
-    <Switch
-        android:id="@+id/switch1"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/power_status_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:showText="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
