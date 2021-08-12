@@ -15,12 +15,9 @@
         android:elevation="4dp"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/device_list_recycler_view"
-        android:clipToPadding="false"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/wled_list_item" />
+        android:layout_height="match_parent" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
