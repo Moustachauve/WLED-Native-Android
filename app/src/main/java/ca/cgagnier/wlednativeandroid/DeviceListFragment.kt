@@ -37,6 +37,10 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list) {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.home, menu)
+
+        val actionBar = activity?.actionBar
+
+        actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

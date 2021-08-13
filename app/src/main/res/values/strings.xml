@@ -17,4 +17,8 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="looking_for_devices">Looking for Devices</string>
+    <string name="add_manually">Add Manually</string>
+    <string name="try_again">Try Again</string>
+    <string name="no_devices_found">No Devices found</string>
 </resources>
