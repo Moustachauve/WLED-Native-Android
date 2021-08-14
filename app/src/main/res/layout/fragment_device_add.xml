@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DeviceAddFragment">
+    tools:context=".fragment.DeviceAddFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
@@ -58,6 +58,7 @@
         tools:listitem="@layout/wled_list_item"  />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/add_manually_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/add_manually"

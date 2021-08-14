@@ -4,13 +4,16 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/dark_gray</item>
         <item name="colorPrimaryVariant">@color/very_dark_gray</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.WLEDNativeAndroid.Dialog.Alert" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/purple_200</item>
     </style>
 </resources>

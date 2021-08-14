@@ -2,18 +2,21 @@ package ca.cgagnier.wlednativeandroid
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
+import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentManager.OnBackStackChangedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        DeviceRepository.init(applicationContext)
 
         setSupportActionBar(findViewById(R.id.main_toolbar))
         supportActionBar?.setDisplayShowHomeEnabled(true)
