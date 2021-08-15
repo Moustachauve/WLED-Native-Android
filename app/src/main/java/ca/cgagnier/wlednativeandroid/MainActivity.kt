@@ -3,15 +3,15 @@ package ca.cgagnier.wlednativeandroid
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
+import androidx.fragment.app.*
+import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentManager.OnBackStackChangedListener {
+class MainActivity : AppCompatActivity(R.layout.activity_main),
+    FragmentManager.OnBackStackChangedListener,
+    DeviceAddManuallyFragment.NoticeDialogListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +62,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentManager.
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onDeviceManuallyAdded(dialog: DialogFragment) {
+        supportFragmentManager.popBackStackImmediate()
     }
 
 }

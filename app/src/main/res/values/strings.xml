@@ -19,11 +19,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="looking_for_devices">Looking for Devices</string>
     <string name="add_a_device_manually">Add a Device Manually</string>
+    <string name="add_device">Add Device</string>
     <string name="add_manually">Add Manually</string>
     <string name="try_again">Try Again</string>
     <string name="no_devices_found">No Devices found</string>
     <string name="ip_address_or_url">IP Address or URL</string>
     <string name="custom_name">Custom Name</string>
     <string name="leave_this_empty_to_use_the_device_name">Leave this empty to use the device name</string>
+    <string name="please_enter_value">Please enter a value</string>
+    <string name="must_be_a_valid_address">Must be a valid IP Address or URL</string>
     <string name="cancel">Cancel</string>
 </resources>

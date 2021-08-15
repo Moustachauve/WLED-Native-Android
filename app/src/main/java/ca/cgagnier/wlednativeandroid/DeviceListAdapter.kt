@@ -14,7 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
-class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>() {
+class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>(),
+    DeviceRepository.DataChangedListener {
 
     private lateinit var context: Context
 
@@ -30,7 +31,7 @@ class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListVie
 
     override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
         val currentItem = DeviceRepository[position]
-        holder.nameTextView.text = currentItem.name
+        holder.nameTextView.text = if (currentItem.name == "") "(New Device)" else currentItem.name
         holder.ipAddressTextView.text = currentItem.ipAddress
         holder.brightnessSeekBar.progress = currentItem.brightness
         holder.powerStatusSwitch.isChecked = currentItem.isPoweredOn
@@ -63,5 +64,17 @@ class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListVie
         val ipAddressTextView: TextView = itemView.findViewById(R.id.ip_address_text_view)
         val brightnessSeekBar: SeekBar = itemView.findViewById(R.id.brightness_seekbar)
         val powerStatusSwitch: SwitchCompat = itemView.findViewById(R.id.power_status_switch)
+    }
+
+    override fun onItemChanged(index: Int, item: DeviceListItem) {
+        notifyItemChanged(index)
+    }
+
+    override fun onItemAdded(index: Int, item: DeviceListItem) {
+        notifyItemInserted(index)
+    }
+
+    override fun onItemRemoved(index: Int) {
+        notifyItemRemoved(index)
     }
 }
