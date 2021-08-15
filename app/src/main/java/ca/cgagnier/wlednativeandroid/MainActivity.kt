@@ -7,6 +7,7 @@ import androidx.fragment.app.*
 import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
@@ -49,6 +50,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0 ) {
+
+            val deviceViewFragment: DeviceViewFragment? = supportFragmentManager.findFragmentByTag(DeviceViewFragment.TAG_NAME) as DeviceViewFragment?
+            if (deviceViewFragment != null && deviceViewFragment.isVisible) {
+                if (deviceViewFragment.onBackPressed()) {
+                    return
+                }
+            }
+
             supportFragmentManager.popBackStack()
         }
         else {
@@ -57,8 +66,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     }
 
     fun switchContent(id: Int, fragment: Fragment) {
+        switchContent(id, fragment, fragment.toString())
+    }
+
+    fun switchContent(id: Int, fragment: Fragment, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(id, fragment, fragment.toString())
+        fragmentTransaction.replace(id, fragment, tag)
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -67,5 +80,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     override fun onDeviceManuallyAdded(dialog: DialogFragment) {
         supportFragmentManager.popBackStackImmediate()
     }
-
 }

@@ -52,7 +52,7 @@ class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListVie
     fun switchContent(id: Int, fragment: Fragment) {
         if (context is MainActivity) {
             val mainActivity = context as MainActivity
-            mainActivity.switchContent(id, fragment)
+            mainActivity.switchContent(id, fragment, DeviceViewFragment.TAG_NAME)
         }
     }
 
