@@ -7,12 +7,14 @@ import android.view.View
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
 import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 
 
 class DeviceAddFragment : Fragment(R.layout.fragment_device_add),
     DeviceAddManuallyFragment.NoticeDialogListener {
 
     internal lateinit var listener: DeviceAddManuallyFragment.NoticeDialogListener
+    lateinit var deviceDiscovery: DeviceDiscovery
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -22,6 +24,8 @@ class DeviceAddFragment : Fragment(R.layout.fragment_device_add),
             throw ClassCastException((context.toString() +
                     " must implement NoticeDialogListener"))
         }
+
+        deviceDiscovery = DeviceDiscovery(context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,6 +38,21 @@ class DeviceAddFragment : Fragment(R.layout.fragment_device_add),
             dialog.showsDialog = true
             dialog.show(childFragmentManager, "device_add_manually")
         }
+    }
+
+    override fun onPause() {
+        deviceDiscovery.stop()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        deviceDiscovery.start()
+    }
+
+    override fun onDestroy() {
+        deviceDiscovery.stop()
+        super.onDestroy()
     }
 
     override fun onDeviceManuallyAdded(dialog: DialogFragment) = listener.onDeviceManuallyAdded(dialog)
