@@ -66,7 +66,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
     }
 
     private fun openAddDeviceFragment() {
-        val fragment = DeviceAddFragment()
+        val fragment = DeviceDiscoveryFragment()
         switchContent(R.id.fragment_container_view, fragment)
     }
 

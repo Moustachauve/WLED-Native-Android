@@ -10,10 +10,10 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 
 
-class DeviceAddFragment : Fragment(R.layout.fragment_device_add),
+class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
     DeviceAddManuallyFragment.NoticeDialogListener {
 
-    internal lateinit var listener: DeviceAddManuallyFragment.NoticeDialogListener
+    private lateinit var listener: DeviceAddManuallyFragment.NoticeDialogListener
     lateinit var deviceDiscovery: DeviceDiscovery
 
     override fun onAttach(context: Context) {
