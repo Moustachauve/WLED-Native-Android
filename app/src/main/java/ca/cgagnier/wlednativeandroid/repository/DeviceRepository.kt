@@ -2,7 +2,7 @@ package ca.cgagnier.wlednativeandroid.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import ca.cgagnier.wlednativeandroid.DeviceListItem
+import ca.cgagnier.wlednativeandroid.DeviceItem
 import com.google.gson.Gson
 
 object DeviceRepository {
@@ -11,13 +11,13 @@ object DeviceRepository {
     private const val SHARED_PREFERENCES_NAME = "WLED_DATA"
     private const val DEVICE_LIST = "WLED_DATA"
 
-    private var devices = HashSet<DeviceListItem>()
+    private var devices = HashSet<DeviceItem>()
     private var listeners = ArrayList<DataChangedListener>()
 
     interface DataChangedListener {
-        fun onItemChanged(item: DeviceListItem)
-        fun onItemAdded(item: DeviceListItem)
-        fun onItemRemoved(item: DeviceListItem)
+        fun onItemChanged(item: DeviceItem)
+        fun onItemAdded(item: DeviceItem)
+        fun onItemRemoved(item: DeviceItem)
     }
 
     fun init(context: Context) {
@@ -25,17 +25,17 @@ object DeviceRepository {
 
         val gson = Gson()
         val devicesJson = sharedPreferences.getString(DEVICE_LIST, "")
-        val deviceList = gson.fromJson(devicesJson, Array<DeviceListItem>::class.java)
+        val deviceList = gson.fromJson(devicesJson, Array<DeviceItem>::class.java)
         if (deviceList != null) {
-            devices = deviceList.toHashSet<DeviceListItem>()
+            devices = deviceList.toHashSet()
         }
     }
 
-    fun getAll(): List<DeviceListItem> {
+    fun getAll(): List<DeviceItem> {
         return devices.toList()
     }
 
-    fun add(device: DeviceListItem) {
+    fun add(device: DeviceItem) {
         devices.add(device)
         save()
         for (listener in listeners) {
@@ -43,7 +43,7 @@ object DeviceRepository {
         }
     }
 
-    fun remove(device: DeviceListItem) {
+    fun remove(device: DeviceItem) {
         devices.remove(device)
         save()
         for (listener in listeners) {

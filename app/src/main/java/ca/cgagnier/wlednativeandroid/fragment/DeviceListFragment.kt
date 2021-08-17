@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.DeviceListAdapter
-import ca.cgagnier.wlednativeandroid.DeviceListItem
+import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.MainActivity
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
@@ -77,15 +77,15 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
         }
     }
 
-    override fun onItemChanged(item: DeviceListItem) {
+    override fun onItemChanged(item: DeviceItem) {
         deviceListAdapter.itemChanged(item)
     }
 
-    override fun onItemAdded(item: DeviceListItem) {
+    override fun onItemAdded(item: DeviceItem) {
         deviceListAdapter.addItem(item)
     }
 
-    override fun onItemRemoved(item: DeviceListItem) {
+    override fun onItemRemoved(item: DeviceItem) {
         deviceListAdapter.removeItem(item)
     }
 }

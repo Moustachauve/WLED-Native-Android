@@ -1,6 +1,6 @@
 package ca.cgagnier.wlednativeandroid
 
-data class DeviceListItem(
+data class DeviceItem(
     val name: String,
     val ipAddress: String,
     val brightness: Int,

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
-class DeviceListAdapter(private val deviceList: ArrayList<DeviceListItem>) : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>() {
+class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>() {
 
     private lateinit var context: Context
 
@@ -40,7 +40,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceListItem>) : Rec
         }
     }
 
-    private fun fragmentJump(item: DeviceListItem) {
+    private fun fragmentJump(item: DeviceItem) {
         val fragment = DeviceViewFragment()
         val bundle = Bundle()
         //bundle.putParcelable("item_selected_key", item)
@@ -65,7 +65,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceListItem>) : Rec
         val powerStatusSwitch: SwitchCompat = itemView.findViewById(R.id.power_status_switch)
     }
 
-    private fun getItemPosition(item: DeviceListItem): Int? {
+    private fun getItemPosition(item: DeviceItem): Int? {
         for (i in 0 until deviceList.size) {
             if (item == deviceList[i]) {
                 return i
@@ -74,7 +74,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceListItem>) : Rec
         return null
     }
 
-    fun itemChanged(item: DeviceListItem) {
+    fun itemChanged(item: DeviceItem) {
         val position = getItemPosition(item)
         if (position != null) {
             deviceList[position] = item
@@ -82,12 +82,12 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceListItem>) : Rec
         }
     }
 
-    fun addItem(item: DeviceListItem) {
+    fun addItem(item: DeviceItem) {
         deviceList.add(item)
         notifyItemInserted(deviceList.size - 1)
     }
 
-    fun removeItem(item: DeviceListItem) {
+    fun removeItem(item: DeviceItem) {
         val position = getItemPosition(item)
         if (position != null) {
             deviceList.removeAt(position)

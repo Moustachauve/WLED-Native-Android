@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import ca.cgagnier.wlednativeandroid.DeviceListItem
+import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -63,7 +63,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
         val deviceAddress = deviceAddressTextInputLayout.editText?.text.toString()
         val deviceName = customNameTextTextInputLayout.editText?.text.toString()
 
-        val device = DeviceListItem(deviceName, deviceAddress, 0, false)
+        val device = DeviceItem(deviceName, deviceAddress, 0, false)
         DeviceRepository.add(device)
         dismiss()
         listener.onDeviceManuallyAdded(this)
