@@ -11,13 +11,13 @@ object DeviceRepository {
     private const val SHARED_PREFERENCES_NAME = "WLED_DATA"
     private const val DEVICE_LIST = "WLED_DATA"
 
-    private var devices = ArrayList<DeviceListItem>()
+    private var devices = HashSet<DeviceListItem>()
     private var listeners = ArrayList<DataChangedListener>()
 
     interface DataChangedListener {
-        fun onItemChanged(index: Int, item: DeviceListItem)
-        fun onItemAdded(index: Int, item: DeviceListItem)
-        fun onItemRemoved(index: Int)
+        fun onItemChanged(item: DeviceListItem)
+        fun onItemAdded(item: DeviceListItem)
+        fun onItemRemoved(item: DeviceListItem)
     }
 
     fun init(context: Context) {
@@ -27,23 +27,27 @@ object DeviceRepository {
         val devicesJson = sharedPreferences.getString(DEVICE_LIST, "")
         val deviceList = gson.fromJson(devicesJson, Array<DeviceListItem>::class.java)
         if (deviceList != null) {
-            devices = ArrayList(deviceList.toList())
+            devices = deviceList.toHashSet<DeviceListItem>()
         }
+    }
+
+    fun getAll(): List<DeviceListItem> {
+        return devices.toList()
     }
 
     fun add(device: DeviceListItem) {
         devices.add(device)
         save()
         for (listener in listeners) {
-            listener.onItemAdded(devices.size - 1, device)
+            listener.onItemAdded(device)
         }
     }
 
-    fun remove(index: Int) {
-        devices.removeAt(index)
+    fun remove(device: DeviceListItem) {
+        devices.remove(device)
         save()
         for (listener in listeners) {
-            listener.onItemRemoved(index)
+            listener.onItemRemoved(device)
         }
     }
 
@@ -64,8 +68,5 @@ object DeviceRepository {
         prefsEditor.apply()
     }
 
-    operator fun get(index: Int) = devices[index]
-
     fun count() = devices.count()
-
 }

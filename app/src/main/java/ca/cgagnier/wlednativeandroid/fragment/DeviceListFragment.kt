@@ -7,15 +7,25 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.DeviceListAdapter
+import ca.cgagnier.wlednativeandroid.DeviceListItem
 import ca.cgagnier.wlednativeandroid.MainActivity
 import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
 
-class DeviceListFragment : Fragment(R.layout.fragment_device_list) {
+class DeviceListFragment : Fragment(R.layout.fragment_device_list),
+    DeviceRepository.DataChangedListener {
 
+    val deviceListAdapter = DeviceListAdapter(ArrayList(DeviceRepository.getAll()))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DeviceRepository.registerDataChangedListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        DeviceRepository.unregisterDataChangedListener(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,7 +35,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list) {
         val deviceListRecyclerView = view.findViewById<RecyclerView>(R.id.device_list_recycler_view)
         val layoutManager = LinearLayoutManager(view.context)
 
-        deviceListRecyclerView.adapter = DeviceListAdapter()
+        deviceListRecyclerView.adapter = deviceListAdapter
         deviceListRecyclerView.layoutManager = layoutManager
         deviceListRecyclerView.setHasFixedSize(true)
 
@@ -65,5 +75,17 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list) {
             val mainActivity = context as MainActivity
             mainActivity.switchContent(id, fragment)
         }
+    }
+
+    override fun onItemChanged(item: DeviceListItem) {
+        deviceListAdapter.itemChanged(item)
+    }
+
+    override fun onItemAdded(item: DeviceListItem) {
+        deviceListAdapter.addItem(item)
+    }
+
+    override fun onItemRemoved(item: DeviceListItem) {
+        deviceListAdapter.removeItem(item)
     }
 }

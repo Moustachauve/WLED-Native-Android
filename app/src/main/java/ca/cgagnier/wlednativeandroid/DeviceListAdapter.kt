@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
-class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>(),
-    DeviceRepository.DataChangedListener {
+class DeviceListAdapter(private val deviceList: ArrayList<DeviceListItem>) : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>() {
 
     private lateinit var context: Context
 
@@ -30,7 +29,7 @@ class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListVie
     }
 
     override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
-        val currentItem = DeviceRepository[position]
+        val currentItem = deviceList[position]
         holder.nameTextView.text = if (currentItem.name == "") "(New Device)" else currentItem.name
         holder.ipAddressTextView.text = currentItem.ipAddress
         holder.brightnessSeekBar.progress = currentItem.brightness
@@ -66,15 +65,33 @@ class DeviceListAdapter() : RecyclerView.Adapter<DeviceListAdapter.DeviceListVie
         val powerStatusSwitch: SwitchCompat = itemView.findViewById(R.id.power_status_switch)
     }
 
-    override fun onItemChanged(index: Int, item: DeviceListItem) {
-        notifyItemChanged(index)
+    private fun getItemPosition(item: DeviceListItem): Int? {
+        for (i in 0 until deviceList.size) {
+            if (item == deviceList[i]) {
+                return i
+            }
+        }
+        return null
     }
 
-    override fun onItemAdded(index: Int, item: DeviceListItem) {
-        notifyItemInserted(index)
+    fun itemChanged(item: DeviceListItem) {
+        val position = getItemPosition(item)
+        if (position != null) {
+            deviceList[position] = item
+            notifyItemChanged(position)
+        }
     }
 
-    override fun onItemRemoved(index: Int) {
-        notifyItemRemoved(index)
+    fun addItem(item: DeviceListItem) {
+        deviceList.add(item)
+        notifyItemInserted(deviceList.size - 1)
+    }
+
+    fun removeItem(item: DeviceListItem) {
+        val position = getItemPosition(item)
+        if (position != null) {
+            deviceList.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
 }
