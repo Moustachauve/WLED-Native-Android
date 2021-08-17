@@ -63,7 +63,11 @@ class DeviceAddManuallyFragment : DialogFragment() {
         val deviceAddress = deviceAddressTextInputLayout.editText?.text.toString()
         val deviceName = customNameTextTextInputLayout.editText?.text.toString()
 
-        val device = DeviceItem(deviceName, deviceAddress, 0, false)
+        val device = DeviceItem(deviceAddress)
+        if (deviceName != "") {
+            device.name = deviceName
+        }
+
         DeviceRepository.add(device)
         dismiss()
         listener.onDeviceManuallyAdded(this)

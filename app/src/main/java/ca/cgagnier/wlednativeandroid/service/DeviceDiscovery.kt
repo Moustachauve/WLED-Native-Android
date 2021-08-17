@@ -4,12 +4,24 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiManager.MulticastLock
 
-class DeviceDiscovery(context: Context) {
+
+class DeviceDiscovery(val context: Context) {
 
     val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
     private var discoveryListener: NsdManager.DiscoveryListener? = null
+    private val listeners = ArrayList<DeviceDiscoveredListener>()
 
+    val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    val multicastLock: MulticastLock = wifi.createMulticastLock("multicastLock")
+
+    private val parent = this
+
+    interface DeviceDiscoveredListener {
+        fun onDeviceDiscovered(serviceInfo: NsdServiceInfo)
+    }
 
     private fun initialize() {
         discoveryListener = object : NsdManager.DiscoveryListener {
@@ -22,7 +34,6 @@ class DeviceDiscovery(context: Context) {
             override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
                 Log.e(TAG, "Discovery failed: Error code:$errorCode")
                 nsdManager.stopServiceDiscovery(this)
-
             }
 
             override fun onDiscoveryStarted(serviceType: String?) {
@@ -40,7 +51,7 @@ class DeviceDiscovery(context: Context) {
                         service.serviceType != SERVICE_TYPE -> // Service type is the string containing the protocol and
                             // transport layer for this service.
                             Log.d(TAG, "Unknown Service Type: ${service.serviceType}")
-                        service.serviceName.contains(SERVICE_NAME) -> nsdManager.resolveService(service, ResolveListener(nsdManager))
+                        service.serviceName.contains(SERVICE_NAME) -> nsdManager.resolveService(service, ResolveListener(parent, nsdManager))
                     }
                 }
 
@@ -54,11 +65,18 @@ class DeviceDiscovery(context: Context) {
 
     fun start() {
         stop()
+
+        multicastLock.setReferenceCounted(true)
+        multicastLock.acquire()
+
         initialize()
         nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
     }
 
     fun stop() {
+        if (multicastLock.isHeld) {
+            multicastLock.release()
+        }
         if (discoveryListener != null) {
             try {
                 nsdManager.stopServiceDiscovery(discoveryListener)
@@ -69,15 +87,28 @@ class DeviceDiscovery(context: Context) {
         }
     }
 
-    class ResolveListener(private val nsdManager: NsdManager): NsdManager.ResolveListener {
+    fun registerDeviceDiscoveredListener(listener: DeviceDiscoveredListener) {
+        listeners.add(listener)
+    }
 
+    fun unregisterDeviceDiscoveredListener(listener: DeviceDiscoveredListener) {
+        listeners.remove(listener)
+    }
+
+    fun notifyListeners(serviceInfo: NsdServiceInfo) {
+        for (listener in parent.listeners) {
+            listener.onDeviceDiscovered(serviceInfo)
+        }
+    }
+
+    class ResolveListener(private val parent: DeviceDiscovery, private val nsdManager: NsdManager): NsdManager.ResolveListener {
 
         override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
             Log.e(TAG, "Resolve failed $errorCode")
             when (errorCode) {
                 NsdManager.FAILURE_ALREADY_ACTIVE -> {
                     Log.e(TAG, "FAILURE ALREADY ACTIVE")
-                    nsdManager.resolveService(serviceInfo, ResolveListener(nsdManager))
+                    nsdManager.resolveService(serviceInfo, ResolveListener(parent, nsdManager))
                 }
                 NsdManager.FAILURE_INTERNAL_ERROR -> Log.e(TAG, "FAILURE_INTERNAL_ERROR")
                 NsdManager.FAILURE_MAX_LIMIT -> Log.e(TAG, "FAILURE_MAX_LIMIT")
@@ -86,6 +117,9 @@ class DeviceDiscovery(context: Context) {
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
             Log.i(TAG, "Resolve Succeeded. [$serviceInfo]")
+            if (serviceInfo != null) {
+                parent.notifyListeners(serviceInfo)
+            }
         }
 
     }

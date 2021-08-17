@@ -1,8 +1,10 @@
 package ca.cgagnier.wlednativeandroid
 
-data class DeviceItem(
-    val name: String,
-    val ipAddress: String,
-    val brightness: Int,
-    val isPoweredOn: Boolean
-)
+data class DeviceItem(val address: String) {
+
+    var name: String = ""
+    var brightness: Int = 0
+    var isPoweredOn: Boolean = false
+
+
+}

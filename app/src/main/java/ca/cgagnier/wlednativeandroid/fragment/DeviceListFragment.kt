@@ -16,7 +16,7 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 class DeviceListFragment : Fragment(R.layout.fragment_device_list),
     DeviceRepository.DataChangedListener {
 
-    val deviceListAdapter = DeviceListAdapter(ArrayList(DeviceRepository.getAll()))
+    private val deviceListAdapter = DeviceListAdapter(ArrayList(DeviceRepository.getAll()))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

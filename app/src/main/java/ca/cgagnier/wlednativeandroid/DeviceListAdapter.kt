@@ -12,7 +12,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
 class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>() {
 
@@ -31,7 +30,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
     override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
         val currentItem = deviceList[position]
         holder.nameTextView.text = if (currentItem.name == "") "(New Device)" else currentItem.name
-        holder.ipAddressTextView.text = currentItem.ipAddress
+        holder.ipAddressTextView.text = currentItem.address
         holder.brightnessSeekBar.progress = currentItem.brightness
         holder.powerStatusSwitch.isChecked = currentItem.isPoweredOn
 
@@ -55,7 +54,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
         }
     }
 
-    override fun getItemCount() = DeviceRepository.count()
+    override fun getItemCount() = deviceList.count()
 
     class DeviceListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val container: ConstraintLayout = itemView.findViewById(R.id.container)
