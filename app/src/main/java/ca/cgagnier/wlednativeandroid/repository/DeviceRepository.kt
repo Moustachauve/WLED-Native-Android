@@ -4,13 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.DeviceItem
-import com.google.gson.Gson
-import java.lang.NullPointerException
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import java.lang.Exception
 
 object DeviceRepository {
     private const val TAG = "DEVICE_REPOSITORY"
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var jsonAdapter: JsonAdapter<HashSet<DeviceItem>>
 
     private const val SHARED_PREFERENCES_NAME = "WLED_DATA"
     private const val DEVICE_LIST = "WLED_DATA"
@@ -27,15 +30,17 @@ object DeviceRepository {
     fun init(context: Context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
 
-        val gson = Gson()
+        val type = Types.newParameterizedType(Set::class.java, DeviceItem::class.java)
+        val moshi = Moshi.Builder().build()
+        jsonAdapter = moshi.adapter(type)
+
         val devicesJson = sharedPreferences.getString(DEVICE_LIST, "")
-        val deviceList = gson.fromJson(devicesJson, Array<DeviceItem>::class.java)
-        if (deviceList != null) {
+        if (devicesJson != null) {
             devices = try {
-                deviceList.toHashSet()
-            } catch (e: NullPointerException) {
+                jsonAdapter.fromJson(devicesJson) ?: HashSet()
+            } catch (e: Exception) {
                 Log.e(TAG, "Corrupted json data!")
-                Log.e(TAG, devicesJson ?: "[Empty Json]")
+                Log.e(TAG, devicesJson)
                 Log.e(TAG, e.message ?: "[Empty Exception Message]", e)
                 HashSet()
             }
@@ -62,6 +67,16 @@ object DeviceRepository {
         }
     }
 
+    fun update(device: DeviceItem) {
+        devices.remove(device)
+        devices.add(device)
+
+        save()
+        for (listener in listeners) {
+            listener.onItemChanged(device)
+        }
+    }
+
     fun contains(device: DeviceItem): Boolean = devices.contains(device)
 
     fun registerDataChangedListener(listener: DataChangedListener) {
@@ -73,9 +88,7 @@ object DeviceRepository {
     }
 
     private fun save() {
-        val gson = Gson()
-        val devicesJson = gson.toJson(devices)
-
+        val devicesJson = jsonAdapter.toJson(devices)
         val prefsEditor = sharedPreferences.edit()
         prefsEditor.putString(DEVICE_LIST, devicesJson)
         prefsEditor.apply()
