@@ -12,9 +12,19 @@ data class DeviceItem(
     @Json(name = "name")
     var name: String = ""
 
+    @Json(name = "customName")
+    var isCustomName = false
+
     @Transient
     var brightness: Int = 0
 
     @Transient
     var isPoweredOn: Boolean = false
+
+    @Transient
+    var isOnline = false
+
+    fun getDeviceUrl(): String {
+        return "http://$address"
+    }
 }

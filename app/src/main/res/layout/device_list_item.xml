@@ -13,19 +13,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="WLED"
+        android:text="@string/default_device_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/ip_address_text_view"
+    <LinearLayout
+        android:id="@+id/host_info_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="0.0.0.0"
         app:layout_constraintStart_toStartOf="@+id/name_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/name_text_view" />
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/name_text_view">
+        <TextView
+            android:id="@+id/ip_address_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/default_ip" />
+
+        <TextView
+            android:id="@+id/is_offline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:drawablePadding="4dp"
+            android:gravity="center"
+            android:text="@string/is_offline"
+            app:drawableStartCompat="@drawable/ic_signal_wifi_bad_24" />
+    </LinearLayout>
 
     <SeekBar
         android:id="@+id/brightness_seekbar"
@@ -37,7 +54,7 @@
         app:layout_constraintEnd_toStartOf="@+id/power_status_switch"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ip_address_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/host_info_layout" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/power_status_switch"

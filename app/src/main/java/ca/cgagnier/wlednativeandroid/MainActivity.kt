@@ -8,6 +8,7 @@ import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
+import ca.cgagnier.wlednativeandroid.service.DeviceSync
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        DeviceRepository.init(applicationContext)
+        initDevices()
 
         setSupportActionBar(findViewById(R.id.main_toolbar))
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -79,5 +80,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     override fun onDeviceManuallyAdded(dialog: DialogFragment) {
         supportFragmentManager.popBackStackImmediate()
+    }
+
+    private fun initDevices() {
+        DeviceRepository.init(applicationContext)
+        val devices = DeviceRepository.getAll()
+
+        for (device in devices) {
+            DeviceSync.update(device)
+        }
     }
 }

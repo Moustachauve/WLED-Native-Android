@@ -66,6 +66,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
         val device = DeviceItem(deviceAddress)
         if (deviceName != "") {
             device.name = deviceName
+            device.isCustomName = true
         }
 
         DeviceRepository.add(device)

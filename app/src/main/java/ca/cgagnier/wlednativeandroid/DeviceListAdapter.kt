@@ -23,14 +23,16 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.wled_list_item, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false)
         return DeviceListViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
         val currentItem = deviceList[position]
-        holder.nameTextView.text = if (currentItem.name == "") "(New Device)" else currentItem.name
+
+        holder.nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
         holder.ipAddressTextView.text = currentItem.address
+        holder.isOfflineTextView.visibility = if (currentItem.isOnline) View.INVISIBLE else View.VISIBLE
         holder.brightnessSeekBar.progress = currentItem.brightness
         holder.powerStatusSwitch.isChecked = currentItem.isPoweredOn
 
@@ -60,6 +62,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
         val container: ConstraintLayout = itemView.findViewById(R.id.container)
         val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
         val ipAddressTextView: TextView = itemView.findViewById(R.id.ip_address_text_view)
+        val isOfflineTextView: TextView = itemView.findViewById(R.id.is_offline)
         val brightnessSeekBar: SeekBar = itemView.findViewById(R.id.brightness_seekbar)
         val powerStatusSwitch: SwitchCompat = itemView.findViewById(R.id.power_status_switch)
     }

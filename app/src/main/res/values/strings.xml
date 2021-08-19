@@ -29,4 +29,7 @@
     <string name="please_enter_value">Please enter a value</string>
     <string name="must_be_a_valid_address">Must be a valid IP Address or URL</string>
     <string name="cancel">Cancel</string>
+    <string name="default_device_name">(New Device)</string>
+    <string name="default_ip">0.0.0.0</string>
+    <string name="is_offline">Offline</string>
 </resources>
