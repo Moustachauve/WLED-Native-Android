@@ -84,10 +84,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     private fun initDevices() {
         DeviceRepository.init(applicationContext)
-        val devices = DeviceRepository.getAll()
-
-        for (device in devices) {
-            DeviceSync.update(device)
-        }
     }
 }

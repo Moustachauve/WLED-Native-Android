@@ -1,6 +1,8 @@
 package ca.cgagnier.wlednativeandroid
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.ColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
@@ -36,6 +40,9 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
         holder.brightnessSeekBar.progress = currentItem.brightness
         holder.powerStatusSwitch.isChecked = currentItem.isPoweredOn
 
+        holder.brightnessSeekBar.progressDrawable.setTint(currentItem.color)
+        holder.brightnessSeekBar.thumb.setTint(currentItem.color)
+
         holder.container.setOnClickListener {
             fragmentJump(currentItem)
         }
@@ -57,6 +64,10 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
     }
 
     override fun getItemCount() = deviceList.count()
+
+    fun getAllItems(): ArrayList<DeviceItem> {
+        return deviceList
+    }
 
     class DeviceListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val container: ConstraintLayout = itemView.findViewById(R.id.container)

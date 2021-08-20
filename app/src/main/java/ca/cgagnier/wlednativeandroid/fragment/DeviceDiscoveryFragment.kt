@@ -15,16 +15,23 @@ import ca.cgagnier.wlednativeandroid.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.DeviceSync
 
 
 class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
     DeviceAddManuallyFragment.NoticeDialogListener,
-    DeviceDiscovery.DeviceDiscoveredListener {
+    DeviceDiscovery.DeviceDiscoveredListener,
+    DeviceRepository.DataChangedListener{
 
     private lateinit var listener: DeviceAddManuallyFragment.NoticeDialogListener
     lateinit var deviceDiscovery: DeviceDiscovery
 
     private val deviceListAdapter = DeviceListAdapter(ArrayList())
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        DeviceRepository.registerDataChangedListener(this)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -81,24 +88,34 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
     override fun onDestroy() {
         deviceDiscovery.stop()
         super.onDestroy()
+        DeviceRepository.unregisterDataChangedListener(this)
     }
 
     override fun onDeviceManuallyAdded(dialog: DialogFragment) = listener.onDeviceManuallyAdded(dialog)
 
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
-        val device = DeviceItem(serviceInfo.host.toString())
+
+        val deviceName = serviceInfo.serviceName ?: ""
+        val device = DeviceItem(serviceInfo.host.toString(), deviceName)
         if (DeviceRepository.contains(device)) {
             return
         }
 
-        if (serviceInfo.serviceName != null) {
-            device.name = serviceInfo.serviceName
-        }
-
-        DeviceRepository.add(device)
+        DeviceRepository.put(device)
+        DeviceSync.update(device)
 
         activity?.runOnUiThread {
             deviceListAdapter.addItem(device)
         }
+    }
+
+    override fun onItemChanged(item: DeviceItem) {
+        deviceListAdapter.itemChanged(item)
+    }
+
+    override fun onItemAdded(item: DeviceItem) {
+    }
+
+    override fun onItemRemoved(item: DeviceItem) {
     }
 }

@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.service
 
+import android.graphics.Color
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.model.DeviceStateInfo
@@ -30,20 +31,24 @@ object DeviceSync {
 
     private fun onFailure(device: DeviceItem, call: Call<DeviceStateInfo>, t: Throwable) {
         Log.e(TAG, t.message!!)
-        device.isOnline = false
-        DeviceRepository.update(device)
+        val updatedDevice = device.copy(isOnline = false)
+        DeviceRepository.put(updatedDevice)
     }
 
     private fun onSuccess(device: DeviceItem, call: Call<DeviceStateInfo>, response: Response<DeviceStateInfo>) {
         if (response.code() == 200) {
             val deviceStateInfo = response.body()!!
+            val colorInfo = deviceStateInfo.state.segment[0].colors[0]
 
-            device.isOnline = true
-            if (!device.isCustomName) {
-                device.name = deviceStateInfo.info.name
-            }
+            val updatedDevice = device.copy(
+                isOnline = true,
+                name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
+                brightness = deviceStateInfo.state.brightness,
+                isPoweredOn = deviceStateInfo.state.isOn,
+                color = Color.rgb(colorInfo[0], colorInfo[1], colorInfo[2])
+            )
 
-            DeviceRepository.update(device)
+            DeviceRepository.put(updatedDevice)
         }
     }
 }
