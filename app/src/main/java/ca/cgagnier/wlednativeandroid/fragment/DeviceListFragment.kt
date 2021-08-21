@@ -77,6 +77,10 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
                 onRefresh()
                 true
             }
+            R.id.action_manage_device -> {
+                openManageDevicesFragment()
+                true
+            }
 
             else -> super.onOptionsItemSelected(item)
         }
@@ -84,6 +88,11 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
 
     private fun openAddDeviceFragment() {
         val fragment = DeviceDiscoveryFragment()
+        switchContent(R.id.fragment_container_view, fragment)
+    }
+
+    private fun openManageDevicesFragment() {
+        val fragment = DeviceListManageFragment()
         switchContent(R.id.fragment_container_view, fragment)
     }
 

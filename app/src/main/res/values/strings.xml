@@ -15,8 +15,6 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="looking_for_devices">Looking for Devices</string>
     <string name="add_a_device_manually">Add a Device Manually</string>
     <string name="add_device">Add Device</string>
@@ -36,4 +34,9 @@
     <string name="refresh_list">Refresh List</string>
     <string name="manage_devices">Manage Devices</string>
     <string name="wled_logo">WLED Logo</string>
+    <string name="remove">Remove</string>
+    <string name="edit_device">Edit Device</string>
+    <string name="remove_device">Remove Device</string>
+    <string name="remove_device_confirm">Remove a device?</string>
+    <string name="remove_device_confirm_text">Do you really want to remove %1$s [%2$s]?</string>
 </resources>

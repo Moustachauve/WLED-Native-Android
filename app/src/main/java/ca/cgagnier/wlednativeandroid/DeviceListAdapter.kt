@@ -1,9 +1,5 @@
 package ca.cgagnier.wlednativeandroid
 
-import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.ColorFilter
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,20 +9,10 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
-class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>() {
-
-    private lateinit var context: Context
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        context = recyclerView.context
-    }
+class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false)
@@ -54,23 +40,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
         }
     }
 
-    private fun fragmentJump(item: DeviceItem) {
-        val fragment = DeviceViewFragment.newInstance(item)
-        switchContent(R.id.fragment_container_view, fragment)
-    }
-
-    fun switchContent(id: Int, fragment: Fragment) {
-        if (context is MainActivity) {
-            val mainActivity = context as MainActivity
-            mainActivity.switchContent(id, fragment, DeviceViewFragment.TAG_NAME)
-        }
-    }
-
     override fun getItemCount() = deviceList.count()
-
-    fun getAllItems(): ArrayList<DeviceItem> {
-        return deviceList
-    }
 
     class DeviceListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val container: ConstraintLayout = itemView.findViewById(R.id.container)
@@ -83,33 +53,8 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
         val refreshProgressBar: ProgressBar = itemView.findViewById(R.id.refresh_progress_bar)
     }
 
-    private fun getItemPosition(item: DeviceItem): Int? {
-        for (i in 0 until deviceList.size) {
-            if (item == deviceList[i]) {
-                return i
-            }
-        }
-        return null
-    }
-
-    fun itemChanged(item: DeviceItem) {
-        val position = getItemPosition(item)
-        if (position != null) {
-            deviceList[position] = item
-            notifyItemChanged(position)
-        }
-    }
-
-    fun addItem(item: DeviceItem) {
-        deviceList.add(item)
-        notifyItemInserted(deviceList.size - 1)
-    }
-
-    fun removeItem(item: DeviceItem) {
-        val position = getItemPosition(item)
-        if (position != null) {
-            deviceList.removeAt(position)
-            notifyItemRemoved(position)
-        }
+    private fun fragmentJump(item: DeviceItem) {
+        val fragment = DeviceViewFragment.newInstance(item)
+        switchContent(R.id.fragment_container_view, fragment)
     }
 }
