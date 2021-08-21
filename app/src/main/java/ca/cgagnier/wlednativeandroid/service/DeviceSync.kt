@@ -16,6 +16,10 @@ object DeviceSync {
     private const val TAG = "DeviceSync"
 
     fun update(device: DeviceItem) {
+
+        val newDevice = device.copy(isRefreshing = true)
+        DeviceRepository.put(newDevice)
+
         val retrofit = Retrofit.Builder()
             .baseUrl(device.getDeviceUrl())
             .addConverterFactory(MoshiConverterFactory.create())
@@ -31,7 +35,7 @@ object DeviceSync {
 
     private fun onFailure(device: DeviceItem, call: Call<DeviceStateInfo>, t: Throwable) {
         Log.e(TAG, t.message!!)
-        val updatedDevice = device.copy(isOnline = false)
+        val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
         DeviceRepository.put(updatedDevice)
     }
 
@@ -45,7 +49,9 @@ object DeviceSync {
                 name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
                 brightness = deviceStateInfo.state.brightness,
                 isPoweredOn = deviceStateInfo.state.isOn,
-                color = Color.rgb(colorInfo[0], colorInfo[1], colorInfo[2])
+                color = Color.rgb(colorInfo[0], colorInfo[1], colorInfo[2]),
+                isRefreshing = false,
+                networkRssi = deviceStateInfo.info.wifi.rssi
             )
 
             DeviceRepository.put(updatedDevice)

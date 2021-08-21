@@ -6,6 +6,25 @@
         android:id="@+id/action_device_add"
         android:icon="@drawable/ic_baseline_add_24"
         android:title="@string/add_a_device"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_overflow"
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/action_refresh"
+                android:icon="@drawable/ic_baseline_refresh_24"
+                android:title="@string/refresh_list"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/action_manage_device"
+                android:icon="@drawable/ic_baseline_edit_note_24"
+                android:title="@string/manage_devices"
+                app:showAsAction="never" />
+        </menu>
+    </item>
 </menu>

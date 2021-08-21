@@ -72,6 +72,11 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
                 openAddDeviceFragment()
                 true
             }
+            R.id.action_refresh -> {
+                swipeRefreshLayout.isRefreshing = true
+                onRefresh()
+                true
+            }
 
             else -> super.onOptionsItemSelected(item)
         }

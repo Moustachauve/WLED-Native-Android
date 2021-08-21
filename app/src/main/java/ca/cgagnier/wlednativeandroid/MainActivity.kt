@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         setSupportActionBar(findViewById(R.id.main_toolbar))
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setIcon(R.drawable.wled_logo_akemi)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         supportFragmentManager.addOnBackStackChangedListener(this)
 

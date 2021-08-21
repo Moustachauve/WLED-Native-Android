@@ -32,4 +32,8 @@
     <string name="default_device_name">(New Device)</string>
     <string name="default_ip">0.0.0.0</string>
     <string name="is_offline">Offline</string>
+    <string name="network_status">Network Status</string>
+    <string name="refresh_list">Refresh List</string>
+    <string name="manage_devices">Manage Devices</string>
+    <string name="wled_logo">WLED Logo</string>
 </resources>

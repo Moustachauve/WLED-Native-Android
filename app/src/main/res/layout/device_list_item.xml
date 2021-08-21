@@ -33,15 +33,20 @@
             android:gravity="center"
             android:text="@string/default_ip" />
 
+        <ImageView
+            android:id="@+id/network_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/network_status"
+            android:layout_marginStart="4dp"
+            app:srcCompat="@drawable/twotone_signal_wifi_connected_no_internet_0_24" />
         <TextView
             android:id="@+id/is_offline"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:drawablePadding="4dp"
             android:gravity="center"
-            android:text="@string/is_offline"
-            app:drawableStartCompat="@drawable/ic_signal_wifi_bad_24" />
+            android:text="@string/is_offline" />
     </LinearLayout>
 
     <SeekBar
@@ -51,6 +56,7 @@
         android:layout_height="wrap_content"
         android:max="255"
         android:progress="10"
+        android:thumb="@drawable/ic_baseline_brightness_high_24"
         app:layout_constraintEnd_toStartOf="@+id/power_status_switch"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -65,4 +71,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/refresh_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/power_status_switch"
+        app:layout_constraintEnd_toEndOf="@+id/power_status_switch"
+        app:layout_constraintStart_toStartOf="@+id/power_status_switch"
+        app:layout_constraintTop_toTopOf="@+id/power_status_switch" />
 </androidx.constraintlayout.widget.ConstraintLayout>

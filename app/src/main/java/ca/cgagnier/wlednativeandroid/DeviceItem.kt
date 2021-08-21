@@ -25,7 +25,13 @@ data class DeviceItem(
     val isPoweredOn: Boolean = false,
 
     @Transient
-    val isOnline: Boolean = false
+    val isOnline: Boolean = false,
+
+    @Transient
+    val isRefreshing: Boolean = false,
+
+    @Transient
+    val networkRssi: Int = -101
 ) {
 
     fun getDeviceUrl(): String {
@@ -37,6 +43,7 @@ data class DeviceItem(
                 && brightness == device.brightness
                 && isPoweredOn == device.isPoweredOn
                 && isOnline == device.isOnline
+                && isRefreshing == device.isRefreshing
     }
 
     fun isSameForSave(device: DeviceItem): Boolean {
@@ -50,5 +57,24 @@ data class DeviceItem(
             return other.address == address
         }
         return super.equals(other)
+    }
+
+    fun getNetworkStrengthImage(): Int {
+        if (!isOnline) {
+            return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
+        }
+        if (networkRssi >= -50) {
+            return R.drawable.twotone_signal_wifi_4_bar_24
+        }
+        if (networkRssi >= -70) {
+            return R.drawable.twotone_signal_wifi_3_bar_24
+        }
+        if (networkRssi >= -80) {
+            return R.drawable.twotone_signal_wifi_2_bar_24
+        }
+        if (networkRssi >= -100) {
+            return R.drawable.twotone_signal_wifi_1_bar_24
+        }
+        return R.drawable.twotone_signal_wifi_0_bar_24
     }
 }
