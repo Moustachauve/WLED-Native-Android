@@ -40,6 +40,10 @@ object DeviceRepository {
         }
     }
 
+    fun get(address: String): DeviceItem? {
+        return devices[address]
+    }
+
     fun getAll(): List<DeviceItem> {
         return ArrayList<DeviceItem>(devices.values)
     }

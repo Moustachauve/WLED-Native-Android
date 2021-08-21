@@ -55,10 +55,7 @@ class DeviceListAdapter(private val deviceList: ArrayList<DeviceItem>) : Recycle
     }
 
     private fun fragmentJump(item: DeviceItem) {
-        val fragment = DeviceViewFragment()
-        val bundle = Bundle()
-        //bundle.putParcelable("item_selected_key", item)
-        fragment.arguments = bundle
+        val fragment = DeviceViewFragment.newInstance(item)
         switchContent(R.id.fragment_container_view, fragment)
     }
 
