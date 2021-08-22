@@ -39,4 +39,5 @@
     <string name="remove_device">Remove Device</string>
     <string name="remove_device_confirm">Remove a device?</string>
     <string name="remove_device_confirm_text">Do you really want to remove %1$s [%2$s]?</string>
+    <string name="save_device">Save Device</string>
 </resources>

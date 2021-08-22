@@ -22,19 +22,17 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
     private val deviceListAdapter = DeviceListAdapter(ArrayList(DeviceRepository.getAll()))
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        DeviceRepository.registerDataChangedListener(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        DeviceRepository.unregisterDataChangedListener(this)
-    }
 
     override fun onResume() {
         super.onResume()
+        DeviceRepository.registerDataChangedListener(this)
+        deviceListAdapter.replaceItems(ArrayList(DeviceRepository.getAll().toList()))
         onRefresh()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        DeviceRepository.unregisterDataChangedListener(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

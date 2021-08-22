@@ -1,13 +1,18 @@
 package ca.cgagnier.wlednativeandroid
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
-abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected val deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<T>() {
+abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected var deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<T>() {
 
     protected lateinit var context: Context
+
+    init {
+        this.setHasStableIds(true)
+    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -19,6 +24,10 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected
             val mainActivity = context as MainActivity
             mainActivity.switchContent(id, fragment, DeviceViewFragment.TAG_NAME)
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return deviceList[position].address.hashCode().toLong()
     }
 
     override fun getItemCount() = deviceList.count()
@@ -55,5 +64,11 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected
             deviceList.removeAt(position)
             notifyItemRemoved(position)
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun replaceItems(items: ArrayList<DeviceItem>) {
+        deviceList = items
+        notifyDataSetChanged()
     }
 }
