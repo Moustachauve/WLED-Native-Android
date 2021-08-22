@@ -21,24 +21,24 @@ class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDevic
         return DeviceListViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
-        val currentItem = deviceList[position]
+    override fun updateView(holder: DeviceListViewHolder, currentItem: DeviceItem) {
+        holder.apply {
+            holder.nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
+            holder.ipAddressTextView.text = currentItem.address
 
-        holder.nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
-        holder.ipAddressTextView.text = currentItem.address
+            val activity = holder.itemView.context as AppCompatActivity
 
-        val activity = holder.itemView.context as AppCompatActivity
+            holder.container.setOnClickListener {
+                openEditDialog(currentItem, activity.supportFragmentManager)
+            }
 
-        holder.container.setOnClickListener {
-            openEditDialog(currentItem, activity.supportFragmentManager)
-        }
+            holder.editButton.setOnClickListener {
+                openEditDialog(currentItem, activity.supportFragmentManager)
+            }
 
-        holder.editButton.setOnClickListener {
-            openEditDialog(currentItem, activity.supportFragmentManager)
-        }
-
-        holder.deleteButton.setOnClickListener {
-            deleteItem(currentItem)
+            holder.deleteButton.setOnClickListener {
+                deleteItem(currentItem)
+            }
         }
     }
 

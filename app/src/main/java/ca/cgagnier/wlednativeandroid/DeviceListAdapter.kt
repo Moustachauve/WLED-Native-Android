@@ -19,24 +19,24 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
         return DeviceListViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
-        val currentItem = deviceList[position]
+    override fun updateView(holder: DeviceListViewHolder, currentItem: DeviceItem) {
+        holder.apply {
+            nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
+            ipAddressTextView.text = currentItem.address
+            isOfflineTextView.visibility = if (currentItem.isOnline) View.INVISIBLE else View.VISIBLE
+            brightnessSeekBar.progress = currentItem.brightness
+            powerStatusSwitch.isChecked = currentItem.isPoweredOn
+            networkStatusImage.setImageResource(currentItem.getNetworkStrengthImage())
 
-        holder.nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
-        holder.ipAddressTextView.text = currentItem.address
-        holder.isOfflineTextView.visibility = if (currentItem.isOnline) View.INVISIBLE else View.VISIBLE
-        holder.brightnessSeekBar.progress = currentItem.brightness
-        holder.powerStatusSwitch.isChecked = currentItem.isPoweredOn
-        holder.networkStatusImage.setImageResource(currentItem.getNetworkStrengthImage())
+            brightnessSeekBar.progressDrawable.setTint(currentItem.color)
+            brightnessSeekBar.thumb.setTint(currentItem.color)
 
-        holder.brightnessSeekBar.progressDrawable.setTint(currentItem.color)
-        holder.brightnessSeekBar.thumb.setTint(currentItem.color)
+            refreshProgressBar.visibility = if (currentItem.isRefreshing) View.VISIBLE else View.GONE
+            powerStatusSwitch.visibility = if (currentItem.isRefreshing) View.INVISIBLE else View.VISIBLE
 
-        holder.refreshProgressBar.visibility = if (currentItem.isRefreshing) View.VISIBLE else View.GONE
-        holder.powerStatusSwitch.visibility = if (currentItem.isRefreshing) View.INVISIBLE else View.VISIBLE
-
-        holder.container.setOnClickListener {
-            fragmentJump(currentItem)
+            container.setOnClickListener {
+                fragmentJump(currentItem)
+            }
         }
     }
 

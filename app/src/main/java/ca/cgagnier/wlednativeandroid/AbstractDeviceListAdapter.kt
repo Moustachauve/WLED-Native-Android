@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
-abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected var deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<T>() {
+abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder>(protected var deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<T>() {
 
     protected lateinit var context: Context
 
@@ -14,16 +14,26 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected
         this.setHasStableIds(true)
     }
 
+    override fun onBindViewHolder(holder: T, position: Int) {
+        updateView(holder, deviceList[position])
+    }
+
+    override fun onBindViewHolder(
+        holder: T,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isNullOrEmpty()) {
+            // refresh all
+            onBindViewHolder(holder, position)
+            return
+        }
+        updateView(holder, deviceList[position])
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         context = recyclerView.context
-    }
-
-    fun switchContent(id: Int, fragment: Fragment) {
-        if (context is MainActivity) {
-            val mainActivity = context as MainActivity
-            mainActivity.switchContent(id, fragment, DeviceViewFragment.TAG_NAME)
-        }
     }
 
     override fun getItemId(position: Int): Long {
@@ -31,6 +41,15 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected
     }
 
     override fun getItemCount() = deviceList.count()
+
+    protected abstract fun updateView(holder: T, currentItem: DeviceItem)
+
+    fun switchContent(id: Int, fragment: Fragment) {
+        if (context is MainActivity) {
+            val mainActivity = context as MainActivity
+            mainActivity.switchContent(id, fragment, DeviceViewFragment.TAG_NAME)
+        }
+    }
 
     fun getAllItems(): ArrayList<DeviceItem> {
         return deviceList
@@ -49,7 +68,7 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder?>(protected
         val position = getItemPosition(item)
         if (position != null) {
             deviceList[position] = item
-            notifyItemChanged(position)
+            notifyItemChanged(position, "updated")
         }
     }
 
