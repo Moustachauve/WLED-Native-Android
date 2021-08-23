@@ -15,7 +15,7 @@ import ca.cgagnier.wlednativeandroid.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
-import ca.cgagnier.wlednativeandroid.service.DeviceSync
+import ca.cgagnier.wlednativeandroid.service.DeviceApi
 
 
 class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
@@ -102,7 +102,7 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
         }
 
         DeviceRepository.put(device)
-        DeviceSync.update(device)
+        DeviceApi.update(device)
 
         activity?.runOnUiThread {
             deviceListAdapter.addItem(device)

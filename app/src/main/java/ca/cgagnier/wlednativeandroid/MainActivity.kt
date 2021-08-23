@@ -8,7 +8,6 @@ import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
-import ca.cgagnier.wlednativeandroid.service.DeviceSync
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),

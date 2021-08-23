@@ -34,6 +34,8 @@ data class DeviceItem(
     val networkRssi: Int = -101
 ) {
 
+    var isSliding = false
+
     fun getDeviceUrl(): String {
         return "http://$address"
     }

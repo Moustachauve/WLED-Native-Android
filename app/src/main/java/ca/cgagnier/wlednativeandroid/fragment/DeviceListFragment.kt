@@ -12,7 +12,7 @@ import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.MainActivity
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.service.DeviceSync
+import ca.cgagnier.wlednativeandroid.service.DeviceApi
 
 
 class DeviceListFragment : Fragment(R.layout.fragment_device_list),
@@ -116,7 +116,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
 
     override fun onRefresh() {
         for (device in deviceListAdapter.getAllItems()) {
-            DeviceSync.update(device)
+            DeviceApi.update(device)
         }
     }
 }

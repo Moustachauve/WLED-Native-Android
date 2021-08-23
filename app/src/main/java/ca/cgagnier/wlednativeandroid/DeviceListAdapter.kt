@@ -11,6 +11,9 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
+import ca.cgagnier.wlednativeandroid.model.JsonPost
+import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 
 class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
@@ -37,6 +40,27 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
             container.setOnClickListener {
                 fragmentJump(currentItem)
             }
+
+            powerStatusSwitch.setOnClickListener {
+                val deviceSetPost = JsonPost(isOn = !currentItem.isPoweredOn)
+                DeviceApi.postJson(currentItem, deviceSetPost)
+            }
+
+            brightnessSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        ThrottleApiPostCall.send(currentItem, JsonPost(brightness = value))
+                    }
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    currentItem.isSliding = true
+                }
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    currentItem.isSliding = false
+                }
+
+            })
         }
     }
 

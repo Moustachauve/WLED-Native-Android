@@ -8,7 +8,7 @@ import androidx.fragment.app.DialogFragment
 import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.service.DeviceSync
+import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 
@@ -62,7 +62,7 @@ class DeviceEditFragment : DialogFragment() {
         )
 
         DeviceRepository.put(device)
-        DeviceSync.update(device)
+        DeviceApi.update(device)
 
         dismiss()
     }
