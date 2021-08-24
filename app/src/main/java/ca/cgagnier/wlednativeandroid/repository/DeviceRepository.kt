@@ -35,7 +35,7 @@ object DeviceRepository {
         jsonAdapter = moshi.adapter(type)
 
         val devicesJson = sharedPreferences.getString(DEVICE_LIST, "")
-        if (devicesJson != null) {
+        if (devicesJson != null && devicesJson != "") {
             devices = HashMap(jsonAdapter.fromJson(devicesJson) ?: HashMap())
         }
     }
