@@ -16,6 +16,7 @@ import ca.cgagnier.wlednativeandroid.model.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 import android.content.res.ColorStateList
+import androidx.core.content.res.ResourcesCompat
 
 import androidx.core.graphics.drawable.DrawableCompat
 
@@ -91,8 +92,9 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
     }
 
     private fun setSwitchColor(switch: SwitchCompat, color: Int) {
-        // trackColor is the thumbColor with 30% transparency (77)
-        val trackColor: Int = Color.argb(77, Color.red(color), Color.green(color), Color.blue(color))
+        // trackColor is the thumbColor with some transparency
+        val trackColor: Int = Color.argb(90, Color.red(color), Color.green(color), Color.blue(color))
+
 
         DrawableCompat.setTintList(
             switch.thumbDrawable, ColorStateList(
@@ -107,7 +109,7 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
             switch.trackDrawable, ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
                     trackColor,
-                    Color.parseColor("#4D000000") // full black with 30% transparency (4D)
+                    ResourcesCompat.getColor(context.resources, R.color.light_gray_semi_transparent, null)
                 )
             )
         )
