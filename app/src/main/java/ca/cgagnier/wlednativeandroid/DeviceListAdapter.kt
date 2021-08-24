@@ -16,11 +16,12 @@ import ca.cgagnier.wlednativeandroid.model.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import androidx.core.content.res.ResourcesCompat
 
 import androidx.core.graphics.drawable.DrawableCompat
 
-
+import androidx.core.graphics.ColorUtils
 
 
 class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
@@ -39,8 +40,7 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
             powerStatusSwitch.isChecked = currentItem.isPoweredOn
             networkStatusImage.setImageResource(currentItem.getNetworkStrengthImage())
 
-            brightnessSeekBar.progressDrawable.setTint(currentItem.color)
-            brightnessSeekBar.thumb.setTint(currentItem.color)
+            setSeekBarColor(brightnessSeekBar, currentItem.color)
             setSwitchColor(powerStatusSwitch, currentItem.color)
 
             refreshProgressBar.visibility = if (currentItem.isRefreshing) View.VISIBLE else View.GONE
@@ -91,15 +91,39 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
         switchContent(R.id.fragment_container_view, fragment)
     }
 
-    private fun setSwitchColor(switch: SwitchCompat, color: Int) {
-        // trackColor is the thumbColor with some transparency
-        val trackColor: Int = Color.argb(90, Color.red(color), Color.green(color), Color.blue(color))
+    /**
+     * Fixes the color if it is too dark or too bright depending of the dark/light theme
+     */
+    private fun fixColor(color: Int): Int {
+        val floatArray = FloatArray(3)
+        ColorUtils.colorToHSL(color, floatArray)
 
+        if (isDark() && floatArray[2] < 0.25f) {
+            floatArray[2] = 0.25f
+        } else if (!isDark() && floatArray[2] > 0.8f) {
+            floatArray[2] = 0.8f
+        }
+
+        return ColorUtils.HSLToColor(floatArray)
+    }
+
+    private fun setSeekBarColor(seekBar: SeekBar, color: Int) {
+        val fixedColor = fixColor(color)
+
+        seekBar.thumb.setTint(fixedColor)
+        seekBar.progressDrawable.setTint(fixedColor)
+    }
+
+    private fun setSwitchColor(switch: SwitchCompat, color: Int) {
+        val fixedColor = fixColor(color)
+
+        // trackColor is the thumbColor with some transparency
+        val trackColor: Int = Color.argb(90, Color.red(fixedColor), Color.green(fixedColor), Color.blue(fixedColor))
 
         DrawableCompat.setTintList(
             switch.thumbDrawable, ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
-                    color,
+                    fixedColor,
                     Color.WHITE
                 )
             )
@@ -113,5 +137,9 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
                 )
             )
         )
+    }
+
+    private fun isDark(): Boolean {
+        return context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 }
