@@ -53,15 +53,6 @@ class DeviceViewFragment : Fragment(R.layout.fragment_device_view) {
             }
         }
 
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-            var settingToSet = WebSettingsCompat.FORCE_DARK_AUTO
-            when (context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
-                Configuration.UI_MODE_NIGHT_YES -> settingToSet = WebSettingsCompat.FORCE_DARK_ON
-                Configuration.UI_MODE_NIGHT_NO -> settingToSet = WebSettingsCompat.FORCE_DARK_OFF
-            }
-            WebSettingsCompat.setForceDark(deviceWebView.settings, settingToSet)
-        }
-
         deviceWebView.settings.javaScriptEnabled = true
         deviceWebView.settings.domStorageEnabled = true
         deviceWebView.loadUrl(address)
