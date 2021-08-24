@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class FileSystem (
 
-	@Json(name = "u") val spaceUsed : Int,
-	@Json(name = "t") val spaceTotal : Int,
-	@Json(name = "pmt") val presetLastModification : Int
+	@Json(name = "u") val spaceUsed : Int? = null,
+	@Json(name = "t") val spaceTotal : Int? = null,
+	@Json(name = "pmt") val presetLastModification : Int? = null
 )

@@ -6,20 +6,20 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Segment (
 
-	@Json(name = "id") val id : Int,
-	@Json(name = "start") val start : Int,
-	@Json(name = "stop") val stop : Int,
-	@Json(name = "len") val length : Int,
-	@Json(name = "grp") val grouping : Int,
-	@Json(name = "spc") val spacing : Int,
-	@Json(name = "on") val isOn : Boolean,
-	@Json(name = "bri") val brightness : Int,
-	@Json(name = "col") val colors : List<List<Int>>,
-	@Json(name = "fx") val effect : Int,
-	@Json(name = "sx") val effectSpeed : Int,
-	@Json(name = "ix") val effectIntensity : Int,
-	@Json(name = "pal") val palette : Int,
-	@Json(name = "sel") val isSelected : Boolean,
-	@Json(name = "rev") val isReversed : Boolean,
-	@Json(name = "mi") val isMirrored : Boolean
+	@Json(name = "id") val id : Int? = null,
+	@Json(name = "start") val start : Int? = null,
+	@Json(name = "stop") val stop : Int? = null,
+	@Json(name = "len") val length : Int? = null,
+	@Json(name = "grp") val grouping : Int? = null,
+	@Json(name = "spc") val spacing : Int? = null,
+	@Json(name = "on") val isOn : Boolean? = null,
+	@Json(name = "bri") val brightness : Int? = null,
+	@Json(name = "col") val colors : List<List<Int>>? = null,
+	@Json(name = "fx") val effect : Int? = null,
+	@Json(name = "sx") val effectSpeed : Int? = null,
+	@Json(name = "ix") val effectIntensity : Int? = null,
+	@Json(name = "pal") val palette : Int? = null,
+	@Json(name = "sel") val isSelected : Boolean? = null,
+	@Json(name = "rev") val isReversed : Boolean? = null,
+	@Json(name = "mi") val isMirrored : Boolean? = null
 )

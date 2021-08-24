@@ -8,11 +8,11 @@ data class State (
 
 	@Json(name = "on") val isOn : Boolean,
 	@Json(name = "bri") val brightness : Int,
-	@Json(name = "transition") val transition : Int,
-	@Json(name = "ps") val selectedPresetId : Int,
-	@Json(name = "pl") val selectedPlaylistId : Int,
-	@Json(name = "nl") val nightlight : Nightlight,
-	@Json(name = "lor") val liveDataOverride : Int,
-	@Json(name = "mainseg") val mainSegment : Int,
-	@Json(name = "seg") val segment : List<Segment>
+	@Json(name = "transition") val transition : Int? = null,
+	@Json(name = "ps") val selectedPresetId : Int? = null,
+	@Json(name = "pl") val selectedPlaylistId : Int? = null,
+	@Json(name = "nl") val nightlight : Nightlight? = null,
+	@Json(name = "lor") val liveDataOverride : Int? = null,
+	@Json(name = "mainseg") val mainSegment : Int? = null,
+	@Json(name = "seg") val segment : List<Segment>? = null
 )

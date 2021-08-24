@@ -63,16 +63,16 @@ object DeviceApi {
     fun onSuccess(device: DeviceItem, response: Response<DeviceStateInfo>) {
         if (response.code() == 200) {
             val deviceStateInfo = response.body()!!
-            val colorInfo = deviceStateInfo.state.segment[0].colors[0]
+            val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
             val updatedDevice = device.copy(
                 isOnline = true,
                 name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
                 brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
                 isPoweredOn = deviceStateInfo.state.isOn,
-                color = Color.rgb(colorInfo[0], colorInfo[1], colorInfo[2]),
+                color = if (colorInfo != null) Color.rgb(colorInfo[0], colorInfo[1], colorInfo[2]) else Color.WHITE,
                 isRefreshing = false,
-                networkRssi = deviceStateInfo.info.wifi.rssi
+                networkRssi = deviceStateInfo.info.wifi.rssi ?: 0
             )
 
             DeviceRepository.put(updatedDevice)

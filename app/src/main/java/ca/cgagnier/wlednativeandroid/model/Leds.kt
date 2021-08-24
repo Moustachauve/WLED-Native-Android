@@ -6,11 +6,11 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Leds (
 
-	@Json(name = "count") val count : Int,
-	@Json(name = "rgbw") val isRgbw : Boolean,
-	@Json(name = "wv") val isWhiteChannelEnabled : Boolean,
-	@Json(name = "pwr") val estimatedPowerUsed : Int,
-	@Json(name = "fps") val fps : Int,
-	@Json(name = "maxpwr") val maxPower : Int,
-	@Json(name = "maxseg") val maxSegment : Int
+	@Json(name = "count") val count : Int? = null,
+	@Json(name = "rgbw") val isRgbw : Boolean? = null,
+	@Json(name = "wv") val isWhiteChannelEnabled : Boolean? = null,
+	@Json(name = "pwr") val estimatedPowerUsed : Int? = null,
+	@Json(name = "fps") val fps : Int? = null,
+	@Json(name = "maxpwr") val maxPower : Int? = null,
+	@Json(name = "maxseg") val maxSegment : Int? = null
 )
