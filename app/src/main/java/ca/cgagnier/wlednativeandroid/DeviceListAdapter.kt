@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,12 @@ import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.model.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
+import android.content.res.ColorStateList
+
+import androidx.core.graphics.drawable.DrawableCompat
+
+
+
 
 class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
@@ -33,6 +40,7 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
 
             brightnessSeekBar.progressDrawable.setTint(currentItem.color)
             brightnessSeekBar.thumb.setTint(currentItem.color)
+            setSwitchColor(powerStatusSwitch, currentItem.color)
 
             refreshProgressBar.visibility = if (currentItem.isRefreshing) View.VISIBLE else View.GONE
             powerStatusSwitch.visibility = if (currentItem.isRefreshing) View.INVISIBLE else View.VISIBLE
@@ -80,5 +88,28 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListA
     private fun fragmentJump(item: DeviceItem) {
         val fragment = DeviceViewFragment.newInstance(item)
         switchContent(R.id.fragment_container_view, fragment)
+    }
+
+    private fun setSwitchColor(switch: SwitchCompat, color: Int) {
+        // trackColor is the thumbColor with 30% transparency (77)
+        val trackColor: Int = Color.argb(77, Color.red(color), Color.green(color), Color.blue(color))
+
+        DrawableCompat.setTintList(
+            switch.thumbDrawable, ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
+                    color,
+                    Color.WHITE
+                )
+            )
+        )
+        // setting the track color
+        DrawableCompat.setTintList(
+            switch.trackDrawable, ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
+                    trackColor,
+                    Color.parseColor("#4D000000") // full black with 30% transparency (4D)
+                )
+            )
+        )
     }
 }
