@@ -1,20 +1,7 @@
 <resources>
-    <string name="app_name">WLED-Native-Android</string>
+    <string name="app_name">WLED Native</string>
+    <string name="wled_logo">WLED Logo</string>
     <string name="add_a_device">Add a Device</string>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="looking_for_devices">Looking for Devices</string>
     <string name="add_a_device_manually">Add a Device Manually</string>
     <string name="add_device">Add Device</string>
@@ -33,7 +20,6 @@
     <string name="network_status">Network Status</string>
     <string name="refresh_list">Refresh List</string>
     <string name="manage_devices">Manage Devices</string>
-    <string name="wled_logo">WLED Logo</string>
     <string name="remove">Remove</string>
     <string name="edit_device">Edit Device</string>
     <string name="remove_device">Remove Device</string>
