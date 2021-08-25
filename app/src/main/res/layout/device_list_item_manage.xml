@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:background="?attr/selectableItemBackground"
     android:padding="6dp">
 
     <TextView
@@ -16,10 +15,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/default_device_name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:ellipsize="end"
         android:maxLines="2"
+        android:text="@string/default_device_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toStartOf="@id/hidden_image"
         app:layout_constraintHorizontal_bias="0"
@@ -46,9 +45,9 @@
         android:id="@+id/ip_address_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/default_ip"
         android:ellipsize="end"
         android:maxLines="1"
+        android:text="@string/default_ip"
         app:layout_constraintEnd_toStartOf="@id/hidden_text"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -81,15 +80,15 @@
 
     <ImageButton
         android:id="@+id/delete_button"
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:backgroundTint="#DA1414"
+        android:contentDescription="@string/remove_device"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_delete_outline_24"
-        style="?android:attr/borderlessButtonStyle"
-        android:contentDescription="@string/remove_device" />
+        app:srcCompat="@drawable/ic_baseline_delete_outline_24" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/hidden_group"

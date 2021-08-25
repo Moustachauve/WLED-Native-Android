@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -28,7 +27,6 @@
         app:layout_constraintTop_toBottomOf="@id/looking_for_devices_text" />
 
 
-
     <TextView
         android:id="@+id/no_device_found_text"
         android:layout_width="wrap_content"
@@ -37,7 +35,8 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/looking_for_devices_text"  />
+        app:layout_constraintTop_toBottomOf="@id/looking_for_devices_text" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,11 +50,11 @@
         android:id="@+id/device_found_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layoutManager="LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progress_bar"
-        app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/device_list_item"  />
+        tools:listitem="@layout/device_list_item" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/add_manually_button"
