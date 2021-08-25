@@ -3,6 +3,7 @@ package ca.cgagnier.wlednativeandroid.fragment
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.widget.CheckBox
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import ca.cgagnier.wlednativeandroid.DeviceItem
@@ -14,9 +15,11 @@ import com.google.android.material.textfield.TextInputLayout
 
 class DeviceEditFragment : DialogFragment() {
 
+    lateinit var device: DeviceItem
+
     lateinit var deviceAddressTextInputLayout: TextInputLayout
     lateinit var customNameTextTextInputLayout: TextInputLayout
-    lateinit var device: DeviceItem
+    lateinit var hideDeviceCheckBox: CheckBox
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
@@ -41,12 +44,14 @@ class DeviceEditFragment : DialogFragment() {
 
         val alertDialog = dialog as AlertDialog
 
-        deviceAddressTextInputLayout = alertDialog.findViewById<TextInputLayout>(R.id.device_address_text_input_layout)!!
-        customNameTextTextInputLayout = alertDialog.findViewById<TextInputLayout>(R.id.custom_name_text_input_layout)!!
+        deviceAddressTextInputLayout = alertDialog.findViewById(R.id.device_address_text_input_layout)!!
+        customNameTextTextInputLayout = alertDialog.findViewById(R.id.custom_name_text_input_layout)!!
+        hideDeviceCheckBox = alertDialog.findViewById(R.id.hide_device_check_box)!!
 
         deviceAddressTextInputLayout.isEnabled = false
         deviceAddressTextInputLayout.editText?.setText(device.address)
         customNameTextTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
+        hideDeviceCheckBox.isChecked = device.isHidden
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             submitClickListener()
@@ -55,10 +60,12 @@ class DeviceEditFragment : DialogFragment() {
 
     private fun submitClickListener() {
         val deviceName = customNameTextTextInputLayout.editText?.text.toString()
+        val isHidden = hideDeviceCheckBox.isChecked
 
         val device = device.copy(
             name = deviceName,
-            isCustomName = deviceName != ""
+            isCustomName = deviceName != "",
+            isHidden = isHidden
         )
 
         DeviceRepository.put(device)

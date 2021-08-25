@@ -3,6 +3,7 @@ package ca.cgagnier.wlednativeandroid.fragment
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.widget.CheckBox
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import ca.cgagnier.wlednativeandroid.DeviceItem
@@ -17,6 +18,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
 
     lateinit var deviceAddressTextInputLayout: TextInputLayout
     lateinit var customNameTextTextInputLayout: TextInputLayout
+    lateinit var hideDeviceCheckBox: CheckBox
 
     interface NoticeDialogListener {
         fun onDeviceManuallyAdded(dialog: DialogFragment)
@@ -47,8 +49,9 @@ class DeviceAddManuallyFragment : DialogFragment() {
 
         val alertDialog = dialog as AlertDialog
 
-        deviceAddressTextInputLayout = alertDialog.findViewById<TextInputLayout>(R.id.device_address_text_input_layout)!!
-        customNameTextTextInputLayout = alertDialog.findViewById<TextInputLayout>(R.id.custom_name_text_input_layout)!!
+        deviceAddressTextInputLayout = alertDialog.findViewById(R.id.device_address_text_input_layout)!!
+        customNameTextTextInputLayout = alertDialog.findViewById(R.id.custom_name_text_input_layout)!!
+        hideDeviceCheckBox = alertDialog.findViewById(R.id.hide_device_check_box)!!
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             submitClickListener()
@@ -62,11 +65,13 @@ class DeviceAddManuallyFragment : DialogFragment() {
 
         val deviceAddress = deviceAddressTextInputLayout.editText?.text.toString()
         val deviceName = customNameTextTextInputLayout.editText?.text.toString()
+        val isHidden = hideDeviceCheckBox.isChecked
 
         val device = DeviceItem(
             address = deviceAddress,
             name = deviceName,
-            isCustomName = deviceName != ""
+            isCustomName = deviceName != "",
+            isHidden = isHidden
         )
 
         DeviceRepository.put(device)

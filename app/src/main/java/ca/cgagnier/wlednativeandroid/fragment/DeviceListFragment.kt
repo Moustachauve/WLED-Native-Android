@@ -19,15 +19,19 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
     DeviceRepository.DataChangedListener,
     SwipeRefreshLayout.OnRefreshListener {
 
-    private val deviceListAdapter = DeviceListAdapter(ArrayList(DeviceRepository.getAll()))
+    private val deviceListAdapter = DeviceListAdapter(getAllNotHidden())
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
 
     override fun onResume() {
         super.onResume()
         DeviceRepository.registerDataChangedListener(this)
-        deviceListAdapter.replaceItems(ArrayList(DeviceRepository.getAll().toList()))
+        deviceListAdapter.replaceItems(getAllNotHidden())
         onRefresh()
+    }
+
+    private fun getAllNotHidden(): ArrayList<DeviceItem> {
+        return DeviceRepository.getAll().filter { !it.isHidden } as ArrayList
     }
 
     override fun onPause() {

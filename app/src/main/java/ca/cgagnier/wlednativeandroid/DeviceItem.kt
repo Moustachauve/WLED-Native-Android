@@ -15,6 +15,9 @@ data class DeviceItem(
     @Json(name = "customName")
     val isCustomName: Boolean = false,
 
+    @Json(name = "hidden")
+    val isHidden: Boolean = false,
+
     @Transient
     val brightness: Int = 0,
 
@@ -33,7 +36,7 @@ data class DeviceItem(
     @Transient
     val networkRssi: Int = -101
 ) {
-
+    @Transient
     var isSliding = false
 
     fun getDeviceUrl(): String {
@@ -43,15 +46,18 @@ data class DeviceItem(
     fun isSame(device: DeviceItem): Boolean {
         return isSameForSave(device)
                 && brightness == device.brightness
+                && color == device.color
                 && isPoweredOn == device.isPoweredOn
                 && isOnline == device.isOnline
                 && isRefreshing == device.isRefreshing
+                && networkRssi == device.networkRssi
     }
 
     fun isSameForSave(device: DeviceItem): Boolean {
         return address == device.address
                 && name == device.name
                 && isCustomName == device.isCustomName
+                && isHidden == device.isHidden
     }
 
     override fun equals(other: Any?): Boolean {
