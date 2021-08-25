@@ -31,12 +31,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
                 add<DeviceListFragment>(R.id.fragment_container_view)
             }
         }
+
+        updateIsBackArrowVisible()
     }
 
     override fun onBackStackChanged() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(
-            supportFragmentManager.backStackEntryCount > 0
-        )
+        updateIsBackArrowVisible()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -83,5 +83,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     private fun initDevices() {
         DeviceRepository.init(applicationContext)
+    }
+
+    private fun updateIsBackArrowVisible() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(
+            supportFragmentManager.backStackEntryCount > 0
+        )
     }
 }

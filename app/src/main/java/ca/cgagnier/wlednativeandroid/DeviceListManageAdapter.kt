@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceEditFragment
@@ -26,9 +27,7 @@ class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDevic
             holder.nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
             holder.ipAddressTextView.text = currentItem.address
 
-            val hiddenVisibility = if (currentItem.isHidden) View.VISIBLE else View.GONE
-            holder.hiddenImage.visibility = hiddenVisibility
-            holder.hiddenText.visibility = hiddenVisibility
+            holder.hiddenGroup.visibility = if (currentItem.isHidden) View.VISIBLE else View.GONE
 
             val activity = holder.itemView.context as AppCompatActivity
 
@@ -52,8 +51,7 @@ class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDevic
         val ipAddressTextView: TextView = itemView.findViewById(R.id.ip_address_text_view)
         val editButton: ImageButton = itemView.findViewById(R.id.edit_button)
         val deleteButton: ImageButton = itemView.findViewById(R.id.delete_button)
-        val hiddenImage: ImageView = itemView.findViewById(R.id.hidden_image)
-        val hiddenText: TextView = itemView.findViewById(R.id.hidden_text)
+        val hiddenGroup: Group = itemView.findViewById(R.id.hidden_group)
     }
 
     private fun openEditDialog(item: DeviceItem, fragmentManager: FragmentManager) {
