@@ -39,7 +39,14 @@ class DeviceViewFragment : Fragment(R.layout.fragment_device_view) {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         arguments?.getString(BUNDLE_ADDRESS_KEY)?.let {
-            attachedDevice = DeviceRepository.get(it)!!
+            val fromSavedDevices = DeviceRepository.get(it)
+            if (fromSavedDevices != null) {
+                attachedDevice = fromSavedDevices
+                return
+            }
+
+            // It should always be an address. If we don't have it saved, try to open it anyway
+            attachedDevice = DeviceItem(it)
         }
     }
 

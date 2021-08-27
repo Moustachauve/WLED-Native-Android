@@ -1,11 +1,16 @@
 package ca.cgagnier.wlednativeandroid.service
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
+import androidx.appcompat.app.AppCompatActivity
+import java.math.BigInteger
+import java.net.InetAddress
+import java.nio.ByteOrder
 
 
 class DeviceDiscovery(val context: Context) {
@@ -128,5 +133,25 @@ class DeviceDiscovery(val context: Context) {
         const val TAG = "DEVICE_DISCOVERY"
         const val SERVICE_TYPE = "_wled._tcp."
         const val SERVICE_NAME = "wled"
+
+        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+
+
+        @SuppressLint("WifiManagerPotentialLeak")
+        fun isConnectedToWledAP(applicationContext: Context): Boolean {
+            val manager = applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+            val dhcp = manager.dhcpInfo
+            var ip = dhcp.gateway
+            ip =
+                if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) Integer.reverseBytes(ip)
+                else ip
+
+            val ipAddressByte: ByteArray = BigInteger.valueOf(ip.toLong()).toByteArray()
+            val inetAddress: InetAddress = InetAddress.getByAddress(ipAddressByte)
+
+            val ipAddress = inetAddress.hostAddress
+
+            return ipAddress == DEFAULT_WLED_AP_IP
+        }
     }
 }

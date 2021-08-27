@@ -96,7 +96,7 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
 
         val deviceName = serviceInfo.serviceName ?: ""
-        val device = DeviceItem(serviceInfo.host.toString(), deviceName)
+        val device = DeviceItem(serviceInfo.host.hostAddress!!, deviceName)
         if (DeviceRepository.contains(device)) {
             return
         }
