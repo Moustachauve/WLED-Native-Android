@@ -147,8 +147,11 @@ class DeviceDiscovery(val context: Context) {
                 else ip
 
             val ipAddressByte: ByteArray = BigInteger.valueOf(ip.toLong()).toByteArray()
-            val inetAddress: InetAddress = InetAddress.getByAddress(ipAddressByte)
+            if (ipAddressByte.isEmpty() || ipAddressByte.size <= 1) {
+                return false
+            }
 
+            val inetAddress: InetAddress = InetAddress.getByAddress(ipAddressByte)
             val ipAddress = inetAddress.hostAddress
 
             return ipAddress == DEFAULT_WLED_AP_IP
