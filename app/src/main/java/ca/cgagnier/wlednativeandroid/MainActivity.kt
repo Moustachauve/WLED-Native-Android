@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.fragment.app.*
 import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
@@ -40,7 +41,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         updateIsBackArrowVisible()
 
-        if (DeviceDiscovery.isConnectedToWledAP(applicationContext)) {
+        var isConnectedToWledAP = false
+        try {
+            isConnectedToWledAP = DeviceDiscovery.isConnectedToWledAP(applicationContext)
+        } catch (e: Exception) {
+            isConnectedToWledAP = false
+            Log.e(TAG, "Error when checking isConnectedToWledAP: " + e.message, e)
+        }
+
+        if (isConnectedToWledAP) {
             val connectionManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager?
 
             val request = NetworkRequest.Builder()
@@ -59,6 +68,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
             val fragment = DeviceViewFragment.newInstance(DeviceItem(DeviceDiscovery.DEFAULT_WLED_AP_IP))
             switchContent(R.id.fragment_container_view, fragment)
         }
+    }
+    companion object {
+        private val TAG = MainActivity::class.qualifiedName
     }
 
     override fun onBackStackChanged() {

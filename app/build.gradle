@@ -11,13 +11,13 @@ android {
         applicationId "ca.cgagnier.wlednativeandroid"
         minSdk 23
         targetSdk 31
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 5
+        versionName "1.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    buildTypes {isConnectedToWledAP
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
