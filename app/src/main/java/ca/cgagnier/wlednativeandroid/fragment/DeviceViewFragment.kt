@@ -2,27 +2,30 @@ package ca.cgagnier.wlednativeandroid.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.*
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import ca.cgagnier.wlednativeandroid.DeviceItem
-import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import android.webkit.ValueCallback
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
+import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
 
 class DeviceViewFragment : Fragment(R.layout.fragment_device_view) {
 
     private lateinit var deviceWebView: WebView
     private lateinit var attachedDevice: DeviceItem
+
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     var uploadMessage: ValueCallback<Array<Uri>>? = null
 
@@ -38,6 +41,14 @@ class DeviceViewFragment : Fragment(R.layout.fragment_device_view) {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateBack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         arguments?.getString(BUNDLE_ADDRESS_KEY)?.let {
             val fromSavedDevices = DeviceRepository.get(it)
             if (fromSavedDevices != null) {
@@ -69,7 +80,32 @@ class DeviceViewFragment : Fragment(R.layout.fragment_device_view) {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
+                if (view?.canGoBack() == true) {
+                    val webBackForwardList = view.copyBackForwardList()
+                    val currentIndex = webBackForwardList.currentIndex
+                    if (webBackForwardList.getItemAtIndex(currentIndex - 1).url == request?.url.toString()) {
+                        view.goBack()
+                        return true
+                    } else if (request?.url?.path == "/") {
+                        view.goBackOrForward(-currentIndex)
+                    }
+                }
                 return false
+            }
+
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                updateNavigationState()
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                updateNavigationState()
+            }
+
+            override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                super.doUpdateVisitedHistory(view, url, isReload)
+                updateNavigationState()
             }
         }
 
@@ -93,12 +129,59 @@ class DeviceViewFragment : Fragment(R.layout.fragment_device_view) {
         return view
     }
 
-    fun onBackPressed(): Boolean {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                // Handle for example visibility of menu items
+                menu.findItem(R.id.action_browse_back).isEnabled = deviceWebView.canGoBack()
+                menu.findItem(R.id.action_browse_forward).isEnabled = deviceWebView.canGoForward()
+            }
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.navigate, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_browse_back -> {
+                        navigateBack()
+                        true
+                    }
+                    R.id.action_browse_forward -> {
+                        navigateForward()
+                        true
+                    }
+
+                    else -> {
+                        onBackPressedCallback.isEnabled = false
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    fun navigateBack(): Boolean {
         if (deviceWebView.canGoBack()) {
             deviceWebView.goBack()
             return true
         }
         return false
+    }
+
+    fun navigateForward(): Boolean {
+        if (deviceWebView.canGoForward()) {
+            deviceWebView.goForward()
+            return true
+        }
+        return false
+    }
+
+    fun updateNavigationState() {
+        onBackPressedCallback.isEnabled = deviceWebView.canGoBack()
+        requireActivity().invalidateOptionsMenu()
     }
 
     companion object {

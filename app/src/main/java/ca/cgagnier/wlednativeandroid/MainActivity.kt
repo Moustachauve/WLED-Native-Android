@@ -4,17 +4,15 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
 import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
-import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
@@ -41,7 +39,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         updateIsBackArrowVisible()
 
-        var isConnectedToWledAP = false
+        var isConnectedToWledAP: Boolean
         try {
             isConnectedToWledAP = DeviceDiscovery.isConnectedToWledAP(applicationContext)
         } catch (e: Exception) {
@@ -77,32 +75,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         updateIsBackArrowVisible()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            //Title bar back press triggers onBackPressed()
-            onBackPressed()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0 ) {
-
-            val deviceViewFragment: DeviceViewFragment? = supportFragmentManager.findFragmentByTag(DeviceViewFragment.TAG_NAME) as DeviceViewFragment?
-            if (deviceViewFragment != null && deviceViewFragment.isVisible) {
-                if (deviceViewFragment.onBackPressed()) {
-                    return
-                }
-            }
-
-            supportFragmentManager.popBackStack()
-        }
-        else {
-            super.onBackPressed()
-        }
-    }
-
     fun switchContent(id: Int, fragment: Fragment) {
         switchContent(id, fragment, fragment.toString())
     }
@@ -127,5 +99,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         supportActionBar?.setDisplayHomeAsUpEnabled(
             supportFragmentManager.backStackEntryCount > 0
         )
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
     }
 }

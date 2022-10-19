@@ -29,4 +29,6 @@
     <string name="hide_device">Hide Device</string>
     <string name="device_is_hidden">Device is Hidden</string>
     <string name="hidden_status">[Hidden]</string>
+    <string name="navigate_forward">Go Forward</string>
+    <string name="navigate_backward">Go Backward</string>
 </resources>
