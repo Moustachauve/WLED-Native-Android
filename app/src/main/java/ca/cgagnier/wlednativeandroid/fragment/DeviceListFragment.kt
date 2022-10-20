@@ -2,15 +2,14 @@ package ca.cgagnier.wlednativeandroid.fragment
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ca.cgagnier.wlednativeandroid.DeviceListAdapter
-import ca.cgagnier.wlednativeandroid.DeviceItem
-import ca.cgagnier.wlednativeandroid.MainActivity
-import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.*
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 
@@ -44,6 +43,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
         setHasOptionsMenu(true)
 
         val deviceListRecyclerView = view.findViewById<RecyclerView>(R.id.device_list_recycler_view)
+        val emptyDataView = view.findViewById<ConstraintLayout>(R.id.empty_data_parent)
         val layoutManager = LinearLayoutManager(view.context)
 
         deviceListRecyclerView.adapter = deviceListAdapter
@@ -58,6 +58,14 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
 
         swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
         swipeRefreshLayout.setOnRefreshListener(this)
+
+        val emptyDataObserver = EmptyDataObserver(deviceListRecyclerView, emptyDataView)
+        deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
+
+        val findMyDeviceButton = view.findViewById<Button>(R.id.find_my_device_button)
+        findMyDeviceButton.setOnClickListener {
+            openAddDeviceFragment()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -98,7 +106,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
         switchContent(R.id.fragment_container_view, fragment)
     }
 
-    fun switchContent(id: Int, fragment: Fragment) {
+    private fun switchContent(id: Int, fragment: Fragment) {
         if (context is MainActivity) {
             val mainActivity = context as MainActivity
             mainActivity.switchContent(id, fragment)

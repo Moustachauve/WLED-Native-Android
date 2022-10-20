@@ -16,6 +16,15 @@
         android:text="@string/manage_devices"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
+    <include
+        android:id="@+id/empty_data_parent"
+        layout="@layout/device_list_main_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/device_list_recycler_view"
         android:layout_width="match_parent"
