@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id "kotlin-kapt"
     id "org.jetbrains.kotlin.kapt"
 }
 
@@ -15,6 +16,10 @@ android {
         versionName "1.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        dataBinding true
     }
 
     buildTypes {isConnectedToWledAP

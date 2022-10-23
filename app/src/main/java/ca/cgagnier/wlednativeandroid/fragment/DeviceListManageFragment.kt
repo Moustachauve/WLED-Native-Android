@@ -48,8 +48,9 @@ class DeviceListManageFragment : Fragment(R.layout.fragment_device_list_manage),
         )
         deviceListRecyclerView.addItemDecoration(dividerItemDecoration)
 
-        val emptyDataObserver = EmptyDataObserver(deviceListRecyclerView, emptyDataView)
-        deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
+        // TODO Fix me with bindings
+        //val emptyDataObserver = EmptyDataObserver(deviceListRecyclerView, emptyDataView)
+        //deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
 
         val findMyDeviceButton = view.findViewById<Button>(R.id.find_my_device_button)
         findMyDeviceButton.setOnClickListener {

@@ -1,90 +1,78 @@
 package ca.cgagnier.wlednativeandroid
 
+import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
+import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.model.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
-import android.content.res.ColorStateList
-import android.content.res.Configuration
-import androidx.core.content.res.ResourcesCompat
-
-import androidx.core.graphics.drawable.DrawableCompat
-
-import androidx.core.graphics.ColorUtils
 
 
-class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
+class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
+    AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false)
-        return DeviceListViewHolder(itemView)
-    }
+    inner class DeviceListViewHolder(val itemBinding: DeviceListItemBinding) :
+        RecyclerView.ViewHolder(itemBinding.root) {
+        fun bindItem(device:DeviceItem) {
+            itemBinding.nameTextView.text = if (device.name == "") context.getString(R.string.default_device_name) else device.name
+            itemBinding.ipAddressTextView.text = device.address
+            itemBinding.isOffline.visibility = if (device.isOnline) View.INVISIBLE else View.VISIBLE
+            itemBinding.brightnessSeekbar.progress = device.brightness
+            itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
+            itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())
 
-    override fun updateView(holder: DeviceListViewHolder, currentItem: DeviceItem) {
-        holder.apply {
-            nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
-            ipAddressTextView.text = currentItem.address
-            isOfflineTextView.visibility = if (currentItem.isOnline) View.INVISIBLE else View.VISIBLE
-            brightnessSeekBar.progress = currentItem.brightness
-            powerStatusSwitch.isChecked = currentItem.isPoweredOn
-            networkStatusImage.setImageResource(currentItem.getNetworkStrengthImage())
+            setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
+            setSwitchColor(itemBinding.powerStatusSwitch, device.color)
 
-            setSeekBarColor(brightnessSeekBar, currentItem.color)
-            setSwitchColor(powerStatusSwitch, currentItem.color)
+            itemBinding.refreshProgressBar.visibility = if (device.isRefreshing) View.VISIBLE else View.GONE
+            itemBinding.powerStatusSwitch.visibility = if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
 
-            refreshProgressBar.visibility = if (currentItem.isRefreshing) View.VISIBLE else View.GONE
-            powerStatusSwitch.visibility = if (currentItem.isRefreshing) View.INVISIBLE else View.VISIBLE
-
-            container.setOnClickListener {
-                fragmentJump(currentItem)
+            itemBinding.container.setOnClickListener {
+                fragmentJump(device)
             }
 
-            powerStatusSwitch.setOnClickListener {
-                val deviceSetPost = JsonPost(isOn = !currentItem.isPoweredOn)
-                DeviceApi.postJson(currentItem, deviceSetPost)
+            itemBinding.powerStatusSwitch.setOnClickListener {
+                val deviceSetPost = JsonPost(isOn = !device.isPoweredOn)
+                DeviceApi.postJson(device, deviceSetPost)
             }
 
-            brightnessSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            itemBinding.brightnessSeekbar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
                     if (fromUser) {
-                        ThrottleApiPostCall.send(currentItem, JsonPost(brightness = value))
+                        ThrottleApiPostCall.send(device, JsonPost(brightness = value))
                     }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    currentItem.isSliding = true
+                    device.isSliding = true
                 }
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    currentItem.isSliding = false
+                    device.isSliding = false
                 }
-
             })
         }
     }
 
-    override fun getItemCount() = deviceList.count()
-
-    class DeviceListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val container: ConstraintLayout = itemView.findViewById(R.id.container)
-        val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
-        val ipAddressTextView: TextView = itemView.findViewById(R.id.ip_address_text_view)
-        val networkStatusImage: ImageView = itemView.findViewById(R.id.network_status)
-        val isOfflineTextView: TextView = itemView.findViewById(R.id.is_offline)
-        val brightnessSeekBar: SeekBar = itemView.findViewById(R.id.brightness_seekbar)
-        val powerStatusSwitch: SwitchCompat = itemView.findViewById(R.id.power_status_switch)
-        val refreshProgressBar: ProgressBar = itemView.findViewById(R.id.refresh_progress_bar)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
+        return DeviceListViewHolder(DeviceListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
+
+    override fun updateView(holder: DeviceListViewHolder, currentItem: DeviceItem) {
+        holder.bindItem(currentItem)
+    }
+
+    override fun getItemCount() = deviceList.count()
 
     private fun fragmentJump(item: DeviceItem) {
         val fragment = DeviceViewFragment.newInstance(item)
