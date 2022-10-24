@@ -2,7 +2,6 @@ package ca.cgagnier.wlednativeandroid.fragment
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +39,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
 
         val binding = FragmentDeviceListBinding.inflate(inflater, container,false)
@@ -66,7 +65,7 @@ class DeviceListFragment : Fragment(R.layout.fragment_device_list),
             openAddDeviceFragment()
         }
 
-        return binding.root;
+        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
