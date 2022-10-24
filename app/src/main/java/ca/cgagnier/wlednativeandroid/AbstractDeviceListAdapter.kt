@@ -2,11 +2,18 @@ package ca.cgagnier.wlednativeandroid
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
-abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder>(protected var deviceList: ArrayList<DeviceItem>) : RecyclerView.Adapter<T>() {
+abstract class AbstractDeviceListAdapter<T : AbstractDeviceListAdapter.ViewHolder>(protected var deviceList: ArrayList<DeviceItem>) :
+    RecyclerView.Adapter<T>() {
+
+    abstract class ViewHolder(itemBinding: ViewDataBinding) :
+        RecyclerView.ViewHolder(itemBinding.root) {
+        abstract fun bindItem(device: DeviceItem)
+    }
 
     protected lateinit var context: Context
 
@@ -15,7 +22,7 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder>(protected 
     }
 
     override fun onBindViewHolder(holder: T, position: Int) {
-        updateView(holder, deviceList[position])
+        holder.bindItem(deviceList[position])
     }
 
     override fun onBindViewHolder(
@@ -23,12 +30,12 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder>(protected 
         position: Int,
         payloads: MutableList<Any>
     ) {
-        if (payloads.isNullOrEmpty()) {
+        if (payloads.isEmpty()) {
             // refresh all
             onBindViewHolder(holder, position)
             return
         }
-        updateView(holder, deviceList[position])
+        holder.bindItem(deviceList[position])
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -41,8 +48,6 @@ abstract class AbstractDeviceListAdapter<T : RecyclerView.ViewHolder>(protected 
     }
 
     override fun getItemCount() = deviceList.count()
-
-    protected abstract fun updateView(holder: T, currentItem: DeviceItem)
 
     fun switchContent(id: Int, fragment: Fragment) {
         if (context is MainActivity) {

@@ -11,7 +11,6 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.model.JsonPost
@@ -22,10 +21,11 @@ import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
     AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
-    inner class DeviceListViewHolder(val itemBinding: DeviceListItemBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
-        fun bindItem(device:DeviceItem) {
-            itemBinding.nameTextView.text = if (device.name == "") context.getString(R.string.default_device_name) else device.name
+    inner class DeviceListViewHolder(private val itemBinding: DeviceListItemBinding) :
+        ViewHolder(itemBinding) {
+        override fun bindItem(device: DeviceItem) {
+            itemBinding.nameTextView.text =
+                if (device.name == "") context.getString(R.string.default_device_name) else device.name
             itemBinding.ipAddressTextView.text = device.address
             itemBinding.isOffline.visibility = if (device.isOnline) View.INVISIBLE else View.VISIBLE
             itemBinding.brightnessSeekbar.progress = device.brightness
@@ -35,8 +35,10 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
             setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
             setSwitchColor(itemBinding.powerStatusSwitch, device.color)
 
-            itemBinding.refreshProgressBar.visibility = if (device.isRefreshing) View.VISIBLE else View.GONE
-            itemBinding.powerStatusSwitch.visibility = if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
+            itemBinding.refreshProgressBar.visibility =
+                if (device.isRefreshing) View.VISIBLE else View.GONE
+            itemBinding.powerStatusSwitch.visibility =
+                if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
 
             itemBinding.container.setOnClickListener {
                 fragmentJump(device)
@@ -47,7 +49,8 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
                 DeviceApi.postJson(device, deviceSetPost)
             }
 
-            itemBinding.brightnessSeekbar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            itemBinding.brightnessSeekbar.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
                     if (fromUser) {
                         ThrottleApiPostCall.send(device, JsonPost(brightness = value))
@@ -57,6 +60,7 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                     device.isSliding = true
                 }
+
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     device.isSliding = false
                 }
@@ -65,11 +69,13 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
-        return DeviceListViewHolder(DeviceListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-    }
-
-    override fun updateView(holder: DeviceListViewHolder, currentItem: DeviceItem) {
-        holder.bindItem(currentItem)
+        return DeviceListViewHolder(
+            DeviceListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount() = deviceList.count()
@@ -106,7 +112,8 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
         val fixedColor = fixColor(color)
 
         // trackColor is the thumbColor with some transparency
-        val trackColor: Int = Color.argb(90, Color.red(fixedColor), Color.green(fixedColor), Color.blue(fixedColor))
+        val trackColor: Int =
+            Color.argb(90, Color.red(fixedColor), Color.green(fixedColor), Color.blue(fixedColor))
 
         DrawableCompat.setTintList(
             switch.thumbDrawable, ColorStateList(
@@ -121,7 +128,11 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
             switch.trackDrawable, ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
                     trackColor,
-                    ResourcesCompat.getColor(context.resources, R.color.light_gray_semi_transparent, null)
+                    ResourcesCompat.getColor(
+                        context.resources,
+                        R.color.light_gray_semi_transparent,
+                        null
+                    )
                 )
             )
         )

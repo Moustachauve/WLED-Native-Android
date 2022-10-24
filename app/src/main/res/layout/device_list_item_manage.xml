@@ -18,7 +18,7 @@
 
         <TextView
             android:id="@+id/name_text_view"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:ellipsize="end"
@@ -30,12 +30,11 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_default="wrap" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/hidden_image"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:contentDescription="@string/device_is_hidden"
@@ -44,12 +43,12 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@+id/name_text_view"
             app:layout_constraintTop_toTopOf="@+id/name_text_view"
-            app:layout_constraintWidth_default="wrap"
+            app:layout_constrainedWidth="true"
             app:srcCompat="@drawable/ic_baseline_visibility_off_24" />
 
         <TextView
             android:id="@+id/ip_address_text_view"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
@@ -59,11 +58,11 @@
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="@+id/name_text_view"
             app:layout_constraintTop_toBottomOf="@+id/name_text_view"
-            app:layout_constraintWidth_default="wrap" />
+            app:layout_constrainedWidth="true" />
 
         <TextView
             android:id="@+id/hidden_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:text="@string/hidden_status"
@@ -71,7 +70,7 @@
             app:layout_constraintEnd_toStartOf="@+id/edit_button"
             app:layout_constraintStart_toEndOf="@+id/ip_address_text_view"
             app:layout_constraintTop_toTopOf="@+id/ip_address_text_view"
-            app:layout_constraintWidth_default="wrap" />
+            app:layout_constrainedWidth="true" />
 
         <ImageButton
             android:id="@+id/edit_button"

@@ -1,36 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".fragment.DeviceListFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="6dp"
-        android:text="@string/manage_devices"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+    </data>
 
-    <include
-        android:id="@+id/empty_data_parent"
-        layout="@layout/device_list_main_empty"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:layout_gravity="center"
-        />
+        android:orientation="vertical"
+        tools:context=".fragment.DeviceListFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/device_list_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/device_list_item_manage" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:text="@string/manage_devices"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <include
+            android:id="@+id/empty_data_parent"
+            layout="@layout/device_list_main_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:layout_gravity="center" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/device_list_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/device_list_item_manage" />
+
+    </LinearLayout>
+</layout>

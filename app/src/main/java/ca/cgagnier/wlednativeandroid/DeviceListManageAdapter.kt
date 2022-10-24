@@ -4,54 +4,50 @@ package ca.cgagnier.wlednativeandroid
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.RecyclerView
+import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemManageBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceEditFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDeviceListAdapter<DeviceListManageAdapter.DeviceListViewHolder>(deviceList) {
+class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) :
+    AbstractDeviceListAdapter<DeviceListManageAdapter.DeviceListViewHolder>(deviceList) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item_manage, parent, false)
-        return DeviceListViewHolder(itemView)
-    }
+    inner class DeviceListViewHolder(private val itemBinding: DeviceListItemManageBinding) :
+        ViewHolder(itemBinding) {
+        override fun bindItem(device: DeviceItem) {
+            itemBinding.nameTextView.text =
+                if (device.name == "") context.getString(R.string.default_device_name) else device.name
+            itemBinding.ipAddressTextView.text = device.address
 
-    override fun updateView(holder: DeviceListViewHolder, currentItem: DeviceItem) {
-        holder.apply {
-            holder.nameTextView.text = if (currentItem.name == "") context.getString(R.string.default_device_name) else currentItem.name
-            holder.ipAddressTextView.text = currentItem.address
+            itemBinding.hiddenGroup.visibility = if (device.isHidden) View.VISIBLE else View.GONE
 
-            holder.hiddenGroup.visibility = if (currentItem.isHidden) View.VISIBLE else View.GONE
+            val activity = itemView.context as AppCompatActivity
 
-            val activity = holder.itemView.context as AppCompatActivity
-
-            holder.container.setOnClickListener {
-                openEditDialog(currentItem, activity.supportFragmentManager)
+            itemBinding.container.setOnClickListener {
+                openEditDialog(device, activity.supportFragmentManager)
             }
 
-            holder.editButton.setOnClickListener {
-                openEditDialog(currentItem, activity.supportFragmentManager)
+            itemBinding.editButton.setOnClickListener {
+                openEditDialog(device, activity.supportFragmentManager)
             }
 
-            holder.deleteButton.setOnClickListener {
-                deleteItem(currentItem)
+            itemBinding.deleteButton.setOnClickListener {
+                deleteItem(device)
             }
         }
     }
 
-    class DeviceListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val container: ConstraintLayout = itemView.findViewById(R.id.container)
-        val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
-        val ipAddressTextView: TextView = itemView.findViewById(R.id.ip_address_text_view)
-        val editButton: ImageButton = itemView.findViewById(R.id.edit_button)
-        val deleteButton: ImageButton = itemView.findViewById(R.id.delete_button)
-        val hiddenGroup: Group = itemView.findViewById(R.id.hidden_group)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
+        return DeviceListViewHolder(
+            DeviceListItemManageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     private fun openEditDialog(item: DeviceItem, fragmentManager: FragmentManager) {
@@ -61,7 +57,8 @@ class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) : AbstractDevic
     }
 
     private fun deleteItem(item: DeviceItem) {
-        val name = if (item.name != "") item.name else context.getString(R.string.default_device_name)
+        val name =
+            if (item.name != "") item.name else context.getString(R.string.default_device_name)
 
         MaterialAlertDialogBuilder(context, R.style.Theme_WLEDNativeAndroid_Dialog_Alert)
             .setTitle(context.getString(R.string.remove_device_confirm))
