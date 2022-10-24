@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id "kotlin-kapt"
     id "org.jetbrains.kotlin.kapt"
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -22,7 +23,8 @@ android {
         dataBinding true
     }
 
-    buildTypes {isConnectedToWledAP
+    buildTypes {
+        isConnectedToWledAP
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -42,7 +44,7 @@ android {
 
 dependencies {
 
-    def moshiVersion= '1.14.0'
+    def moshiVersion = '1.14.0'
     def retrofit2_version = "2.9.0"
     def okhttp3_version = '5.0.0-alpha.10'
 
@@ -51,6 +53,9 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.6.0"
     implementation "com.google.android.material:material:1.6.1"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "androidx.slidingpanelayout:slidingpanelayout:1.2.0"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
 
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.fragment:fragment-ktx:1.5.3"

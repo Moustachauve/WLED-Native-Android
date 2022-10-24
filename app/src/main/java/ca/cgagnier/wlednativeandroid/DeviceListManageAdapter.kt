@@ -12,8 +12,13 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) :
-    AbstractDeviceListAdapter<DeviceListManageAdapter.DeviceListViewHolder>(deviceList) {
+class DeviceListManageAdapter(
+    deviceList: ArrayList<DeviceItem>,
+    private val onItemClicked: (DeviceItem) -> Unit
+) :
+    AbstractDeviceListAdapter<DeviceListManageAdapter.DeviceListViewHolder>(
+        deviceList
+    ) {
 
     inner class DeviceListViewHolder(private val itemBinding: DeviceListItemManageBinding) :
         ViewHolder(itemBinding) {
@@ -27,6 +32,7 @@ class DeviceListManageAdapter(deviceList: ArrayList<DeviceItem>) :
             val activity = itemView.context as AppCompatActivity
 
             itemBinding.container.setOnClickListener {
+                onItemClicked(device)
                 openEditDialog(device, activity.supportFragmentManager)
             }
 

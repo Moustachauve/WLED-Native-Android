@@ -12,13 +12,15 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
-import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.model.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 
 
-class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
+class DeviceListAdapter(
+    deviceList: ArrayList<DeviceItem>,
+    private val onItemClicked: (DeviceItem) -> Unit
+) :
     AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
     inner class DeviceListViewHolder(private val itemBinding: DeviceListItemBinding) :
@@ -41,7 +43,7 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
                 if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
 
             itemBinding.container.setOnClickListener {
-                fragmentJump(device)
+                onItemClicked(device)
             }
 
             itemBinding.powerStatusSwitch.setOnClickListener {
@@ -79,11 +81,6 @@ class DeviceListAdapter(deviceList: ArrayList<DeviceItem>) :
     }
 
     override fun getItemCount() = deviceList.count()
-
-    private fun fragmentJump(item: DeviceItem) {
-        val fragment = DeviceViewFragment.newInstance(item)
-        switchContent(R.id.fragment_container_view, fragment)
-    }
 
     /**
      * Fixes the color if it is too dark or too bright depending of the dark/light theme

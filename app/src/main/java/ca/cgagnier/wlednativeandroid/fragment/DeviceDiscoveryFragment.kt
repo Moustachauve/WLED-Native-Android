@@ -26,7 +26,7 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
     private lateinit var listener: DeviceAddManuallyFragment.NoticeDialogListener
     lateinit var deviceDiscovery: DeviceDiscovery
 
-    private val deviceListAdapter = DeviceListAdapter(ArrayList())
+    private val deviceListAdapter = DeviceListAdapter(ArrayList()) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

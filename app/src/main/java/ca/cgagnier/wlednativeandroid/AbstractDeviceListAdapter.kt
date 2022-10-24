@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
-abstract class AbstractDeviceListAdapter<T : AbstractDeviceListAdapter.ViewHolder>(protected var deviceList: ArrayList<DeviceItem>) :
-    RecyclerView.Adapter<T>() {
+abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHolder>(
+    protected var deviceList: ArrayList<DeviceItem>
+) :
+    ListAdapter<DeviceItem, VH>(DiffCallback) {
 
     abstract class ViewHolder(itemBinding: ViewDataBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
@@ -21,12 +25,12 @@ abstract class AbstractDeviceListAdapter<T : AbstractDeviceListAdapter.ViewHolde
         this.setHasStableIds(true)
     }
 
-    override fun onBindViewHolder(holder: T, position: Int) {
+    override fun onBindViewHolder(holder: VH, position: Int) {
         holder.bindItem(deviceList[position])
     }
 
     override fun onBindViewHolder(
-        holder: T,
+        holder: VH,
         position: Int,
         payloads: MutableList<Any>
     ) {
@@ -94,5 +98,17 @@ abstract class AbstractDeviceListAdapter<T : AbstractDeviceListAdapter.ViewHolde
     fun replaceItems(items: ArrayList<DeviceItem>) {
         deviceList = items
         notifyDataSetChanged()
+    }
+
+    companion object {
+        private val DiffCallback = object : DiffUtil.ItemCallback<DeviceItem>() {
+            override fun areItemsTheSame(oldItem: DeviceItem, newItem: DeviceItem): Boolean {
+                return oldItem.isSame(newItem)
+            }
+
+            override fun areContentsTheSame(oldItem: DeviceItem, newItem: DeviceItem): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 }

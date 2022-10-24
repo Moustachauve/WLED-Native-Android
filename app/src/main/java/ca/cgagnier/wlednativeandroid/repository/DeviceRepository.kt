@@ -2,12 +2,10 @@ package ca.cgagnier.wlednativeandroid.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import ca.cgagnier.wlednativeandroid.DeviceItem
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import java.lang.Exception
 
 object DeviceRepository {
     private const val TAG = "DEVICE_REPOSITORY"
@@ -19,6 +17,7 @@ object DeviceRepository {
     private const val DEVICE_LIST = "WLED_DATA"
 
     private var devices = HashMap<String, DeviceItem>()
+    private var devicesNotHidden: ArrayList<DeviceItem>? = null
     private var listeners = ArrayList<DataChangedListener>()
 
     interface DataChangedListener {
@@ -37,6 +36,7 @@ object DeviceRepository {
         val devicesJson = sharedPreferences.getString(DEVICE_LIST, "")
         if (devicesJson != null && devicesJson != "") {
             devices = HashMap(jsonAdapter.fromJson(devicesJson) ?: HashMap())
+            devicesNotHidden = null
         }
     }
 
@@ -48,20 +48,29 @@ object DeviceRepository {
         return ArrayList<DeviceItem>(devices.values)
     }
 
+    fun getAllNotHidden(): ArrayList<DeviceItem> {
+        if (devicesNotHidden == null) {
+            devicesNotHidden = getAll().filter { !it.isHidden } as ArrayList
+        }
+        return devicesNotHidden as ArrayList<DeviceItem>
+    }
+
     fun remove(device: DeviceItem) {
         if (!devices.containsKey(device.address)) {
             return
         }
         devices.remove(device.address)
         save()
+        devicesNotHidden?.remove(device)
         for (listener in listeners) {
             listener.onItemRemoved(device)
         }
     }
 
     fun put(device: DeviceItem) {
-
         val previousDevice = devices.put(device.address, device)
+        // TODO maybe dynamically change devicesNotHidden instead of resetting it
+        devicesNotHidden = null
         if (previousDevice == null) {
             save()
             for (listener in listeners) {

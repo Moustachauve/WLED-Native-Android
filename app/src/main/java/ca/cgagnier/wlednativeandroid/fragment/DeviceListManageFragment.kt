@@ -8,14 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.cgagnier.wlednativeandroid.*
-import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
+import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListManageBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 
 
-class DeviceListManageFragment : Fragment(R.layout.fragment_device_list_manage),
+class DeviceListManageFragment : Fragment(),
     DeviceRepository.DataChangedListener {
 
-    private val deviceListAdapter = DeviceListManageAdapter(ArrayList(DeviceRepository.getAll()))
+    private val deviceListAdapter = DeviceListManageAdapter(ArrayList(DeviceRepository.getAll())) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class DeviceListManageFragment : Fragment(R.layout.fragment_device_list_manage),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentDeviceListBinding.inflate(inflater, container,false)
+        val binding = FragmentDeviceListManageBinding.inflate(inflater, container,false)
         val layoutManager = LinearLayoutManager(binding.root.context)
 
         binding.deviceListRecyclerView.adapter = deviceListAdapter

@@ -8,36 +8,42 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
+import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
-import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
-import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 
 
-class MainActivity : AppCompatActivity(R.layout.activity_main),
+class MainActivity : AppCompatActivity(),
     FragmentManager.OnBackStackChangedListener,
-    DeviceAddManuallyFragment.NoticeDialogListener{
+    DeviceAddManuallyFragment.NoticeDialogListener {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        binding.mainToolbar.setupWithNavController(navController, appBarConfiguration)
 
         initDevices()
 
-        setSupportActionBar(findViewById(R.id.main_toolbar))
+        setSupportActionBar(binding.mainToolbar)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         supportFragmentManager.addOnBackStackChangedListener(this)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                add<DeviceListFragment>(R.id.fragment_container_view)
-            }
-        }
-
-        updateIsBackArrowVisible()
+        //updateIsBackArrowVisible()
 
         var isConnectedToWledAP: Boolean
         try {
@@ -48,27 +54,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         }
 
         if (isConnectedToWledAP) {
-            val connectionManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager?
+            val connectionManager =
+                applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager?
 
             val request = NetworkRequest.Builder()
             request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
 
-            connectionManager!!.requestNetwork(request.build(), object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    try {
-                        connectionManager.bindProcessToNetwork(network)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+            connectionManager!!.requestNetwork(
+                request.build(),
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        try {
+                            connectionManager.bindProcessToNetwork(network)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
-                }
-            })
-
-            val fragment = DeviceViewFragment.newInstance(DeviceItem(DeviceDiscovery.DEFAULT_WLED_AP_IP))
-            switchContent(R.id.fragment_container_view, fragment)
+                })
         }
-    }
-    companion object {
-        private val TAG = MainActivity::class.qualifiedName
+
+        setContentView(binding.root)
     }
 
     override fun onBackStackChanged() {
@@ -104,5 +109,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     override fun onSupportNavigateUp(): Boolean {
         onBackPressedDispatcher.onBackPressed()
         return true
+    }
+
+    companion object {
+        private val TAG = MainActivity::class.qualifiedName
     }
 }
