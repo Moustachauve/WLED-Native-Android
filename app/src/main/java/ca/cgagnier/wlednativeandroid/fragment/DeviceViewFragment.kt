@@ -15,6 +15,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
 import ca.cgagnier.wlednativeandroid.R
@@ -205,5 +206,13 @@ class DeviceViewFragment : Fragment() {
 
     companion object {
         const val TAG_NAME = "deviceWebview"
+        const val BUNDLE_ADDRESS_KEY = "bundleDeviceAddressKey"
+
+        @JvmStatic
+        fun newInstance(device: DeviceItem) = DeviceViewFragment().apply {
+            arguments = Bundle().apply {
+                putString(BUNDLE_ADDRESS_KEY, device.address)
+            }
+        }
     }
 }
