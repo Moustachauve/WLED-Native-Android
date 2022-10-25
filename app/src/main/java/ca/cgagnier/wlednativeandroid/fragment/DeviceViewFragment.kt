@@ -50,7 +50,12 @@ class DeviceViewFragment : Fragment() {
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateBack()
+                if (binding.deviceWebView.canGoBack()) {
+                    navigateBack()
+                } else {
+                    isEnabled = false
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -174,7 +179,6 @@ class DeviceViewFragment : Fragment() {
                     }
 
                     else -> {
-                        onBackPressedCallback.isEnabled = false
                         false
                     }
                 }
@@ -199,9 +203,7 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun updateNavigationState() {
-        // TODO investigate crash when debugging caused by binding
-        onBackPressedCallback.isEnabled = binding.deviceWebView.canGoBack()
-        requireActivity().invalidateOptionsMenu()
+        activity?.invalidateOptionsMenu()
     }
 
     companion object {

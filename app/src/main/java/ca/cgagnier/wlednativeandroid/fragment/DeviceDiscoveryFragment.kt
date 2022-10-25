@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.DeviceItem
-import ca.cgagnier.wlednativeandroid.DeviceListAdapter
+import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery

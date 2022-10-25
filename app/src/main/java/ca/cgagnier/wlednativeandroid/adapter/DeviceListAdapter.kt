@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid
+package ca.cgagnier.wlednativeandroid.adapter
 
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -11,6 +11,8 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
+import ca.cgagnier.wlednativeandroid.DeviceItem
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
 import ca.cgagnier.wlednativeandroid.model.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
@@ -34,6 +36,8 @@ class DeviceListAdapter(
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())
 
+            itemBinding.container.isSelected = isSelectable && selectedIndex == bindingAdapterPosition
+
             setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
             setSwitchColor(itemBinding.powerStatusSwitch, device.color)
 
@@ -43,7 +47,11 @@ class DeviceListAdapter(
                 if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
 
             itemBinding.container.setOnClickListener {
+                val oldPosition = selectedIndex
+                selectedIndex = bindingAdapterPosition
                 onItemClicked(device)
+                notifyItemChanged(oldPosition)
+                notifyItemChanged(selectedIndex)
             }
 
             itemBinding.powerStatusSwitch.setOnClickListener {

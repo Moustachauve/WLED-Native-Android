@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.cgagnier.wlednativeandroid.*
+import ca.cgagnier.wlednativeandroid.adapter.DeviceListManageAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListManageBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 

@@ -43,6 +43,7 @@ data class DeviceItem(
         return "http://$address"
     }
 
+    // Determines if any of the two DeviceItem's fields are different
     fun isSame(device: DeviceItem): Boolean {
         return isSameForSave(device)
                 && brightness == device.brightness
@@ -53,6 +54,7 @@ data class DeviceItem(
                 && networkRssi == device.networkRssi
     }
 
+    // Determines if the two DeviceItem's saved fields are different
     fun isSameForSave(device: DeviceItem): Boolean {
         return address == device.address
                 && name == device.name
@@ -60,11 +62,16 @@ data class DeviceItem(
                 && isHidden == device.isHidden
     }
 
+    // Determines if two DeviceItem represent the same physical device
     override fun equals(other: Any?): Boolean {
         if (other is DeviceItem) {
             return other.address == address
         }
         return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        return address.hashCode()
     }
 
     fun getNetworkStrengthImage(): Int {

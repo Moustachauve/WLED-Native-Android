@@ -8,11 +8,11 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ca.cgagnier.wlednativeandroid.*
+import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
@@ -74,6 +74,7 @@ class DeviceListFragment : Fragment(),
             if (deviceViewModel.currentDevice.value != it) {
                 deviceViewModel.updateCurrentDevice(it)
             }
+            deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
             binding.slidingPaneLayout.openPane()
         }
 
@@ -81,14 +82,9 @@ class DeviceListFragment : Fragment(),
         binding.deviceListRecyclerView.layoutManager = layoutManager
         binding.deviceListRecyclerView.setHasFixedSize(true)
 
-        val dividerItemDecoration = DividerItemDecoration(
-            binding.deviceListRecyclerView.context,
-            layoutManager.orientation
-        )
-        binding.deviceListRecyclerView.addItemDecoration(dividerItemDecoration)
-
         val emptyDataObserver = EmptyDataObserver(binding.deviceListRecyclerView, binding.emptyDataParent)
         deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
+        deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
 
         binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
             openAddDeviceFragment()
@@ -168,35 +164,36 @@ class DeviceListFragment : Fragment(),
             DeviceApi.update(device)
         }
     }
-}
 
-class DeviceListOnBackPressedCallback(
-    private val slidingPaneLayout: SlidingPaneLayout
-) : OnBackPressedCallback(
-    // Set the default 'enabled' state to true only if it is slidable (i.e., the panes
-    // are overlapping) and open (i.e., the detail pane is visible).
-    slidingPaneLayout.isSlideable && slidingPaneLayout.isOpen
-), SlidingPaneLayout.PanelSlideListener {
+    inner class DeviceListOnBackPressedCallback(
+        private val slidingPaneLayout: SlidingPaneLayout
+    ) : OnBackPressedCallback(
+        // Set the default 'enabled' state to true only if it is slidable (i.e., the panes
+        // are overlapping) and open (i.e., the detail pane is visible).
+        slidingPaneLayout.isSlideable && slidingPaneLayout.isOpen
+    ), SlidingPaneLayout.PanelSlideListener {
 
-    init {
-        slidingPaneLayout.addPanelSlideListener(this)
+        init {
+            slidingPaneLayout.addPanelSlideListener(this)
+        }
+
+        override fun handleOnBackPressed() {
+            // Return to the list pane when the system back button is pressed.
+            slidingPaneLayout.closePane()
+        }
+
+        override fun onPanelSlide(panel: View, slideOffset: Float) {}
+
+        override fun onPanelOpened(panel: View) {
+            // Intercept the system back button when the detail pane becomes visible.
+            isEnabled = true
+        }
+
+        override fun onPanelClosed(panel: View) {
+            // Disable intercepting the system back button when the user returns to the
+            // list pane.
+            isEnabled = false
+        }
     }
 
-    override fun handleOnBackPressed() {
-        // Return to the list pane when the system back button is pressed.
-        slidingPaneLayout.closePane()
-    }
-
-    override fun onPanelSlide(panel: View, slideOffset: Float) {}
-
-    override fun onPanelOpened(panel: View) {
-        // Intercept the system back button when the detail pane becomes visible.
-        isEnabled = true
-    }
-
-    override fun onPanelClosed(panel: View) {
-        // Disable intercepting the system back button when the user returns to the
-        // list pane.
-        isEnabled = false
-    }
 }

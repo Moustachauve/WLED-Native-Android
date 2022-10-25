@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid
+package ca.cgagnier.wlednativeandroid.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import ca.cgagnier.wlednativeandroid.DeviceItem
+import ca.cgagnier.wlednativeandroid.MainActivity
 import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
 abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHolder>(
@@ -19,6 +21,8 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
         abstract fun bindItem(device: DeviceItem)
     }
 
+    var isSelectable: Boolean = false
+    protected var selectedIndex = -1
     protected lateinit var context: Context
 
     init {
@@ -48,7 +52,7 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
     }
 
     override fun getItemId(position: Int): Long {
-        return deviceList[position].address.hashCode().toLong()
+        return deviceList[position].hashCode().toLong()
     }
 
     override fun getItemCount() = deviceList.count()
@@ -103,11 +107,11 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<DeviceItem>() {
             override fun areItemsTheSame(oldItem: DeviceItem, newItem: DeviceItem): Boolean {
-                return oldItem.isSame(newItem)
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(oldItem: DeviceItem, newItem: DeviceItem): Boolean {
-                return oldItem == newItem
+                return oldItem.isSame(newItem)
             }
         }
     }

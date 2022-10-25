@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid
+package ca.cgagnier.wlednativeandroid.adapter
 
 
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import ca.cgagnier.wlednativeandroid.DeviceItem
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemManageBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceEditFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository

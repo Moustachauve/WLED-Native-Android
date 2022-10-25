@@ -30,7 +30,8 @@
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
                     app:layoutManager="LinearLayoutManager"
-                    tools:listitem="@layout/device_list_item" />
+                    tools:listitem="@layout/device_list_item"
+                    android:paddingVertical="10dp" />
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
