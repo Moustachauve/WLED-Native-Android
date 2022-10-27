@@ -8,7 +8,6 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/Theme.AppCompat.Dialog"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="24dp"

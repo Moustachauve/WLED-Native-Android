@@ -16,7 +16,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="400dp"
             android:layout_height="match_parent"
-            tools:context=".fragment.DeviceListFragment">
+            tools:context=".fragment.DeviceListFragment"
+            android:background="?colorSurfaceVariant">
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_refresh"
                 android:layout_width="match_parent"

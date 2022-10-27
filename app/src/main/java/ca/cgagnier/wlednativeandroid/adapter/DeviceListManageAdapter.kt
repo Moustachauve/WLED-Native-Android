@@ -68,7 +68,7 @@ class DeviceListManageAdapter(
         val name =
             if (item.name != "") item.name else context.getString(R.string.default_device_name)
 
-        MaterialAlertDialogBuilder(context, R.style.Theme_WLEDNativeAndroid_Dialog_Alert)
+        MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(R.string.remove_device_confirm))
             .setMessage(context.getString(R.string.remove_device_confirm_text, name, item.address))
             .setPositiveButton(R.string.remove) { _, _ ->

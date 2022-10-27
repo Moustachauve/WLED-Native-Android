@@ -24,7 +24,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:text="@string/default_device_name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/hidden_image"
             app:layout_constraintHorizontal_bias="0"

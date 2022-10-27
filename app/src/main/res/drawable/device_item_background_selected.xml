@@ -8,5 +8,5 @@
     <corners android:radius="30dp" />
 
     <solid android:state_selected="false" android:color="@android:color/transparent" />
-    <solid android:state_selected="true" android:color="?colorSecondary" />
+    <solid android:state_selected="true" android:color="?colorPrimary" />
 </shape>

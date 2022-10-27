@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:padding="6dp"
             android:text="@string/manage_devices"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall" />
 
         <include
             android:id="@+id/empty_data_parent"

@@ -23,7 +23,7 @@ class DeviceEditFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
-            val builder = MaterialAlertDialogBuilder(it, R.style.Theme_WLEDNativeAndroid_Dialog_Alert)
+            val builder = MaterialAlertDialogBuilder(it)
             builder.setMessage(R.string.add_a_device_manually)
                 .setPositiveButton(getString(R.string.save_device), null)
                 .setNegativeButton(R.string.cancel, null)

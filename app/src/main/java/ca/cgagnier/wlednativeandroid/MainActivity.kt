@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(),
 
         supportFragmentManager.addOnBackStackChangedListener(this)
 
-        //updateIsBackArrowVisible()
+        updateIsBackArrowVisible()
 
         var isConnectedToWledAP: Boolean
         try {
