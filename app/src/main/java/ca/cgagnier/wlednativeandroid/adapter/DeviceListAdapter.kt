@@ -21,7 +21,7 @@ import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 
 class DeviceListAdapter(
     deviceList: ArrayList<DeviceItem>,
-    private val onItemClicked: (DeviceItem) -> Unit
+    private val onItemClicked: (DeviceItem, Int) -> Unit
 ) :
     AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
 
@@ -36,7 +36,7 @@ class DeviceListAdapter(
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())
 
-            itemBinding.container.isSelected = isSelectable && selectedIndex == bindingAdapterPosition
+            itemBinding.container.isSelected = isSelectable && _selectedIndex == bindingAdapterPosition
 
             setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
             setSwitchColor(itemBinding.powerStatusSwitch, device.color)
@@ -47,11 +47,7 @@ class DeviceListAdapter(
                 if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
 
             itemBinding.container.setOnClickListener {
-                val oldPosition = selectedIndex
-                selectedIndex = bindingAdapterPosition
-                onItemClicked(device)
-                notifyItemChanged(oldPosition)
-                notifyItemChanged(selectedIndex)
+                onItemClicked(device, bindingAdapterPosition)
             }
 
             itemBinding.powerStatusSwitch.setOnClickListener {

@@ -22,7 +22,7 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
     }
 
     var isSelectable: Boolean = false
-    protected var selectedIndex = -1
+    protected var _selectedIndex = -1
     protected lateinit var context: Context
 
     init {
@@ -96,6 +96,17 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
             deviceList.removeAt(position)
             notifyItemRemoved(position)
         }
+    }
+
+    fun getSelectedIndex(): Int {
+        return _selectedIndex
+    }
+
+    fun setSelectedIndex(index: Int) {
+        val oldPosition = _selectedIndex
+        _selectedIndex = index
+        notifyItemChanged(oldPosition)
+        notifyItemChanged(index)
     }
 
     @SuppressLint("NotifyDataSetChanged")

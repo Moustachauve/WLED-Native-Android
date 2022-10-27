@@ -8,6 +8,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -27,7 +28,7 @@ class DeviceListFragment : Fragment(),
 
     private var _binding: FragmentDeviceListBinding? = null
     private val binding get() = _binding!!
-
+    private var layoutChangedListener: ViewTreeObserver.OnGlobalLayoutListener? = null
 
     private lateinit var deviceListAdapter: DeviceListAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -70,13 +71,16 @@ class DeviceListFragment : Fragment(),
             DeviceListOnBackPressedCallback(slidingPaneLayout)
         )
 
-        deviceListAdapter = DeviceListAdapter(DeviceRepository.getAllNotHidden()) {
-            if (deviceViewModel.currentDevice.value != it) {
-                deviceViewModel.updateCurrentDevice(it)
+        deviceListAdapter = DeviceListAdapter(DeviceRepository.getAllNotHidden()) { deviceItem: DeviceItem, index: Int ->
+            if (deviceViewModel.currentDevice.value != deviceItem) {
+                deviceViewModel.updateCurrentDevice(deviceItem)
+                deviceViewModel.updateSelectedIndex(index)
             }
+
             deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
             binding.slidingPaneLayout.openPane()
         }
+
 
         binding.deviceListRecyclerView.adapter = deviceListAdapter
         binding.deviceListRecyclerView.layoutManager = layoutManager
@@ -84,11 +88,22 @@ class DeviceListFragment : Fragment(),
 
         val emptyDataObserver = EmptyDataObserver(binding.deviceListRecyclerView, binding.emptyDataParent)
         deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
-        deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
+        deviceListAdapter.isSelectable = false
+
+        val selectedIndexObserver = Observer<Int> {
+            deviceListAdapter.setSelectedIndex(it)
+        }
+        deviceViewModel.currentSelectedIndex.observe(viewLifecycleOwner, selectedIndexObserver)
 
         binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
             openAddDeviceFragment()
         }
+
+        layoutChangedListener = ViewTreeObserver.OnGlobalLayoutListener {
+            deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
+            view.viewTreeObserver.removeOnGlobalLayoutListener(layoutChangedListener)
+        }
+        view.viewTreeObserver.addOnGlobalLayoutListener(layoutChangedListener)
     }
 
     override fun onDestroyView() {
@@ -195,5 +210,4 @@ class DeviceListFragment : Fragment(),
             isEnabled = false
         }
     }
-
 }
