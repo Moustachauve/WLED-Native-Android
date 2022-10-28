@@ -14,6 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.OptionsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 
 
@@ -98,6 +99,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun initDevices() {
         DeviceRepository.init(applicationContext)
+        OptionsRepository.init(applicationContext)
     }
 
     private fun updateIsBackArrowVisible() {

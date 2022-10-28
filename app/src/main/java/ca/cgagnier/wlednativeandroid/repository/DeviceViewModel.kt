@@ -12,14 +12,18 @@ class DeviceViewModel : ViewModel() {
     val currentDevice: LiveData<DeviceItem> get() = _currentDevice
 
     init {
-        // TODO open either last opened or first online device
-        val selectedIndex = 0
+        var selectedIndex = OptionsRepository.get().lastSelectedIndex
+        if (selectedIndex < 0 || selectedIndex >= DeviceRepository.getAllNotHidden().size) {
+            selectedIndex = 0
+            OptionsRepository.saveSelectedIndex(selectedIndex)
+        }
         _currentSelectedIndex.value = selectedIndex
         _currentDevice.value = DeviceRepository.getAllNotHidden()[selectedIndex]
     }
 
     fun updateSelectedIndex(index: Int) {
         _currentSelectedIndex.value = index
+        OptionsRepository.saveSelectedIndex(index)
     }
 
     fun updateCurrentDevice(device: DeviceItem) {

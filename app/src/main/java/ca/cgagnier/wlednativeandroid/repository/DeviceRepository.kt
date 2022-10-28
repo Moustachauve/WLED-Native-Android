@@ -8,7 +8,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 
 object DeviceRepository {
-    private const val TAG = "DEVICE_REPOSITORY"
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var jsonAdapter: JsonAdapter<Map<String, DeviceItem>>
