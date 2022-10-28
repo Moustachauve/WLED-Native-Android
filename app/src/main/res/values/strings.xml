@@ -34,6 +34,6 @@
     <string name="you_dont_have_any_devices_yet">You don\'t have any devices yet.</string>
     <string name="find_my_device">Find my Device</string>
     <string name="awkward_akemi_character">Awkward Akemi character</string>
-    <string name="device_list">Device List</string>
+    <string name="device_list">My Devices</string>
     <string name="device_view">Device View</string>
 </resources>

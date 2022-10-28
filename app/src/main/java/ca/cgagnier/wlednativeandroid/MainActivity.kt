@@ -6,11 +6,12 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.*
 import androidx.fragment.app.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
@@ -28,17 +29,30 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentContainerView) { insetView, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                bottomMargin = insets.bottom
+                rightMargin = insets.right
+            }
+
+            windowInsets
+        }
+
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
         val navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.mainToolbar.setupWithNavController(navController, appBarConfiguration)
+        //binding.mainToolbar.setupWithNavController(navController, appBarConfiguration)
 
         initDevices()
 
-        setSupportActionBar(binding.mainToolbar)
+        //setSupportActionBar(binding.mainToolbar)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 

@@ -8,8 +8,10 @@ import ca.cgagnier.wlednativeandroid.DeviceItem
 class DeviceViewModel : ViewModel() {
     private var _currentSelectedIndex = MutableLiveData<Int>()
     private var _currentDevice = MutableLiveData<DeviceItem>()
+
     val currentSelectedIndex: LiveData<Int> get() = _currentSelectedIndex
     val currentDevice: LiveData<DeviceItem> get() = _currentDevice
+    var isTwoPane = false
 
     init {
         var selectedIndex = OptionsRepository.get().lastSelectedIndex

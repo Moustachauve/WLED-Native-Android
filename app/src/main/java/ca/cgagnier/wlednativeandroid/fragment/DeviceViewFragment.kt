@@ -10,17 +10,23 @@ import android.util.Log
 import android.view.*
 import android.webkit.*
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceViewBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
+import com.google.android.material.appbar.MaterialToolbar
 
 
 class DeviceViewFragment : Fragment() {
@@ -55,6 +61,7 @@ class DeviceViewFragment : Fragment() {
                 } else {
                     isEnabled = false
                     requireActivity().onBackPressedDispatcher.onBackPressed()
+                    isEnabled = true
                 }
             }
         }
@@ -76,7 +83,15 @@ class DeviceViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG_NAME, "Device view created")
-        setMenu()
+        setMenu(binding.deviceToolbar)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.deviceToolbarContainer) { insetView, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
+            insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.top
+            }
+            WindowInsetsCompat.CONSUMED
+        }
 
         binding.deviceWebView.setBackgroundColor(Color.TRANSPARENT)
 
@@ -116,6 +131,7 @@ class DeviceViewFragment : Fragment() {
                 } else if (shouldResetHistory) {
                     shouldResetHistory = false
                     view?.clearHistory()
+                    updateNavigationState()
                 }
             }
 
@@ -147,6 +163,10 @@ class DeviceViewFragment : Fragment() {
             // Let the "page finished" event load the new url
             binding.deviceWebView.loadUrl("about:blank")
             binding.deviceWebView.clearHistory()
+
+            binding.deviceToolbar.title = deviceViewModel.currentDevice.value?.name ?: "[empty]"
+            binding.deviceToolbar.subtitle = deviceViewModel.currentDevice.value?.address
+            updateNavigationState()
         }
     }
 
@@ -155,12 +175,24 @@ class DeviceViewFragment : Fragment() {
         _binding = null
     }
 
-    private fun setMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+    private fun setMenu(toolbar: MaterialToolbar) {
+        toolbar.setupWithNavController(findNavController(), AppBarConfiguration(findNavController().graph))
+        toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
+        toolbar.setNavigationOnClickListener {
+            onBackPressedCallback.isEnabled = false
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+            onBackPressedCallback.isEnabled = true
+        }
+
+        toolbar.addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Handle for example visibility of menu items
                 menu.findItem(R.id.action_browse_back).isEnabled = binding.deviceWebView.canGoBack()
                 menu.findItem(R.id.action_browse_forward).isEnabled = binding.deviceWebView.canGoForward()
+
+                if (deviceViewModel.isTwoPane) {
+                    toolbar.navigationIcon = null
+                }
             }
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -203,7 +235,7 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun updateNavigationState() {
-        activity?.invalidateOptionsMenu()
+        binding.deviceToolbar.invalidateMenu()
     }
 
     companion object {

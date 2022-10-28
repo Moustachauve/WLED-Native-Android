@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".fragment.DeviceListFragment">
 
     <data>
 
@@ -13,26 +13,56 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="400dp"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="410dp"
             android:layout_height="match_parent"
-            tools:context=".fragment.DeviceListFragment"
             android:background="?colorSurfaceVariant">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/main_toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintStart_toStartOf="parent">
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:expandedTitleMarginStart="72dp"
+                    app:expandedTitleMarginBottom="28dp"
+                    app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
+                    app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                        <com.google.android.material.appbar.MaterialToolbar
+                            android:id="@+id/main_toolbar"
+                            android:layout_width="match_parent"
+                            android:layout_height="?attr/actionBarSize"
+                            app:logo="@drawable/wled_logo_akemi"
+                            app:layout_collapseMode="pin">
+
+
+                        </com.google.android.material.appbar.MaterialToolbar>
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
+
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_toolbar_container"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/device_list_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
+                    android:paddingVertical="10dp"
                     app:layoutManager="LinearLayoutManager"
-                    tools:listitem="@layout/device_list_item"
-                    android:paddingVertical="10dp" />
+                    tools:listitem="@layout/device_list_item" />
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -44,12 +74,12 @@
                 android:layout_gravity="center"
                 android:visibility="gone" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/device_web_view_fragment"
             android:name="ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment"
-            android:layout_width="440dp"
+            android:layout_width="420dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             tools:layout="@layout/fragment_device_view" />

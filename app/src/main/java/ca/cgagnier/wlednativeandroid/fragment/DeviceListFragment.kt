@@ -3,12 +3,17 @@ package ca.cgagnier.wlednativeandroid.fragment
 import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +23,7 @@ import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import com.google.android.material.appbar.MaterialToolbar
 
 
 class DeviceListFragment : Fragment(),
@@ -58,13 +64,23 @@ class DeviceListFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(binding.root.context)
 
+        setMenu(binding.mainToolbar)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainToolbarContainer) { insetView, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
+            insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.top
+            }
+            WindowInsetsCompat.CONSUMED
+        }
+
         swipeRefreshLayout = binding.swipeRefresh
         swipeRefreshLayout.setOnRefreshListener(this)
 
         val slidingPaneLayout = binding.slidingPaneLayout
         slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
 
-        setMenu()
+
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -72,12 +88,11 @@ class DeviceListFragment : Fragment(),
         )
 
         deviceListAdapter = DeviceListAdapter(DeviceRepository.getAllNotHidden()) { deviceItem: DeviceItem, index: Int ->
-            if (deviceViewModel.currentDevice.value != deviceItem) {
-                deviceViewModel.updateCurrentDevice(deviceItem)
-                deviceViewModel.updateSelectedIndex(index)
-            }
+            deviceViewModel.updateCurrentDevice(deviceItem)
+            deviceViewModel.updateSelectedIndex(index)
 
             deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
+            deviceViewModel.isTwoPane = deviceListAdapter.isSelectable
             binding.slidingPaneLayout.openPane()
         }
 
@@ -92,6 +107,7 @@ class DeviceListFragment : Fragment(),
 
         val selectedIndexObserver = Observer<Int> {
             deviceListAdapter.setSelectedIndex(it)
+            binding.deviceListRecyclerView.scrollToPosition(it)
         }
         deviceViewModel.currentSelectedIndex.observe(viewLifecycleOwner, selectedIndexObserver)
 
@@ -101,6 +117,7 @@ class DeviceListFragment : Fragment(),
 
         layoutChangedListener = ViewTreeObserver.OnGlobalLayoutListener {
             deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
+            deviceViewModel.isTwoPane = deviceListAdapter.isSelectable
             view.viewTreeObserver.removeOnGlobalLayoutListener(layoutChangedListener)
         }
         view.viewTreeObserver.addOnGlobalLayoutListener(layoutChangedListener)
@@ -111,8 +128,9 @@ class DeviceListFragment : Fragment(),
         _binding = null
     }
 
-    private fun setMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+    private fun setMenu(toolbar: MaterialToolbar) {
+        toolbar.setupWithNavController(findNavController(), AppBarConfiguration(findNavController().graph))
+        toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.home, menu)
                 val actionBar = activity?.actionBar
