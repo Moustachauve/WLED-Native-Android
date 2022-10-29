@@ -13,15 +13,13 @@ import androidx.fragment.app.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
-import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.OptionsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 
 
 class MainActivity : AppCompatActivity(),
-    FragmentManager.OnBackStackChangedListener,
-    DeviceAddManuallyFragment.NoticeDialogListener {
+    FragmentManager.OnBackStackChangedListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -105,10 +103,6 @@ class MainActivity : AppCompatActivity(),
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onDeviceManuallyAdded(dialog: DialogFragment) {
-        supportFragmentManager.popBackStackImmediate()
     }
 
     private fun initDevices() {

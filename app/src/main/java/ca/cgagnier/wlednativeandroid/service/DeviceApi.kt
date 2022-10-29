@@ -17,6 +17,7 @@ object DeviceApi {
     private const val TAG = "DeviceApi"
 
     private fun getJsonApi(device: DeviceItem): JsonApi {
+        // TODO show invalid URL in the interface (How to reproduce: add url "a b"
         return Retrofit.Builder()
             .baseUrl(device.getDeviceUrl())
             .addConverterFactory(MoshiConverterFactory.create())

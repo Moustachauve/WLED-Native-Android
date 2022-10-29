@@ -30,7 +30,7 @@
             android:text="@string/default_device_name"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:textColor="@drawable/device_item_text_selector"
-            app:layout_constraintEnd_toStartOf="@+id/power_status_switch"
+            app:layout_constraintEnd_toStartOf="@id/power_status_switch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,8 +46,8 @@
             app:layout_constraintEnd_toStartOf="@id/network_status"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="@+id/name_text_view"
-            app:layout_constraintTop_toBottomOf="@+id/name_text_view"
+            app:layout_constraintStart_toStartOf="@id/name_text_view"
+            app:layout_constraintTop_toBottomOf="@id/name_text_view"
             app:layout_constrainedWidth="true" />
 
         <ImageView
@@ -57,10 +57,10 @@
             android:layout_marginStart="6dp"
             android:contentDescription="@string/network_status"
             app:tint="@drawable/device_item_text_selector"
-            app:layout_constraintBottom_toBottomOf="@+id/ip_address_text_view"
+            app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
             app:layout_constraintEnd_toStartOf="@id/is_offline"
-            app:layout_constraintStart_toEndOf="@+id/ip_address_text_view"
-            app:layout_constraintTop_toTopOf="@+id/ip_address_text_view"
+            app:layout_constraintStart_toEndOf="@id/ip_address_text_view"
+            app:layout_constraintTop_toTopOf="@id/ip_address_text_view"
             app:srcCompat="@drawable/twotone_signal_wifi_connected_no_internet_0_24" />
 
         <TextView
@@ -71,9 +71,9 @@
             android:gravity="center"
             android:text="@string/is_offline"
             android:textColor="@drawable/device_item_text_selector"
-            app:layout_constraintBottom_toBottomOf="@+id/ip_address_text_view"
-            app:layout_constraintEnd_toStartOf="@+id/power_status_switch"
-            app:layout_constraintStart_toEndOf="@+id/network_status" />
+            app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
+            app:layout_constraintEnd_toStartOf="@id/power_status_switch"
+            app:layout_constraintStart_toEndOf="@id/network_status" />
 
         <SeekBar
             android:id="@+id/brightness_seekbar"
@@ -84,10 +84,10 @@
             android:max="255"
             android:progress="10"
             android:thumb="@drawable/ic_baseline_brightness_high_24"
-            app:layout_constraintEnd_toStartOf="@+id/power_status_switch"
+            app:layout_constraintEnd_toStartOf="@id/power_status_switch"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ip_address_text_view" />
+            app:layout_constraintTop_toBottomOf="@id/ip_address_text_view" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/power_status_switch"
@@ -104,9 +104,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/power_status_switch"
-            app:layout_constraintEnd_toEndOf="@+id/power_status_switch"
-            app:layout_constraintStart_toStartOf="@+id/power_status_switch"
-            app:layout_constraintTop_toTopOf="@+id/power_status_switch" />
+            app:layout_constraintBottom_toBottomOf="@id/power_status_switch"
+            app:layout_constraintEnd_toEndOf="@id/power_status_switch"
+            app:layout_constraintStart_toStartOf="@id/power_status_switch"
+            app:layout_constraintTop_toTopOf="@id/power_status_switch" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

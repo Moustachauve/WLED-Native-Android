@@ -50,8 +50,23 @@ object DeviceRepository {
     fun getAllNotHidden(): ArrayList<DeviceItem> {
         if (devicesNotHidden == null) {
             devicesNotHidden = getAll().filter { !it.isHidden } as ArrayList
+            // TODO(SORTING) sorting should probably not be done at this level
+            devicesNotHidden!!.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
         }
         return devicesNotHidden as ArrayList<DeviceItem>
+    }
+
+    // This functions assumes we are looking for the position of a device in the main recyclerView
+    // TODO(SORTING) This does not belong in a repository
+    fun getPositionOfDevice(targetDevice: DeviceItem): Int {
+        val allDevice = getAllNotHidden()
+        for ((index, device) in allDevice.withIndex()) {
+            if (device == targetDevice) {
+                return index
+            }
+        }
+
+        return -1
     }
 
     fun remove(device: DeviceItem) {

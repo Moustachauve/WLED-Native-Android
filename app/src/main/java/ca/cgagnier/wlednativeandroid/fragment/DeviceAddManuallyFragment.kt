@@ -1,7 +1,6 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.widget.CheckBox
 import androidx.appcompat.app.AlertDialog
@@ -14,34 +13,23 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 
 class DeviceAddManuallyFragment : DialogFragment() {
-    internal lateinit var listener: NoticeDialogListener
+    private var listeners = ArrayList<NoticeDialogListener>()
 
     lateinit var deviceAddressTextInputLayout: TextInputLayout
     lateinit var customNameTextTextInputLayout: TextInputLayout
     lateinit var hideDeviceCheckBox: CheckBox
 
     interface NoticeDialogListener {
-        fun onDeviceManuallyAdded(dialog: DialogFragment)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            listener = context as NoticeDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException((context.toString() + " must implement NoticeDialogListener"))
-        }
+        fun onDeviceManuallyAdded(dialog: DialogFragment, device: DeviceItem)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
-            val builder = MaterialAlertDialogBuilder(it)
-            builder.setMessage(R.string.add_a_device_manually)
-                .setPositiveButton(R.string.add_device, null)
-                .setNegativeButton(R.string.cancel, null)
-                .setView(R.layout.fragment_device_add_edit)
-            builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
+        val builder = MaterialAlertDialogBuilder(requireActivity())
+        builder.setMessage(R.string.add_device_manually)
+            .setPositiveButton(R.string.add_device, null)
+            .setNegativeButton(R.string.cancel, null)
+            .setView(R.layout.fragment_device_add_edit)
+        return builder.create()
     }
 
     override fun onResume() {
@@ -77,8 +65,8 @@ class DeviceAddManuallyFragment : DialogFragment() {
         DeviceRepository.put(device)
         DeviceApi.update(device)
 
+        notifyListeners(device)
         dismiss()
-        listener.onDeviceManuallyAdded(this)
     }
 
     private fun validateForm(): Boolean {
@@ -93,5 +81,19 @@ class DeviceAddManuallyFragment : DialogFragment() {
         }
 
         return true
+    }
+
+    fun registerDeviceAddedListener(listener: NoticeDialogListener) {
+        listeners.add(listener)
+    }
+
+    fun unregisterDeviceAddedListener(listener: NoticeDialogListener) {
+        listeners.remove(listener)
+    }
+
+    private fun notifyListeners(device: DeviceItem) {
+        for (listener in listeners) {
+            listener.onDeviceManuallyAdded(this, device)
+        }
     }
 }

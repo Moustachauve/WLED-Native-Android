@@ -235,7 +235,7 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun updateNavigationState() {
-        binding.deviceToolbar.invalidateMenu()
+        _binding?.deviceToolbar?.invalidateMenu()
     }
 
     companion object {

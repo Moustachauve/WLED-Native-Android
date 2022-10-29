@@ -161,8 +161,9 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun openAddDeviceFragment() {
-        val fragment = DeviceDiscoveryFragment()
-        switchContent(R.id.fragment_container_view, fragment)
+        val dialog = DeviceDiscoveryFragment()
+        dialog.showsDialog = true
+        dialog.show(childFragmentManager, "device_add_manually")
     }
 
     private fun openManageDevicesFragment() {
@@ -193,6 +194,7 @@ class DeviceListFragment : Fragment(),
     // TODO add polling or push or something to automatically update the list
     // Better UX for tablet if data is kept in sync
     override fun onRefresh() {
+        // TODO Use PublishList or something
         for (device in deviceListAdapter.getAllItems()) {
             DeviceApi.update(device)
         }

@@ -30,4 +30,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
+
+    <style name="WLEDNativeAndroid.Success" parent="WLEDNativeAndroid">
+        <item name="colorPrimary">@color/md_theme_light_success</item>
+    </style>
 </resources>

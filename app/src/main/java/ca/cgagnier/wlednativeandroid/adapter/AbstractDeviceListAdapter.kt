@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -85,9 +84,12 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
         }
     }
 
-    fun addItem(item: DeviceItem) {
+    fun addItem(item: DeviceItem): Int {
         deviceList.add(item)
+        // TODO(SORTING) Improve handling of sorting (use submitList?)
+        deviceList.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
         notifyItemInserted(deviceList.size - 1)
+        return deviceList.size - 1
     }
 
     fun removeItem(item: DeviceItem) {
@@ -109,9 +111,10 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
         notifyItemChanged(index)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun replaceItems(items: ArrayList<DeviceItem>) {
-        deviceList = items
+    fun replaceItems(items: List<DeviceItem>) {
+        deviceList = ArrayList(items)
+        // TODO(SORTING) Improve handling of sorting (use submitList?)
+        deviceList.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
         notifyDataSetChanged()
     }
 

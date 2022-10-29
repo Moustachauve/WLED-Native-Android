@@ -1,32 +1,35 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.app.Dialog
 import android.content.Context
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.View
-import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.DeviceItem
-import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.adapter.DeviceListFoundAdapter
+import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceDiscoveryBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
+class DeviceDiscoveryFragment : DialogFragment(),
     DeviceAddManuallyFragment.NoticeDialogListener,
     DeviceDiscovery.DeviceDiscoveredListener,
-    DeviceRepository.DataChangedListener{
+    DeviceRepository.DataChangedListener {
 
-    private lateinit var listener: DeviceAddManuallyFragment.NoticeDialogListener
-    lateinit var deviceDiscovery: DeviceDiscovery
+    private lateinit var deviceDiscovery: DeviceDiscovery
+    private val deviceViewModel: DeviceViewModel by activityViewModels()
+    private lateinit var deviceListAdapter: DeviceListFoundAdapter
 
-    private val deviceListAdapter = DeviceListAdapter(ArrayList()) {_: DeviceItem, _: Int -> run {} }
+    private var _binding: FragmentDeviceDiscoveryBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,12 +38,6 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        try {
-            listener = context as DeviceAddManuallyFragment.NoticeDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(("$context must implement NoticeDialogListener"))
-        }
-
         deviceDiscovery = DeviceDiscovery(context)
         deviceDiscovery.registerDeviceDiscoveredListener(this)
     }
@@ -50,29 +47,28 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
         deviceDiscovery.unregisterDeviceDiscoveredListener(this)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        _binding = FragmentDeviceDiscoveryBinding.inflate(layoutInflater)
+        val layoutManager = LinearLayoutManager(binding.root.context)
 
-        val addManuallyButton = view.findViewById<Button>(R.id.add_manually_button)
-
-        addManuallyButton.setOnClickListener {
-            val dialog = DeviceAddManuallyFragment()
-            dialog.showsDialog = true
-            dialog.show(childFragmentManager, "device_add_manually")
+        deviceListAdapter = DeviceListFoundAdapter(ArrayList()) {deviceItem: DeviceItem, _: Int ->
+            deviceViewModel.updateCurrentDevice(deviceItem)
+            deviceViewModel.updateSelectedIndex(DeviceRepository.getPositionOfDevice(deviceItem))
+            dismiss()
         }
 
-        val deviceFoundListRecyclerView = view.findViewById<RecyclerView>(R.id.device_found_list_recycler_view)
-        val layoutManager = LinearLayoutManager(view.context)
+        binding.deviceFoundListRecyclerView.adapter = deviceListAdapter
+        binding.deviceFoundListRecyclerView.layoutManager = layoutManager
+        binding.deviceFoundListRecyclerView.setHasFixedSize(false)
 
-        deviceFoundListRecyclerView.adapter = deviceListAdapter
-        deviceFoundListRecyclerView.layoutManager = layoutManager
-        deviceFoundListRecyclerView.setHasFixedSize(false)
+        val builder = MaterialAlertDialogBuilder(requireActivity())
+        builder
+            .setPositiveButton(getString(R.string.add_device_manually), null)
+            .setNeutralButton(R.string.close, null)
+            .setView(binding.root)
+        val dialog = builder.create()
 
-        val dividerItemDecoration = DividerItemDecoration(
-            deviceFoundListRecyclerView.context,
-            layoutManager.orientation
-        )
-        deviceFoundListRecyclerView.addItemDecoration(dividerItemDecoration)
+        return dialog
     }
 
     override fun onPause() {
@@ -83,6 +79,20 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
     override fun onResume() {
         super.onResume()
         deviceDiscovery.start()
+
+        val alertDialog = dialog as AlertDialog
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val newDialog = DeviceAddManuallyFragment()
+            newDialog.showsDialog = true
+            newDialog.show(childFragmentManager, "device_add_manually")
+            newDialog.registerDeviceAddedListener(this)
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -91,7 +101,10 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
         DeviceRepository.unregisterDataChangedListener(this)
     }
 
-    override fun onDeviceManuallyAdded(dialog: DialogFragment) = listener.onDeviceManuallyAdded(dialog)
+    override fun onDeviceManuallyAdded(dialog: DialogFragment, device: DeviceItem) {
+        val newIndex = deviceListAdapter.addItem(device)
+        _binding?.deviceFoundListRecyclerView?.smoothScrollToPosition(newIndex)
+    }
 
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
 
@@ -105,7 +118,8 @@ class DeviceDiscoveryFragment : Fragment(R.layout.fragment_device_discovery),
         DeviceApi.update(device)
 
         activity?.runOnUiThread {
-            deviceListAdapter.addItem(device)
+            val newIndex = deviceListAdapter.addItem(device)
+            _binding?.deviceFoundListRecyclerView?.smoothScrollToPosition(newIndex)
         }
     }
 

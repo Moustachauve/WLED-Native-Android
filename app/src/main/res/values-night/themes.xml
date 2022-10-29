@@ -29,4 +29,8 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="WLEDNativeAndroid.Success" parent="WLEDNativeAndroid">
+        <item name="colorPrimary">@color/md_theme_dark_success</item>
+    </style>
 </resources>
