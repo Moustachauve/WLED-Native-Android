@@ -15,12 +15,16 @@ class DeviceViewModel : ViewModel() {
 
     init {
         var selectedIndex = OptionsRepository.get().lastSelectedIndex
-        if (selectedIndex < 0 || selectedIndex >= DeviceRepository.getAllNotHidden().size) {
+        if (DeviceRepository.getAllNotHidden().isEmpty()) {
+            selectedIndex = -1
+        } else if (selectedIndex < 0 || selectedIndex >= DeviceRepository.getAllNotHidden().count()) {
             selectedIndex = 0
             OptionsRepository.saveSelectedIndex(selectedIndex)
         }
         _currentSelectedIndex.value = selectedIndex
-        _currentDevice.value = DeviceRepository.getAllNotHidden()[selectedIndex]
+        if (selectedIndex > 0) {
+            _currentDevice.value = DeviceRepository.getAllNotHidden()[selectedIndex]
+        }
     }
 
     fun updateSelectedIndex(index: Int) {
