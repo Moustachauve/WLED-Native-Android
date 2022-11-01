@@ -3,19 +3,22 @@ package ca.cgagnier.wlednativeandroid.fragment
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.cgagnier.wlednativeandroid.*
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListManageAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListManageBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 class DeviceListManageFragment : DialogFragment(),
     DeviceRepository.DataChangedListener {
 
-    private val deviceListAdapter = DeviceListManageAdapter(ArrayList(DeviceRepository.getAll())) {}
+    private val deviceViewModel: DeviceViewModel by activityViewModels()
+    private lateinit var deviceListAdapter: DeviceListManageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +33,13 @@ class DeviceListManageFragment : DialogFragment(),
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = FragmentDeviceListManageBinding.inflate(layoutInflater)
         val layoutManager = LinearLayoutManager(binding.root.context)
+
+        deviceListAdapter =
+            DeviceListManageAdapter(ArrayList(DeviceRepository.getAll())) { deviceItem: DeviceItem ->
+                deviceViewModel.updateCurrentDevice(deviceItem)
+                deviceViewModel.updateSelectedIndex(-1)
+                dismiss()
+            }
 
         binding.deviceListRecyclerView.adapter = deviceListAdapter
         binding.deviceListRecyclerView.layoutManager = layoutManager

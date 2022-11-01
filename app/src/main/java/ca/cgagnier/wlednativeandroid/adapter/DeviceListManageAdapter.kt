@@ -35,7 +35,6 @@ class DeviceListManageAdapter(
 
             itemBinding.container.setOnClickListener {
                 onItemClicked(device)
-                openEditDialog(device, activity.supportFragmentManager)
             }
 
             itemBinding.editButton.setOnClickListener {

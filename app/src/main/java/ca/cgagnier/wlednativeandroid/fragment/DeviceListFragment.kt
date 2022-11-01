@@ -121,6 +121,14 @@ class DeviceListFragment : Fragment(),
             view.viewTreeObserver.removeOnGlobalLayoutListener(layoutChangedListener)
         }
         view.viewTreeObserver.addOnGlobalLayoutListener(layoutChangedListener)
+
+        var duringSetup = true
+        deviceViewModel.currentDevice.observe(this.viewLifecycleOwner) {
+            if (!duringSetup) {
+                slidingPaneLayout.openPane()
+            }
+            duringSetup = false
+        }
     }
 
     override fun onDestroyView() {
