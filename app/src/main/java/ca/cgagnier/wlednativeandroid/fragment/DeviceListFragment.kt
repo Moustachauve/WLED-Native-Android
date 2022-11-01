@@ -216,7 +216,7 @@ class DeviceListFragment : Fragment(),
 
         override fun handleOnBackPressed() {
             // Return to the list pane when the system back button is pressed.
-            if (slidingPaneLayout.isOpen) {
+            if (slidingPaneLayout.isOpen && slidingPaneLayout.isSlideable) {
                 slidingPaneLayout.closePane()
                 return
             }
