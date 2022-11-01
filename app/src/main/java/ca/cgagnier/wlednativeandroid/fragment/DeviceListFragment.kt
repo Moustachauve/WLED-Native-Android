@@ -207,7 +207,7 @@ class DeviceListFragment : Fragment(),
     ) : OnBackPressedCallback(
         // Set the default 'enabled' state to true only if it is slidable (i.e., the panes
         // are overlapping) and open (i.e., the detail pane is visible).
-        slidingPaneLayout.isSlideable && slidingPaneLayout.isOpen
+        slidingPaneLayout.isOpen
     ), SlidingPaneLayout.PanelSlideListener {
 
         init {
@@ -216,7 +216,14 @@ class DeviceListFragment : Fragment(),
 
         override fun handleOnBackPressed() {
             // Return to the list pane when the system back button is pressed.
-            slidingPaneLayout.closePane()
+            if (slidingPaneLayout.isOpen) {
+                slidingPaneLayout.closePane()
+                return
+            }
+
+            isEnabled = false
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+            isEnabled = slidingPaneLayout.isOpen
         }
 
         override fun onPanelSlide(panel: View, slideOffset: Float) {}
