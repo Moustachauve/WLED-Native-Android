@@ -66,9 +66,7 @@ class DeviceDiscoveryFragment : DialogFragment(),
             .setPositiveButton(getString(R.string.add_device_manually), null)
             .setNeutralButton(R.string.close, null)
             .setView(binding.root)
-        val dialog = builder.create()
-
-        return dialog
+        return builder.create()
     }
 
     override fun onPause() {

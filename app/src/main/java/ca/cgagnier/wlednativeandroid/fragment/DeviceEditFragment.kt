@@ -51,6 +51,7 @@ class DeviceEditFragment : DialogFragment() {
         deviceAddressTextInputLayout.isEnabled = false
         deviceAddressTextInputLayout.editText?.setText(device.address)
         customNameTextTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
+        customNameTextTextInputLayout.requestFocus()
         hideDeviceCheckBox.isChecked = device.isHidden
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {

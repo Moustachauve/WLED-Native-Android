@@ -1,19 +1,18 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.cgagnier.wlednativeandroid.*
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListManageAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListManageBinding
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class DeviceListManageFragment : Fragment(),
+class DeviceListManageFragment : DialogFragment(),
     DeviceRepository.DataChangedListener {
 
     private val deviceListAdapter = DeviceListManageAdapter(ArrayList(DeviceRepository.getAll())) {}
@@ -28,16 +27,8 @@ class DeviceListManageFragment : Fragment(),
         DeviceRepository.unregisterDataChangedListener(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = FragmentDeviceListManageBinding.inflate(inflater, container,false)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val binding = FragmentDeviceListManageBinding.inflate(layoutInflater)
         val layoutManager = LinearLayoutManager(binding.root.context)
 
         binding.deviceListRecyclerView.adapter = deviceListAdapter
@@ -54,11 +45,19 @@ class DeviceListManageFragment : Fragment(),
         deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
 
         binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
-            val fragment = DeviceDiscoveryFragment()
-            switchContent(R.id.fragment_container_view, fragment)
+            val dialog = DeviceDiscoveryFragment()
+            dialog.showsDialog = true
+            dialog.show(childFragmentManager, "device_discovery")
         }
 
-        return binding.root
+
+        val builder = MaterialAlertDialogBuilder(requireActivity())
+        builder
+            .setTitle(R.string.manage_devices)
+            .setPositiveButton(getString(R.string.add_device_manually), null)
+            .setNeutralButton(R.string.close, null)
+            .setView(binding.root)
+        return builder.create()
     }
 
     override fun onItemChanged(item: DeviceItem) {
@@ -71,12 +70,5 @@ class DeviceListManageFragment : Fragment(),
 
     override fun onItemRemoved(item: DeviceItem) {
         deviceListAdapter.removeItem(item)
-    }
-
-    private fun switchContent(id: Int, fragment: Fragment) {
-        if (context is MainActivity) {
-            val mainActivity = context as MainActivity
-            mainActivity.switchContent(id, fragment)
-        }
     }
 }

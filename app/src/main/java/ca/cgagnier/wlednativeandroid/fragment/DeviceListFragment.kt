@@ -163,19 +163,13 @@ class DeviceListFragment : Fragment(),
     private fun openAddDeviceFragment() {
         val dialog = DeviceDiscoveryFragment()
         dialog.showsDialog = true
-        dialog.show(childFragmentManager, "device_add_manually")
+        dialog.show(childFragmentManager, "device_discovery")
     }
 
     private fun openManageDevicesFragment() {
-        val fragment = DeviceListManageFragment()
-        switchContent(R.id.fragment_container_view, fragment)
-    }
-
-    private fun switchContent(id: Int, fragment: Fragment) {
-        if (context is MainActivity) {
-            val mainActivity = context as MainActivity
-            mainActivity.switchContent(id, fragment)
-        }
+        val dialog = DeviceListManageFragment()
+        dialog.showsDialog = true
+        dialog.show(childFragmentManager, "device_manage")
     }
 
     override fun onItemChanged(item: DeviceItem) {

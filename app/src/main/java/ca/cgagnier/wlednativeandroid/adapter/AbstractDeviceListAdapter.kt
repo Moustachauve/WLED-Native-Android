@@ -2,13 +2,10 @@ package ca.cgagnier.wlednativeandroid.adapter
 
 import android.content.Context
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.DeviceItem
-import ca.cgagnier.wlednativeandroid.MainActivity
-import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 
 abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHolder>(
     protected var deviceList: ArrayList<DeviceItem>
@@ -55,13 +52,6 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
     }
 
     override fun getItemCount() = deviceList.count()
-
-    fun switchContent(id: Int, fragment: Fragment) {
-        if (context is MainActivity) {
-            val mainActivity = context as MainActivity
-            mainActivity.switchContent(id, fragment, DeviceViewFragment.TAG_NAME)
-        }
-    }
 
     fun getAllItems(): ArrayList<DeviceItem> {
         return deviceList

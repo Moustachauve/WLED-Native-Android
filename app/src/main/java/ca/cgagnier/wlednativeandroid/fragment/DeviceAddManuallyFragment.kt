@@ -1,7 +1,9 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
@@ -11,6 +13,7 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+
 
 class DeviceAddManuallyFragment : DialogFragment() {
     private var listeners = ArrayList<NoticeDialogListener>()
@@ -40,6 +43,10 @@ class DeviceAddManuallyFragment : DialogFragment() {
         deviceAddressTextInputLayout = alertDialog.findViewById(R.id.device_address_text_input_layout)!!
         customNameTextTextInputLayout = alertDialog.findViewById(R.id.custom_name_text_input_layout)!!
         hideDeviceCheckBox = alertDialog.findViewById(R.id.hide_device_check_box)!!
+
+        deviceAddressTextInputLayout.requestFocus()
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(deviceAddressTextInputLayout, InputMethodManager.SHOW_IMPLICIT)
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             submitClickListener()
