@@ -6,27 +6,25 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import kotlinx.coroutines.launch
 
 class DiscoverDeviceViewModel(private val repository: DeviceRepository): ViewModel() {
+    private val _allDevicesAddresses = MutableLiveData<ArrayList<String>>()
 
-    // TODO Keep only list of addresses and do a query to the database WHERE address IN (?)
-    //      in order to keep the data in sync (change of name, etc)
-    private val _allDevices = MutableLiveData<ArrayList<Device>>()
-    val allDevices: LiveData<ArrayList<Device>> get() = _allDevices
-
+    val allDevices: LiveData<List<Device>> get() = Transformations.switchMap(_allDevicesAddresses) {
+            addresses -> repository.findDevicesWithAddresses(addresses).asLiveData()
+    }
 
     fun insert(device: Device) = viewModelScope.launch {
-        val devicesList: ArrayList<Device>
-        devicesList = if (_allDevices.value != null) {
-            ArrayList(_allDevices.value!!)
+        val addressesList: ArrayList<String> = if (_allDevicesAddresses.value != null) {
+            ArrayList(_allDevicesAddresses.value!!)
         } else {
             ArrayList()
         }
 
-        devicesList.add(device)
-        _allDevices.value = devicesList
+        addressesList.add(device.address)
+        _allDevicesAddresses.value = addressesList
     }
 
     fun clear() = viewModelScope.launch {
-        _allDevices.value =  ArrayList()
+        _allDevicesAddresses.value = ArrayList()
     }
 }
 

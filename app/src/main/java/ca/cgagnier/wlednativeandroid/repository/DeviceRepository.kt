@@ -16,6 +16,12 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>> {
+        return deviceDao.findDevicesWithAddresses(addresses)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun findDeviceByAddress(address: String): Device? {
         return deviceDao.findDeviceByAddress(address)
     }

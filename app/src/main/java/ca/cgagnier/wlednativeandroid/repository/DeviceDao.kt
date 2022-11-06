@@ -28,6 +28,9 @@ interface DeviceDao {
     @Query("SELECT * FROM device WHERE address = :address")
     suspend fun findDeviceByAddress(address: String): Device?
 
+    @Query("SELECT * FROM device WHERE address IN (:addresses)")
+    fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>>
+
     @Query("SELECT COUNT() FROM device WHERE address = :address")
     suspend fun count(address: String): Int
 
