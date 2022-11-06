@@ -49,6 +49,7 @@ class DeviceViewFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var shouldResetHistory = false
+    private var shouldShowErrorPage = false
 
     var uploadMessage: ValueCallback<Array<Uri>>? = null
 
@@ -150,7 +151,12 @@ class DeviceViewFragment : Fragment() {
                         if (url == "about:blank") {
                             Log.i(TAG_NAME, "page finished - cleared history")
                             shouldResetHistory = true
-                            deviceListViewModel.activeDevice.value?.let { view?.loadUrl(it.address) }
+                            if (shouldShowErrorPage) {
+                                shouldShowErrorPage = false
+                                view?.loadUrl("file:///android_asset/device_error.html")
+                            } else {
+                                deviceListViewModel.activeDevice.value?.let { view?.loadUrl(it.address) }
+                            }
                         } else if (shouldResetHistory) {
                             shouldResetHistory = false
                             view?.clearHistory()
@@ -173,11 +179,13 @@ class DeviceViewFragment : Fragment() {
                         error: WebResourceError?
                     ) {
                         if (request?.isForMainFrame == true) {
-                            Log.i(
-                                TAG_NAME,
-                                "Error received ${request.url} - ${error?.description}"
-                            )
-                            view?.loadUrl("file:///android_asset/device_error.html")
+                            Log.i(TAG_NAME,
+                                "Error received ${request.url} - ${error?.description}")
+
+
+                            shouldShowErrorPage = true
+                            view?.loadUrl("about:blank")
+                            view?.clearHistory()
                         }
                         super.onReceivedError(view, request, error)
                     }
