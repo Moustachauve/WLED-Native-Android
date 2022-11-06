@@ -33,7 +33,17 @@ object DeviceApi {
             }
         }
 
-        val stateInfoCall = getJsonApi(device).getStateInfo()
+        val stateInfoCall: Call<DeviceStateInfo>
+        try {
+            stateInfoCall = getJsonApi(device).getStateInfo()
+        } catch (e: IllegalArgumentException) {
+            Log.wtf(TAG, "Device has invalid address: " + device.address)
+            scope.launch {
+                application!!.repository.delete(device)
+            }
+            return
+        }
+
         stateInfoCall.enqueue(object : Callback<DeviceStateInfo> {
             override fun onResponse(call: Call<DeviceStateInfo>, response: Response<DeviceStateInfo>) =
                 onSuccess(device, response)
@@ -57,7 +67,6 @@ object DeviceApi {
     }
 
     private fun getJsonApi(device: Device): JsonApi {
-        // TODO show invalid URL in the interface (How to reproduce: add url "a b")
         return Retrofit.Builder()
             .baseUrl(device.getDeviceUrl())
             .addConverterFactory(MoshiConverterFactory.create())

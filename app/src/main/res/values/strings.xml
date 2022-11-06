@@ -8,6 +8,7 @@
     <string name="custom_name">Custom Name</string>
     <string name="leave_this_empty_to_use_the_device_name">Leave this empty to use the device name</string>
     <string name="please_enter_value">Please enter a value</string>
+    <string name="please_enter_valid_value">Please enter a valid value</string>
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>
     <string name="default_device_name">(New Device)</string>

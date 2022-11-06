@@ -95,6 +95,10 @@ class DeviceAddManuallyFragment : DialogFragment() {
             deviceAddressTextInputLayout.error = getString(R.string.please_enter_value)
             return false
         }
+        if (deviceAddress.contains(' ')) {
+            deviceAddressTextInputLayout.error = getString(R.string.please_enter_valid_value)
+            return false
+        }
 
         return true
     }
