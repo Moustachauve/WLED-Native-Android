@@ -7,15 +7,24 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import ca.cgagnier.wlednativeandroid.DeviceItem
+import androidx.fragment.app.activityViewModels
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 
 
 class DeviceAddManuallyFragment : DialogFragment() {
+    private val deviceListViewModel: DeviceListViewModel by activityViewModels {
+        DeviceListViewModelFactory(
+            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+    }
+
     private var listeners = ArrayList<NoticeDialogListener>()
 
     lateinit var deviceAddressTextInputLayout: TextInputLayout
@@ -23,7 +32,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
     lateinit var hideDeviceCheckBox: CheckBox
 
     interface NoticeDialogListener {
-        fun onDeviceManuallyAdded(dialog: DialogFragment, device: DeviceItem)
+        fun onDeviceManuallyAdded(dialog: DialogFragment, device: Device)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -62,15 +71,15 @@ class DeviceAddManuallyFragment : DialogFragment() {
         val deviceName = customNameTextTextInputLayout.editText?.text.toString()
         val isHidden = hideDeviceCheckBox.isChecked
 
-        val device = DeviceItem(
+        val device = Device(
             address = deviceAddress,
             name = deviceName,
             isCustomName = deviceName != "",
             isHidden = isHidden
         )
 
-        DeviceRepository.put(device)
-        DeviceApi.update(device)
+        deviceListViewModel.insert(device)
+        DeviceApi.update(device, false)
 
         notifyListeners(device)
         dismiss()
@@ -94,11 +103,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
         listeners.add(listener)
     }
 
-    fun unregisterDeviceAddedListener(listener: NoticeDialogListener) {
-        listeners.remove(listener)
-    }
-
-    private fun notifyListeners(device: DeviceItem) {
+    private fun notifyListeners(device: Device) {
         for (listener in listeners) {
             listener.onDeviceManuallyAdded(this, device)
         }

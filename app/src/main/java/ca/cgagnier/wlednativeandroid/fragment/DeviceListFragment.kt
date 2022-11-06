@@ -1,6 +1,8 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.MenuProvider
@@ -19,18 +21,24 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ca.cgagnier.wlednativeandroid.*
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
+import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
+import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 
 
 class DeviceListFragment : Fragment(),
-    DeviceRepository.DataChangedListener,
     SwipeRefreshLayout.OnRefreshListener {
 
-    private val deviceViewModel: DeviceViewModel by activityViewModels()
+    private val deviceListViewModel: DeviceListViewModel by activityViewModels {
+        DeviceListViewModelFactory(
+            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+    }
 
     private var _binding: FragmentDeviceListBinding? = null
     private val binding get() = _binding!!
@@ -41,14 +49,7 @@ class DeviceListFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
-        DeviceRepository.registerDataChangedListener(this)
-        deviceListAdapter.replaceItems(DeviceRepository.getAllNotHidden())
-        onRefresh()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        DeviceRepository.unregisterDataChangedListener(this)
+        refreshListFromApi(false)
     }
 
     override fun onCreateView(
@@ -87,12 +88,11 @@ class DeviceListFragment : Fragment(),
             DeviceListOnBackPressedCallback(slidingPaneLayout)
         )
 
-        deviceListAdapter = DeviceListAdapter(DeviceRepository.getAllNotHidden()) { deviceItem: DeviceItem, index: Int ->
-            deviceViewModel.updateCurrentDevice(deviceItem)
-            deviceViewModel.updateSelectedIndex(index)
+        deviceListAdapter = DeviceListAdapter { device: Device ->
+            deviceListViewModel.updateActiveDevice(device)
 
             deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
-            deviceViewModel.isTwoPane = deviceListAdapter.isSelectable
+            deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
             binding.slidingPaneLayout.openPane()
         }
 
@@ -100,16 +100,33 @@ class DeviceListFragment : Fragment(),
         binding.deviceListRecyclerView.adapter = deviceListAdapter
         binding.deviceListRecyclerView.layoutManager = layoutManager
         binding.deviceListRecyclerView.setHasFixedSize(true)
+        binding.deviceListRecyclerView.itemAnimator = RecyclerViewAnimator()
 
-        val emptyDataObserver = EmptyDataObserver(binding.deviceListRecyclerView, binding.emptyDataParent)
-        deviceListAdapter.registerAdapterDataObserver(emptyDataObserver)
+        deviceListViewModel.allDevices.observe(viewLifecycleOwner) { devices ->
+            devices?.let {
+                deviceListAdapter.submitList(it)
+            }
+            swipeRefreshLayout.isRefreshing = false
+            val isEmpty = devices?.isEmpty() == true
+            binding.emptyDataParent.layout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+            binding.deviceListRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        }
+
         deviceListAdapter.isSelectable = false
 
-        val selectedIndexObserver = Observer<Int> {
-            deviceListAdapter.setSelectedIndex(it)
-            binding.deviceListRecyclerView.scrollToPosition(it)
+        var duringSetup = true
+        val activeDeviceObserver = Observer<Device?> {
+            if (!duringSetup) {
+                slidingPaneLayout.openPane()
+            }
+            duringSetup = false
+            if (it != null) {
+                binding.deviceListRecyclerView.scrollToPosition(
+                    deviceListAdapter.setSelectedDevice(it)
+                )
+            }
         }
-        deviceViewModel.currentSelectedIndex.observe(viewLifecycleOwner, selectedIndexObserver)
+        deviceListViewModel.activeDevice.observe(viewLifecycleOwner, activeDeviceObserver)
 
         binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
             openAddDeviceFragment()
@@ -117,18 +134,18 @@ class DeviceListFragment : Fragment(),
 
         layoutChangedListener = ViewTreeObserver.OnGlobalLayoutListener {
             deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
-            deviceViewModel.isTwoPane = deviceListAdapter.isSelectable
+            deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
             view.viewTreeObserver.removeOnGlobalLayoutListener(layoutChangedListener)
         }
         view.viewTreeObserver.addOnGlobalLayoutListener(layoutChangedListener)
 
-        var duringSetup = true
-        deviceViewModel.currentDevice.observe(this.viewLifecycleOwner) {
-            if (!duringSetup) {
-                slidingPaneLayout.openPane()
-            }
-            duringSetup = false
-        }
+        val mainHandler = Handler(Looper.getMainLooper())
+        refreshTimer(mainHandler, 5000)
+    }
+
+    private fun refreshTimer(handler: Handler, delay: Long) {
+        refreshListFromApi(true)
+        handler.postDelayed({refreshTimer(handler, delay)}, delay)
     }
 
     override fun onDestroyView() {
@@ -169,36 +186,26 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun openAddDeviceFragment() {
-        val dialog = DeviceDiscoveryFragment()
+        val dialog = DiscoverDeviceFragment()
         dialog.showsDialog = true
         dialog.show(childFragmentManager, "device_discovery")
     }
 
     private fun openManageDevicesFragment() {
-        val dialog = DeviceListManageFragment()
+        val dialog = ManageDeviceFragment()
         dialog.showsDialog = true
         dialog.show(childFragmentManager, "device_manage")
     }
 
-    override fun onItemChanged(item: DeviceItem) {
-        deviceListAdapter.itemChanged(item)
-        swipeRefreshLayout.isRefreshing = false
-    }
-
-    override fun onItemAdded(item: DeviceItem) {
-        deviceListAdapter.addItem(item)
-    }
-
-    override fun onItemRemoved(item: DeviceItem) {
-        deviceListAdapter.removeItem(item)
-    }
-
-    // TODO add polling or push or something to automatically update the list
-    // Better UX for tablet if data is kept in sync
     override fun onRefresh() {
-        // TODO Use PublishList or something
-        for (device in deviceListAdapter.getAllItems()) {
-            DeviceApi.update(device)
+        refreshListFromApi(false)
+    }
+
+    private fun refreshListFromApi(silentUpdate: Boolean) {
+        if (deviceListViewModel.allDevices.value != null) {
+            for (device in deviceListViewModel.allDevices.value!!) {
+                DeviceApi.update(device, silentUpdate)
+            }
         }
     }
 

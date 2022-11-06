@@ -11,23 +11,21 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
-import ca.cgagnier.wlednativeandroid.model.JsonPost
+import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 
 
 class DeviceListAdapter(
-    deviceList: ArrayList<DeviceItem>,
-    private val onItemClicked: (DeviceItem, Int) -> Unit
-) :
-    AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>(deviceList) {
+    private val onItemClicked: (Device) -> Unit
+) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>() {
 
     inner class DeviceListViewHolder(private val itemBinding: DeviceListItemBinding) :
         ViewHolder(itemBinding) {
-        override fun bindItem(device: DeviceItem) {
+        override fun bindItem(device: Device) {
             itemBinding.nameTextView.text =
                 if (device.name == "") context.getString(R.string.default_device_name) else device.name
             itemBinding.ipAddressTextView.text = device.address
@@ -36,7 +34,7 @@ class DeviceListAdapter(
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())
 
-            itemBinding.container.isSelected = isSelectable && _selectedIndex == bindingAdapterPosition
+            itemBinding.container.isSelected = isSelectable && selectedDevice?.address == device.address
 
             setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
             setSwitchColor(itemBinding.powerStatusSwitch, device.color)
@@ -47,7 +45,7 @@ class DeviceListAdapter(
                 if (device.isRefreshing) View.INVISIBLE else View.VISIBLE
 
             itemBinding.container.setOnClickListener {
-                onItemClicked(device, bindingAdapterPosition)
+                onItemClicked(device)
             }
 
             itemBinding.powerStatusSwitch.setOnClickListener {
@@ -83,8 +81,6 @@ class DeviceListAdapter(
             )
         )
     }
-
-    override fun getItemCount() = deviceList.count()
 
     /**
      * Fixes the color if it is too dark or too bright depending of the dark/light theme

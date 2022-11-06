@@ -21,19 +21,25 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import ca.cgagnier.wlednativeandroid.DeviceItem
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceViewBinding
-import ca.cgagnier.wlednativeandroid.repository.DeviceViewModel
-import ca.cgagnier.wlednativeandroid.repository.WebViewViewModel
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
+import ca.cgagnier.wlednativeandroid.viewmodel.WebViewViewModel
 import com.google.android.material.appbar.MaterialToolbar
 
 
 class DeviceViewFragment : Fragment() {
 
-    private val deviceViewModel: DeviceViewModel by activityViewModels()
+    private val deviceListViewModel: DeviceListViewModel by activityViewModels {
+        DeviceListViewModelFactory(
+            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+    }
+
     private lateinit var onBackPressedCallback: OnBackPressedCallback
     private lateinit var webViewViewModel: WebViewViewModel
     private lateinit var _webview: WebView
@@ -142,7 +148,7 @@ class DeviceViewFragment : Fragment() {
                         if (url == "about:blank") {
                             Log.i(TAG_NAME, "page finished - cleared history")
                             shouldResetHistory = true
-                            deviceViewModel.currentDevice.value?.let { view?.loadUrl(it.address) }
+                            deviceListViewModel.activeDevice.value?.let { view?.loadUrl(it.address) }
                         } else if (shouldResetHistory) {
                             shouldResetHistory = false
                             view?.clearHistory()
@@ -187,7 +193,7 @@ class DeviceViewFragment : Fragment() {
 
         }
 
-        deviceViewModel.currentDevice.observe(this.viewLifecycleOwner) {
+        deviceListViewModel.activeDevice.observe(viewLifecycleOwner) {
             if (fromRestore) {
                 fromRestore = false
                 return@observe
@@ -197,8 +203,8 @@ class DeviceViewFragment : Fragment() {
             _webview.loadUrl("about:blank")
             _webview.clearHistory()
 
-            binding.deviceToolbar.title = deviceViewModel.currentDevice.value?.name ?: "[empty]"
-            binding.deviceToolbar.subtitle = deviceViewModel.currentDevice.value?.address
+            binding.deviceToolbar.title = deviceListViewModel.activeDevice.value?.name ?: "[empty]"
+            binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
             updateNavigationState()
         }
     }
@@ -222,13 +228,17 @@ class DeviceViewFragment : Fragment() {
             onBackPressedCallback.isEnabled = true
         }
 
+        deviceListViewModel.isTwoPane.observe(viewLifecycleOwner) {
+            updateNavigationState()
+        }
+
         toolbar.addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Handle for example visibility of menu items
                 menu.findItem(R.id.action_browse_back).isEnabled = _webview.canGoBack()
                 menu.findItem(R.id.action_browse_forward).isEnabled = _webview.canGoForward()
 
-                if (deviceViewModel.isTwoPane) {
+                if (deviceListViewModel.isTwoPane.value == true) {
                     toolbar.navigationIcon = null
                 }
             }
@@ -278,14 +288,6 @@ class DeviceViewFragment : Fragment() {
 
     companion object {
         const val TAG_NAME = "deviceWebview"
-        const val BUNDLE_ADDRESS_KEY = "bundleDeviceAddressKey"
         const val BUNDLE_WEBVIEW_STATE = "bundleWebviewStateKey"
-
-        @JvmStatic
-        fun newInstance(device: DeviceItem) = DeviceViewFragment().apply {
-            arguments = Bundle().apply {
-                putString(BUNDLE_ADDRESS_KEY, device.address)
-            }
-        }
     }
 }

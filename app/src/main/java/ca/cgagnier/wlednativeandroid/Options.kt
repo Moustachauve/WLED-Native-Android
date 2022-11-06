@@ -7,6 +7,6 @@ import com.squareup.moshi.JsonClass
 data class Options(
     @Json(name = "version")
     val version: Int,
-    @Json(name = "lastSelectedIndex")
-    val lastSelectedIndex: Int
+    @Json(name = "lastSelectedAddress")
+    val lastSelectedAddress: String
 )

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.codelab.android.datastore";
+option java_multiple_files = true;
+
+message UserPreferences {
+  string selected_device_address = 1;
+  bool has_migrated_shared_pref = 2;
+}

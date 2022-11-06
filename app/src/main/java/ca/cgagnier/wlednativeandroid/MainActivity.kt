@@ -10,17 +10,17 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.*
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.repository.OptionsRepository
+import ca.cgagnier.wlednativeandroid.repository_old.DeviceRepository
+import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DeviceApi.setApplication(application as DevicesApplication)
         binding = ActivityMainBinding.inflate(layoutInflater)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDevices() {
         DeviceRepository.init(applicationContext)
-        OptionsRepository.init(applicationContext)
     }
 
     companion object {

@@ -4,45 +4,36 @@ package ca.cgagnier.wlednativeandroid.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
-import ca.cgagnier.wlednativeandroid.DeviceItem
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemManageBinding
-import ca.cgagnier.wlednativeandroid.fragment.DeviceEditFragment
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ca.cgagnier.wlednativeandroid.model.Device
 
 
 class DeviceListManageAdapter(
-    deviceList: ArrayList<DeviceItem>,
-    private val onItemClicked: (DeviceItem) -> Unit
-) :
-    AbstractDeviceListAdapter<DeviceListManageAdapter.DeviceListViewHolder>(
-        deviceList
-    ) {
+    private val onItemClicked: (Device) -> Unit,
+    private val onItemEditClicked: (Device) -> Unit,
+    private val onItemDeleteClicked: (Device) -> Unit
+) : AbstractDeviceListAdapter<DeviceListManageAdapter.DeviceListViewHolder>() {
 
     inner class DeviceListViewHolder(private val itemBinding: DeviceListItemManageBinding) :
         ViewHolder(itemBinding) {
-        override fun bindItem(device: DeviceItem) {
+        override fun bindItem(device: Device) {
             itemBinding.nameTextView.text =
                 if (device.name == "") context.getString(R.string.default_device_name) else device.name
             itemBinding.ipAddressTextView.text = device.address
 
             itemBinding.hiddenGroup.visibility = if (device.isHidden) View.VISIBLE else View.GONE
 
-            val activity = itemView.context as AppCompatActivity
-
             itemBinding.container.setOnClickListener {
                 onItemClicked(device)
             }
 
             itemBinding.editButton.setOnClickListener {
-                openEditDialog(device, activity.supportFragmentManager)
+                onItemEditClicked(device)
             }
 
             itemBinding.deleteButton.setOnClickListener {
-                deleteItem(device)
+                onItemDeleteClicked(device)
             }
         }
     }
@@ -55,25 +46,5 @@ class DeviceListManageAdapter(
                 false
             )
         )
-    }
-
-    private fun openEditDialog(item: DeviceItem, fragmentManager: FragmentManager) {
-        val dialog = DeviceEditFragment.newInstance(item)
-        dialog.showsDialog = true
-        dialog.show(fragmentManager, "device_add_manually")
-    }
-
-    private fun deleteItem(item: DeviceItem) {
-        val name =
-            if (item.name != "") item.name else context.getString(R.string.default_device_name)
-
-        MaterialAlertDialogBuilder(context)
-            .setTitle(context.getString(R.string.remove_device_confirm))
-            .setMessage(context.getString(R.string.remove_device_confirm_text, name, item.address))
-            .setPositiveButton(R.string.remove) { _, _ ->
-                DeviceRepository.remove(item)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
     }
 }

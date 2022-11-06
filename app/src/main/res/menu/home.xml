@@ -9,7 +9,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_overflow"
         android:icon="@drawable/ic_baseline_more_vert_24"
         android:title=""
         app:showAsAction="always">
