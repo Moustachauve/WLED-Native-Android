@@ -160,6 +160,21 @@ class DeviceViewFragment : Fragment() {
                         super.doUpdateVisitedHistory(view, url, isReload)
                         updateNavigationState()
                     }
+
+                    override fun onReceivedError(
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                        error: WebResourceError?
+                    ) {
+                        if (request?.isForMainFrame == true) {
+                            Log.i(
+                                TAG_NAME,
+                                "Error received ${request.url} - ${error?.description}"
+                            )
+                            view?.loadUrl("file:///android_asset/device_error.html")
+                        }
+                        super.onReceivedError(view, request, error)
+                    }
                 }
 
                 // Allows file upload

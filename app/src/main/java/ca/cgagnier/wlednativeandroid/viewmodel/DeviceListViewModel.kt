@@ -33,8 +33,12 @@ class DeviceListViewModel(private val repository: DeviceRepository,
 
     private fun getActiveDevice(): Flow<Device?> {
         return userPreferencesFlow.map {
-            var device = repository.findDeviceByAddress(it.selectedDeviceAddress ?: "")
-            if (device == null) {
+            val selectedAddress = it.selectedDeviceAddress ?: ""
+            var device: Device? = null
+            if (selectedAddress != "") {
+                device = repository.findDeviceByAddress(selectedAddress)
+            }
+            if (device == null && allDevices.value?.isNotEmpty() == true) {
                 device = allDevices.value?.first()
             }
             device
