@@ -37,7 +37,8 @@ class DeviceViewFragment : Fragment() {
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
             (requireActivity().application as DevicesApplication).repository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+            (requireActivity().application as DevicesApplication).userPreferencesRepository
+        )
     }
 
     private lateinit var onBackPressedCallback: OnBackPressedCallback
@@ -51,15 +52,16 @@ class DeviceViewFragment : Fragment() {
 
     var uploadMessage: ValueCallback<Array<Uri>>? = null
 
-    val fileUpload = registerForActivityResult(FileUploadContract()) { result: FileUploadContractResult ->
-        uploadMessage?.onReceiveValue(
-            WebChromeClient.FileChooserParams.parseResult(
-                result.resultCode,
-                result.intent
+    val fileUpload =
+        registerForActivityResult(FileUploadContract()) { result: FileUploadContractResult ->
+            uploadMessage?.onReceiveValue(
+                WebChromeClient.FileChooserParams.parseResult(
+                    result.resultCode,
+                    result.intent
+                )
             )
-        )
-        uploadMessage = null
-    }
+            uploadMessage = null
+        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -156,7 +158,11 @@ class DeviceViewFragment : Fragment() {
                         }
                     }
 
-                    override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                    override fun doUpdateVisitedHistory(
+                        view: WebView?,
+                        url: String?,
+                        isReload: Boolean
+                    ) {
                         super.doUpdateVisitedHistory(view, url, isReload)
                         updateNavigationState()
                     }
@@ -218,7 +224,8 @@ class DeviceViewFragment : Fragment() {
             _webview.loadUrl("about:blank")
             _webview.clearHistory()
 
-            binding.deviceToolbar.title = deviceListViewModel.activeDevice.value?.name ?: "[empty]"
+            binding.deviceToolbar.title =
+                deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
             binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
             updateNavigationState()
         }
@@ -235,7 +242,10 @@ class DeviceViewFragment : Fragment() {
     }
 
     private fun setMenu(toolbar: MaterialToolbar) {
-        toolbar.setupWithNavController(findNavController(), AppBarConfiguration(findNavController().graph))
+        toolbar.setupWithNavController(
+            findNavController(),
+            AppBarConfiguration(findNavController().graph)
+        )
         toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
         toolbar.setNavigationOnClickListener {
             onBackPressedCallback.isEnabled = false

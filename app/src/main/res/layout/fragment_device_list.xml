@@ -62,7 +62,8 @@
                     android:clipToPadding="false"
                     android:paddingVertical="10dp"
                     app:layoutManager="LinearLayoutManager"
-                    tools:listitem="@layout/device_list_item" />
+                    tools:listitem="@layout/device_list_item"
+                    android:visibility="visible" />
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -71,8 +72,12 @@
                 layout="@layout/device_list_main_empty"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_toolbar_container"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
