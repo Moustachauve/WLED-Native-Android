@@ -226,6 +226,7 @@ class DeviceListFragment : Fragment(),
             // Return to the list pane when the system back button is pressed.
             if (slidingPaneLayout.isOpen && slidingPaneLayout.isSlideable) {
                 slidingPaneLayout.closePane()
+                refreshListFromApi(false)
                 return
             }
 

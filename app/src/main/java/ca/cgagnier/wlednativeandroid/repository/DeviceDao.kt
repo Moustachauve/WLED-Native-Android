@@ -32,7 +32,7 @@ interface DeviceDao {
     fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>>
 
     @Query("SELECT COUNT() FROM device WHERE address = :address")
-    suspend fun count(address: String): Int
+    fun count(address: String): Int
 
     @RawQuery
     suspend fun insert(query: SupportSQLiteQuery): Device

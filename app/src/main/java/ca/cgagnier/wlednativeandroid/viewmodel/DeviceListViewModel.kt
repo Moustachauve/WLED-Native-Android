@@ -23,7 +23,7 @@ class DeviceListViewModel(private val repository: DeviceRepository,
         repository.insert(device)
     }
 
-    fun contains(device: Device): LiveData<Boolean> {
+    fun contains(device: Device): Boolean {
         return repository.contains(device)
     }
 

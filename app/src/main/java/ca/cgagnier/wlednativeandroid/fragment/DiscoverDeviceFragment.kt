@@ -126,20 +126,18 @@ class DiscoverDeviceFragment : DialogFragment(),
             isCustomName = false,
             isHidden = false
         )
-        deviceListViewModel.contains(device).observe(viewLifecycleOwner) { exists: Boolean ->
-            if (!exists) {
-                return@observe
-            }
+        if (deviceListViewModel.contains(device)) {
+            return
+        }
 
-            deviceListViewModel.insert(device)
-            DeviceApi.update(device, false)
+        deviceListViewModel.insert(device)
+        DeviceApi.update(device, false)
 
-            activity?.runOnUiThread {
-                discoverDeviceViewModel.insert(device)
-                discoverDeviceViewModel.allDevices.value?.let {
-                    _binding?.deviceFoundListRecyclerView?.smoothScrollToPosition(
-                        it.count())
-                }
+        activity?.runOnUiThread {
+            discoverDeviceViewModel.insert(device)
+            discoverDeviceViewModel.allDevices.value?.let {
+                _binding?.deviceFoundListRecyclerView?.smoothScrollToPosition(
+                    it.count())
             }
         }
     }
