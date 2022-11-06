@@ -110,6 +110,7 @@ class DeviceListFragment : Fragment(),
             val isEmpty = devices?.isEmpty() == true
             binding.emptyDataParent.layout.visibility = if (isEmpty) View.VISIBLE else View.GONE
             binding.deviceListRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            binding.swipeRefresh.isEnabled = !isEmpty
         }
 
         deviceListAdapter.isSelectable = false
