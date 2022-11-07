@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.15"
-            android:maxWidth="150dp"
+            android:maxHeight="100dp"
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/akemi_018_teeth"
             android:contentDescription="@string/awkward_akemi_character" />
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/you_dont_have_any_devices_yet"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -42,7 +42,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/find_my_device"
-            android:theme="@style/Theme.WLEDNativeAndroid.Dialog.Alert"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />

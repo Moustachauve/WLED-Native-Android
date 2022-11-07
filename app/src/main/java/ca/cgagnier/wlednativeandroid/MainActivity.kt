@@ -6,38 +6,38 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.*
-import ca.cgagnier.wlednativeandroid.fragment.DeviceAddManuallyFragment
-import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
-import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import androidx.core.view.*
+import androidx.lifecycle.lifecycleScope
+import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
+import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
+import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity(R.layout.activity_main),
-    FragmentManager.OnBackStackChangedListener,
-    DeviceAddManuallyFragment.NoticeDialogListener{
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DeviceApi.setApplication(application as DevicesApplication)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        initDevices()
-
-        setSupportActionBar(findViewById(R.id.main_toolbar))
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        supportFragmentManager.addOnBackStackChangedListener(this)
-
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                add<DeviceListFragment>(R.id.fragment_container_view)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentContainerView) { insetView, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                bottomMargin = insets.bottom
+                rightMargin = insets.right
             }
+
+            windowInsets
         }
 
-        updateIsBackArrowVisible()
+        checkMigration()
 
         var isConnectedToWledAP: Boolean
         try {
@@ -48,61 +48,42 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         }
 
         if (isConnectedToWledAP) {
-            val connectionManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager?
+            val connectionManager =
+                applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager?
 
             val request = NetworkRequest.Builder()
             request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
 
-            connectionManager!!.requestNetwork(request.build(), object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    try {
-                        connectionManager.bindProcessToNetwork(network)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+            connectionManager!!.requestNetwork(
+                request.build(),
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        try {
+                            connectionManager.bindProcessToNetwork(network)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
-                }
-            })
+                })
+        }
 
-            val fragment = DeviceViewFragment.newInstance(DeviceItem(DeviceDiscovery.DEFAULT_WLED_AP_IP))
-            switchContent(R.id.fragment_container_view, fragment)
+        setContentView(binding.root)
+    }
+
+    private fun checkMigration() {
+        lifecycleScope.launch {
+            val devicesApp = (application as DevicesApplication)
+            val userPreferences = devicesApp.userPreferencesRepository.fetchInitialPreferences()
+            if (!userPreferences.hasMigratedSharedPref) {
+                Log.i(TAG, "Starting devices migration from V0 to V1")
+                DataMigrationV0toV1(applicationContext, devicesApp.repository).migrate()
+                devicesApp.userPreferencesRepository.updatehasMigratedSharedPref(true)
+                Log.i(TAG, "Migration done.")
+            }
         }
     }
+
     companion object {
         private val TAG = MainActivity::class.qualifiedName
-    }
-
-    override fun onBackStackChanged() {
-        updateIsBackArrowVisible()
-    }
-
-    fun switchContent(id: Int, fragment: Fragment) {
-        switchContent(id, fragment, fragment.toString())
-    }
-
-    fun switchContent(id: Int, fragment: Fragment, tag: String) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(id, fragment, tag)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onDeviceManuallyAdded(dialog: DialogFragment) {
-        supportFragmentManager.popBackStackImmediate()
-    }
-
-    private fun initDevices() {
-        DeviceRepository.init(applicationContext)
-    }
-
-    private fun updateIsBackArrowVisible() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(
-            supportFragmentManager.backStackEntryCount > 0
-        )
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
     }
 }

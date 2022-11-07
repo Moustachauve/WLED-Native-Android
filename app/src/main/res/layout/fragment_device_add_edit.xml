@@ -8,11 +8,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/Theme.AppCompat.Dialog"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
+        android:paddingStart="?dialogPreferredPadding"
+        android:paddingEnd="?dialogPreferredPadding"
         tools:context=".fragment.DeviceAddManuallyFragment">
 
 
@@ -22,12 +21,14 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constrainedWidth="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ip_address_or_url" />
+                android:hint="@string/ip_address_or_url"
+                android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -38,12 +39,14 @@
             app:helperText="@string/leave_this_empty_to_use_the_device_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/device_address_text_input_layout">
+            app:layout_constraintTop_toBottomOf="@+id/device_address_text_input_layout"
+            app:layout_constrainedWidth="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/custom_name" />
+                android:hint="@string/custom_name"
+                android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
@@ -54,7 +57,8 @@
             android:text="@string/hide_device"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/custom_name_text_input_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/custom_name_text_input_layout"
+            app:layout_constrainedWidth="true" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
