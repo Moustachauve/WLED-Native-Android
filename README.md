@@ -11,6 +11,7 @@ This aims to replace the previous WLED app [found here](https://github.com/Airco
 - Opens control UI immediately if connected to WLED-AP
 - Hide or delete devices
 - Light and dark mode
+- Tablet support for a better experience on wider screens
 
 ## Disclaimer
 
