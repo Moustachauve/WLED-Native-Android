@@ -14,7 +14,9 @@
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:padding="6dp">
+        android:padding="12dp"
+        android:paddingStart="?dialogPreferredPadding"
+        android:paddingEnd="?dialogPreferredPadding">
 
         <TextView
             android:id="@+id/name_text_view"
@@ -24,7 +26,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:text="@string/default_device_name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@id/hidden_image"
             app:layout_constraintHorizontal_bias="0"
@@ -76,23 +78,23 @@
             android:id="@+id/edit_button"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:contentDescription="@string/edit_device"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/ip_address_text_view"
             app:layout_constraintEnd_toStartOf="@+id/delete_button"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/name_text_view"
             app:srcCompat="@drawable/ic_baseline_edit_24" />
 
         <ImageButton
             android:id="@+id/delete_button"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:backgroundTint="#DA1414"
             android:contentDescription="@string/remove_device"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/edit_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/edit_button"
             app:srcCompat="@drawable/ic_baseline_delete_outline_24" />
 
         <androidx.constraintlayout.widget.Group
