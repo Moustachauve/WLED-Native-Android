@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.repository_old
+package ca.cgagnier.wlednativeandroid.repository_v0
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -17,8 +17,7 @@ object DeviceRepository {
 
     private var devices = HashMap<String, DeviceItem>()
     private var devicesNotHidden: ArrayList<DeviceItem>? = null
-
-    // TODO Migration script to move data from SharedPreference to whatever Room stuff I do
+    
     fun init(context: Context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
 
@@ -37,10 +36,9 @@ object DeviceRepository {
         return ArrayList<DeviceItem>(devices.values)
     }
 
-    private fun save() {
-        val devicesJson = jsonAdapter.toJson(devices)
+    fun clearStorage() {
         val prefsEditor = sharedPreferences.edit()
-        prefsEditor.putString(DEVICE_LIST, devicesJson)
+        prefsEditor.remove(DEVICE_LIST)
         prefsEditor.apply()
     }
 }

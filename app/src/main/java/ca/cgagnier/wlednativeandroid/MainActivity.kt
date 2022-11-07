@@ -9,10 +9,12 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.*
+import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
-import ca.cgagnier.wlednativeandroid.repository_old.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             windowInsets
         }
 
-        initDevices()
+        checkMigration()
 
         var isConnectedToWledAP: Boolean
         try {
@@ -68,8 +70,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    private fun initDevices() {
-        DeviceRepository.init(applicationContext)
+    private fun checkMigration() {
+        lifecycleScope.launch {
+            val devicesApp = (application as DevicesApplication)
+            val userPreferences = devicesApp.userPreferencesRepository.fetchInitialPreferences()
+            if (!userPreferences.hasMigratedSharedPref) {
+                Log.i(TAG, "Starting devices migration from V0 to V1")
+                DataMigrationV0toV1(applicationContext, devicesApp.repository).migrate()
+                devicesApp.userPreferencesRepository.updatehasMigratedSharedPref(true)
+                Log.i(TAG, "Migration done.")
+            }
+        }
     }
 
     companion object {

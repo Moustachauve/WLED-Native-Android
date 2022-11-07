@@ -16,6 +16,9 @@ interface DeviceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(device: Device)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMany(device: List<Device>)
+
     @Update
     suspend fun update(device: Device)
 

@@ -4,11 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.repository.DevicesDatabase
-import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
-import ca.cgagnier.wlednativeandroid.repository.UserPreferencesSerializer
-import com.codelab.android.datastore.UserPreferences
+import ca.cgagnier.wlednativeandroid.repository.*
 
 private const val DATA_STORE_FILE_NAME = "user_prefs.pb"
 

@@ -3,7 +3,6 @@ package ca.cgagnier.wlednativeandroid.repository
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
-import com.codelab.android.datastore.UserPreferences
 import java.io.InputStream
 import java.io.OutputStream
 

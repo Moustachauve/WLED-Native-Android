@@ -29,6 +29,12 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun insertMany(devices: List<Device>) {
+        deviceDao.insertMany(devices)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun update(device: Device) {
         deviceDao.update(device)
     }

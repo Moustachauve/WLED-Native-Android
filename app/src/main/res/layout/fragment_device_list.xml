@@ -29,8 +29,10 @@
                     android:layout_height="match_parent"
                     app:expandedTitleMarginStart="72dp"
                     app:expandedTitleMarginBottom="28dp"
+                    app:title="@string/device_list"
                     app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
                     app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
+                    app:collapsedTitleTextColor="@android:color/transparent"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
                         <com.google.android.material.appbar.MaterialToolbar
                             android:id="@+id/main_toolbar"

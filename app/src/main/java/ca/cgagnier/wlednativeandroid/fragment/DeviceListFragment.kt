@@ -117,7 +117,7 @@ class DeviceListFragment : Fragment(),
 
         var duringSetup = true
         val activeDeviceObserver = Observer<Device?> {
-            if (!duringSetup) {
+            if (!duringSetup && it != null) {
                 slidingPaneLayout.openPane()
             }
             duringSetup = false

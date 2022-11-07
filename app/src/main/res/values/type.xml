@@ -4,7 +4,7 @@
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="TextAppearance.App.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
+    <style name="TextAppearance.App.CollapsingToolbar.Collapsed" parent="@android:style/TextAppearance">
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 </resources>
