@@ -13,75 +13,82 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
             android:layout_width="410dp"
             android:layout_height="match_parent"
             android:background="?colorSurfaceVariant">
-
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/main_toolbar_container"
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
-                android:layout_height="128dp"
-                android:background="@android:color/transparent"
-                app:layout_constraintStart_toStartOf="parent">
-                <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_height="match_parent">
+                <com.google.android.material.appbar.AppBarLayout
+                    android:id="@+id/main_toolbar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/WLEDNativeAndroid.MainToolbar"
+                    app:liftOnScroll="true"
+                    app:liftOnScrollTargetViewId="@id/device_list_recycler_view">
+                    <com.google.android.material.appbar.MaterialToolbar
+                        android:id="@+id/main_toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:navigationIcon="@drawable/ic_baseline_menu_24"
+                        app:navigationIconTint="?colorOnSurfaceVariant"
+                        app:titleCentered="true">
+                        <ImageView
+                            android:id="@+id/toolbar_logo"
+                            android:contentDescription="@string/app_logo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="45dp"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/wled_logo_akemi"/>
+                    </com.google.android.material.appbar.MaterialToolbar>
+                </com.google.android.material.appbar.AppBarLayout>
+
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipe_refresh"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:expandedTitleMarginStart="72dp"
-                    app:expandedTitleMarginBottom="28dp"
-                    app:title="@string/device_list"
-                    app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
-                    app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
-                    app:collapsedTitleTextColor="@android:color/transparent"
-                    app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
-                        <com.google.android.material.appbar.MaterialToolbar
-                            android:id="@+id/main_toolbar"
-                            android:layout_width="match_parent"
-                            android:layout_height="?attr/actionBarSize"
-                            app:logo="@drawable/wled_logo_akemi"
-                            app:layout_collapseMode="pin">
+                    android:paddingBottom="40dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/main_toolbar"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/device_list_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingVertical="10dp"
+                        app:layoutManager="LinearLayoutManager"
+                        tools:listitem="@layout/device_list_item"
+                        android:visibility="visible" />
 
-                        </com.google.android.material.appbar.MaterialToolbar>
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
-            </com.google.android.material.appbar.AppBarLayout>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_refresh"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="40dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_toolbar_container"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/device_list_recycler_view"
+                <include
+                    android:id="@+id/empty_data_parent"
+                    layout="@layout/device_list_main_empty"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingVertical="10dp"
-                    app:layoutManager="LinearLayoutManager"
-                    tools:listitem="@layout/device_list_item"
-                    android:visibility="visible" />
-
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-            <include
-                android:id="@+id/empty_data_parent"
-                layout="@layout/device_list_main_empty"
-                android:layout_width="match_parent"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/main_toolbar"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <com.google.android.material.navigation.NavigationView
+                android:id="@+id/navigation_view"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_toolbar_container"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                android:layout_gravity="start"
+                app:menu="@menu/navigation_drawer"/>
+        </androidx.drawerlayout.widget.DrawerLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/device_web_view_fragment"

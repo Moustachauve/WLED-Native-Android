@@ -7,7 +7,6 @@
     <fragment
         android:id="@+id/device_list_activity"
         android:name="ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment"
-        android:label="@string/device_list"
         tools:layout="@layout/fragment_device_list">
 
         <action
@@ -17,7 +16,6 @@
     <fragment
         android:id="@+id/device_web_view_fragment"
         android:name="ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment"
-        android:label="@string/device_view"
         tools:layout="@layout/fragment_device_view">
 
         <action

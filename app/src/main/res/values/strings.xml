@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">WLED Native</string>
-    <string name="add_a_device">Add a Device</string>
+    <string name="app_logo">WLED Logo</string>
+    <string name="add_a_device">Add or Discover a Device</string>
     <string name="looking_for_devices">Discovering Devices</string>
     <string name="add_device_manually">Add Manually</string>
     <string name="add_device">Add Device</string>

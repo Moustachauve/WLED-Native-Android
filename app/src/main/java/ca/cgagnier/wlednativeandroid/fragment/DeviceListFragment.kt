@@ -9,13 +9,11 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,6 +27,7 @@ import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.navigation.NavigationView
 
 
 class DeviceListFragment : Fragment(),
@@ -65,9 +64,13 @@ class DeviceListFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(binding.root.context)
 
+        binding.mainToolbar.setNavigationOnClickListener {
+            binding.drawerLayout.open()
+        }
         setMenu(binding.mainToolbar)
+        setNavigationMenu(binding.navigationView, binding.drawerLayout)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainToolbarContainer) { insetView, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainToolbar) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
             insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.top
@@ -155,7 +158,6 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun setMenu(toolbar: MaterialToolbar) {
-        toolbar.setupWithNavController(findNavController(), AppBarConfiguration(findNavController().graph))
         toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.home, menu)
@@ -170,20 +172,31 @@ class DeviceListFragment : Fragment(),
                         openAddDeviceFragment()
                         true
                     }
-                    R.id.action_refresh -> {
-                        swipeRefreshLayout.isRefreshing = true
-                        onRefresh()
-                        true
-                    }
-                    R.id.action_manage_device -> {
-                        openManageDevicesFragment()
-                        true
-                    }
-
                     else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun setNavigationMenu(navigationView: NavigationView, drawerLayout: DrawerLayout) {
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_device_add -> {
+                    openAddDeviceFragment()
+                }
+                R.id.action_refresh -> {
+                    if (deviceListAdapter.itemCount > 0) {
+                        swipeRefreshLayout.isRefreshing = true
+                    }
+                    onRefresh()
+                }
+                R.id.action_manage_device -> {
+                    openManageDevicesFragment()
+                }
+            }
+            drawerLayout.close()
+            true
+        }
     }
 
     private fun openAddDeviceFragment() {
