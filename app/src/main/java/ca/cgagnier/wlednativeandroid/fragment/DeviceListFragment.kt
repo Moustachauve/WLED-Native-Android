@@ -75,7 +75,16 @@ class DeviceListFragment : Fragment(),
             insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.top
             }
-            WindowInsetsCompat.CONSUMED
+            windowInsets
+        }
+
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
+            // This weird workaround of calling setOnApplyWindowInsetsListener on the navigationView
+            // is needed to make sure the DeviceViewFragment's insets are set properly on devices
+            // with API < 30
+            ViewCompat.setOnApplyWindowInsetsListener(binding.navigationView) { _, windowInsets ->
+                windowInsets
+            }
         }
 
         swipeRefreshLayout = binding.swipeRefresh

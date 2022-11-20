@@ -96,6 +96,7 @@ class DeviceViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG_NAME, "Device view created")
         setMenu(binding.deviceToolbar)
+        updateTitle()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.deviceToolbarContainer) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -232,9 +233,7 @@ class DeviceViewFragment : Fragment() {
             _webview.loadUrl("about:blank")
             _webview.clearHistory()
 
-            binding.deviceToolbar.title =
-                deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
-            binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
+            updateTitle()
             updateNavigationState()
         }
     }
@@ -297,6 +296,12 @@ class DeviceViewFragment : Fragment() {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun updateTitle() {
+        binding.deviceToolbar.title =
+            deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
+        binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
     }
 
     fun navigateBack(): Boolean {
