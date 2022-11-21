@@ -6,6 +6,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences>) {
@@ -22,6 +23,8 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
             }
         }
 
+    val themeMode get() = dataStore.data.map { it.theme }
+
     suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
     suspend fun updateSelectedDevice(device: Device) {
@@ -37,6 +40,12 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
             preferences.toBuilder()
                 .setHasMigratedSharedPref(hasMigrated)
                 .build()
+        }
+    }
+
+    suspend fun setThemeMode(themeSettings: ThemeSettings){
+        dataStore.updateData {
+            it.toBuilder().setTheme(themeSettings).build()
         }
     }
 }

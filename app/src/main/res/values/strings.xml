@@ -10,6 +10,7 @@
     <string name="leave_this_empty_to_use_the_device_name">Leave this empty to use the device name</string>
     <string name="please_enter_value">Please enter a value</string>
     <string name="please_enter_valid_value">Please enter a valid value</string>
+    <string name="done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>
     <string name="default_device_name">(New Device)</string>
@@ -36,4 +37,9 @@
     <string name="new_device_found">New Device Found</string>
     <string name="device_view">Device View</string>
     <string name="select_a_device">Select a Device</string>
+    <string name="settings">Settings</string>
+    <string name="theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="system_default">System default</string>
 </resources>

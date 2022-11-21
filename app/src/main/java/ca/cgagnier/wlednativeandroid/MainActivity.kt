@@ -8,9 +8,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.*
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
+import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
@@ -21,6 +23,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycleScope.launch {
+            val devicesApp = (application as DevicesApplication)
+            devicesApp.userPreferencesRepository.themeMode.collect {
+                setThemeMode(it)
+            }
+        }
+
         super.onCreate(savedInstanceState)
         DeviceApi.setApplication(application as DevicesApplication)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -81,6 +90,15 @@ class MainActivity : AppCompatActivity() {
                 Log.i(TAG, "Migration done.")
             }
         }
+    }
+
+    private fun setThemeMode(theme: ThemeSettings){
+        val mode = when(theme){
+            ThemeSettings.Light -> AppCompatDelegate.MODE_NIGHT_NO
+            ThemeSettings.Dark -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 
     companion object {

@@ -16,6 +16,10 @@
                 android:id="@+id/action_manage_device"
                 android:title="@string/manage_devices"
                 android:icon="@drawable/ic_baseline_edit_note_24" />
+            <item
+                android:id="@+id/action_settings"
+                android:title="@string/settings"
+                android:icon="@drawable/ic_baseline_settings_24" />
         </menu>
     </item>
 </menu>

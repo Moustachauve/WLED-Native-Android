@@ -202,6 +202,9 @@ class DeviceListFragment : Fragment(),
                 R.id.action_manage_device -> {
                     openManageDevicesFragment()
                 }
+                R.id.action_settings -> {
+                    openSettings()
+                }
             }
             drawerLayout.close()
             true
@@ -216,6 +219,12 @@ class DeviceListFragment : Fragment(),
 
     private fun openManageDevicesFragment() {
         val dialog = ManageDeviceFragment()
+        dialog.showsDialog = true
+        dialog.show(childFragmentManager, "device_manage")
+    }
+
+    private fun openSettings() {
+        val dialog = SettingsFragment()
         dialog.showsDialog = true
         dialog.show(childFragmentManager, "device_manage")
     }

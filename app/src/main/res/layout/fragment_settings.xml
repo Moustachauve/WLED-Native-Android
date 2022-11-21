@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="?dialogPreferredPadding"
+        android:paddingEnd="?dialogPreferredPadding"
+        tools:context=".fragment.DeviceAddManuallyFragment">
+
+        <TextView
+            android:id="@+id/label_theme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/theme"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/radio_theme_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/label_theme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <RadioButton
+                android:id="@+id/radio_theme_light"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/light" />
+            <RadioButton
+                android:id="@+id/radio_theme_dark"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/dark" />
+            <RadioButton
+                android:id="@+id/radio_theme_auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/system_default"
+                tools:checked="true" />
+        </RadioGroup>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

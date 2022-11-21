@@ -7,7 +7,10 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class UserPreferencesSerializer : Serializer<UserPreferences> {
-    override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
+    override val defaultValue: UserPreferences = UserPreferences.newBuilder()
+        .setThemeValue(ThemeSettings.Auto_VALUE)
+        .build()
+
     override suspend fun readFrom(input: InputStream): UserPreferences {
         try {
             return UserPreferences.parseFrom(input)
