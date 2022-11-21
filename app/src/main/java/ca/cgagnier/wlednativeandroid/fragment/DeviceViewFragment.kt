@@ -228,7 +228,12 @@ class DeviceViewFragment : Fragment() {
                 fromRestore = false
                 return@observe
             }
+            if (!deviceListViewModel.expectDeviceChange) {
+                Log.i(TAG_NAME, "observed device, but did not expect changes")
+                return@observe
+            }
             Log.i(TAG_NAME, "observed device")
+            deviceListViewModel.expectDeviceChange = false
             // Let the "page finished" event load the new url
             _webview.loadUrl("about:blank")
             _webview.clearHistory()

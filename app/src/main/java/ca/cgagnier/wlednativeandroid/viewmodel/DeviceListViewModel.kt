@@ -5,19 +5,19 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class DeviceListViewModel(private val repository: DeviceRepository,
     private val userPreferencesRepository: UserPreferencesRepository): ViewModel() {
 
-    private val userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
-
     val allDevices: LiveData<List<Device>> = repository.allVisibleDevices.asLiveData()
 
     val activeDevice: LiveData<Device?> = getActiveDevice().asLiveData()
 
     var isTwoPane = MutableLiveData(false)
+    var expectDeviceChange = true
 
     fun insert(device: Device) = viewModelScope.launch {
         repository.insert(device)
@@ -28,15 +28,17 @@ class DeviceListViewModel(private val repository: DeviceRepository,
     }
 
     fun updateActiveDevice(device: Device) = viewModelScope.launch {
+        if (device.address != (getActiveDevice().first()?.address ?: "")) {
+            expectDeviceChange = true
+        }
         userPreferencesRepository.updateSelectedDevice(device)
     }
 
     private fun getActiveDevice(): Flow<Device?> {
-        return userPreferencesFlow.map {
-            val selectedAddress = it.selectedDeviceAddress ?: ""
+        return userPreferencesRepository.selectedDeviceAddress.map {
             var device: Device? = null
-            if (selectedAddress != "") {
-                device = repository.findDeviceByAddress(selectedAddress)
+            if (it != "") {
+                device = repository.findDeviceByAddress(it)
             }
             if (device == null && allDevices.value?.isNotEmpty() == true) {
                 device = allDevices.value?.first()

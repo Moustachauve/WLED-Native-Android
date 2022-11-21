@@ -12,7 +12,7 @@ import java.io.IOException
 class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences>) {
     private val TAG: String = "UserPreferencesRepo"
 
-    val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
+    private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
         .catch { exception ->
             // dataStore.data throws an IOException when an error is encountered when reading data
             if (exception is IOException) {
@@ -24,6 +24,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         }
 
     val themeMode get() = dataStore.data.map { it.theme }
+    val selectedDeviceAddress get() = dataStore.data.map { it.selectedDeviceAddress }
 
     suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
@@ -35,7 +36,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         }
     }
 
-    suspend fun updatehasMigratedSharedPref(hasMigrated: Boolean) {
+    suspend fun updateHasMigratedSharedPref(hasMigrated: Boolean) {
         dataStore.updateData { preferences ->
             preferences.toBuilder()
                 .setHasMigratedSharedPref(hasMigrated)
@@ -43,7 +44,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         }
     }
 
-    suspend fun setThemeMode(themeSettings: ThemeSettings){
+    suspend fun updateThemeMode(themeSettings: ThemeSettings){
         dataStore.updateData {
             it.toBuilder().setTheme(themeSettings).build()
         }

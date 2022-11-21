@@ -39,7 +39,7 @@ class SettingsFragment : DialogFragment() {
                     else -> ThemeSettings.Auto
                 }
                 lifecycleScope.launch {
-                    devicesApp.userPreferencesRepository.setThemeMode(mode)
+                    devicesApp.userPreferencesRepository.updateThemeMode(mode)
                 }
             }
         }

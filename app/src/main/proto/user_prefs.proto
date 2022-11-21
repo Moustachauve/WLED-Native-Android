@@ -4,9 +4,9 @@ option java_package = "ca.cgagnier.wlednativeandroid.repository";
 option java_multiple_files = true;
 
 enum ThemeSettings{
-  Light = 0;
-  Dark = 1;
-  Auto = 2;
+  Auto = 0;
+  Light = 1;
+  Dark = 2;
 }
 
 message UserPreferences {

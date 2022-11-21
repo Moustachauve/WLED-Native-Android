@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             if (!userPreferences.hasMigratedSharedPref) {
                 Log.i(TAG, "Starting devices migration from V0 to V1")
                 DataMigrationV0toV1(applicationContext, devicesApp.repository).migrate()
-                devicesApp.userPreferencesRepository.updatehasMigratedSharedPref(true)
+                devicesApp.userPreferencesRepository.updateHasMigratedSharedPref(true)
                 Log.i(TAG, "Migration done.")
             }
         }
