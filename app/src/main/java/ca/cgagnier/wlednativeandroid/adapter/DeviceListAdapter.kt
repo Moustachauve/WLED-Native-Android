@@ -1,22 +1,23 @@
 package ca.cgagnier.wlednativeandroid.adapter
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.appcompat.widget.SwitchCompat
-import androidx.core.content.res.ResourcesCompat
+import androidx.annotation.AttrRes
 import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.drawable.DrawableCompat
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
+import com.google.android.material.materialswitch.MaterialSwitch
 
 
 class DeviceListAdapter(
@@ -91,8 +92,8 @@ class DeviceListAdapter(
 
         if (isDark() && floatArray[2] < 0.25f) {
             floatArray[2] = 0.25f
-        } else if (!isDark() && floatArray[2] > 0.8f) {
-            floatArray[2] = 0.8f
+        } else if (!isDark() && floatArray[2] > 0.6f) {
+            floatArray[2] = 0.6f
         }
 
         return ColorUtils.HSLToColor(floatArray)
@@ -105,32 +106,23 @@ class DeviceListAdapter(
         seekBar.progressDrawable.setTint(fixedColor)
     }
 
-    private fun setSwitchColor(switch: SwitchCompat, color: Int) {
+    private fun setSwitchColor(switch: MaterialSwitch, color: Int) {
         val fixedColor = fixColor(color)
 
-        // trackColor is the thumbColor with some transparency
-        val trackColor: Int =
+        // decorationColor is the fixedColor with some transparency
+        val decorationColor: Int =
             Color.argb(90, Color.red(fixedColor), Color.green(fixedColor), Color.blue(fixedColor))
 
-        DrawableCompat.setTintList(
-            switch.thumbDrawable, ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
-                    fixedColor,
-                    Color.WHITE
-                )
+        switch.trackTintList = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
+                fixedColor,
+                context.getThemeColor(R.attr.colorSurfaceVariant)
             )
         )
-        // setting the track color
-        DrawableCompat.setTintList(
-            switch.trackDrawable, ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
-                    trackColor,
-                    ResourcesCompat.getColor(
-                        context.resources,
-                        R.color.light_gray_semi_transparent,
-                        null
-                    )
-                )
+        switch.trackDecorationTintList = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
+                decorationColor,
+                decorationColor
             )
         )
     }
@@ -138,4 +130,8 @@ class DeviceListAdapter(
     private fun isDark(): Boolean {
         return context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
+
+    private fun Context.getThemeColor(@AttrRes attrRes: Int): Int = TypedValue()
+        .apply { theme.resolveAttribute(attrRes, this, true) }
+        .data
 }
