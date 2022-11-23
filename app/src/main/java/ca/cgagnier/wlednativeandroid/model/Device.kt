@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -13,12 +14,14 @@ data class Device(
     val name: String,
     val isCustomName: Boolean,
     val isHidden: Boolean,
+    @ColumnInfo(defaultValue = "")
+    val macAddress: String,
     val brightness: Int = 0,
     val color: Int = Color.WHITE,
     val isPoweredOn: Boolean = false,
     val isOnline: Boolean = false,
     val isRefreshing: Boolean = false,
-    val networkRssi: Int = -101
+    val networkRssi: Int = -101,
 ) {
     @Ignore
     var isSliding = false

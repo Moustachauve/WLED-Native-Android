@@ -24,6 +24,12 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun findDeviceByMacAddress(address: String): Device? {
+        return deviceDao.findDeviceByMacAddress(address)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun insert(device: Device) {
         deviceDao.insert(device)
     }

@@ -75,7 +75,8 @@ class DeviceAddManuallyFragment : DialogFragment() {
             address = deviceAddress,
             name = deviceName,
             isCustomName = deviceName != "",
-            isHidden = isHidden
+            isHidden = isHidden,
+            macAddress = ""
         )
 
         deviceListViewModel.insert(device)

@@ -29,8 +29,16 @@ class DeviceListViewModel(private val repository: DeviceRepository,
         repository.insert(device)
     }
 
+    fun delete(device: Device) = viewModelScope.launch {
+        repository.delete(device)
+    }
+
     fun contains(device: Device): Boolean {
         return repository.contains(device)
+    }
+
+    suspend fun findWithSameMacAddress(device: Device): Device? {
+        return repository.findDeviceByMacAddress(device.macAddress)
     }
 
     fun updateActiveDevice(device: Device) = viewModelScope.launch {

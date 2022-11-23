@@ -24,7 +24,7 @@ object DeviceApi {
         application = devicesApplication
     }
 
-    fun update(device: Device, silentUpdate: Boolean) {
+    fun update(device: Device, silentUpdate: Boolean, callback: ((Device) -> Unit)? = null) {
         if (!silentUpdate) {
             val newDevice = device.copy(isRefreshing = true)
 
@@ -46,10 +46,10 @@ object DeviceApi {
 
         stateInfoCall.enqueue(object : Callback<DeviceStateInfo> {
             override fun onResponse(call: Call<DeviceStateInfo>, response: Response<DeviceStateInfo>) =
-                onSuccess(device, response)
+                onSuccess(device, response, callback)
 
             override fun onFailure(call: Call<DeviceStateInfo>, t: Throwable) =
-                onFailure(device, t)
+                onFailure(device, t, callback)
         })
     }
 
@@ -74,22 +74,27 @@ object DeviceApi {
             .create(JsonApi::class.java)
     }
 
-    private fun onFailure(device: Device, t: Throwable? = null) {
+    private fun onFailure(device: Device, t: Throwable? = null, callback: ((Device) -> Unit)? = null) {
         if (t != null) {
             Log.e(TAG, t.message!!)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
+        if (callback != null) {
+            callback(updatedDevice)
+            return
+        }
         scope.launch {
             application!!.repository.update(updatedDevice)
         }
     }
 
-    fun onSuccess(device: Device, response: Response<DeviceStateInfo>) {
+    fun onSuccess(device: Device, response: Response<DeviceStateInfo>, callback: ((Device) -> Unit)? = null) {
         if (response.code() == 200) {
             val deviceStateInfo = response.body()!!
             val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
             val updatedDevice = device.copy(
+                macAddress = deviceStateInfo.info.mac ?: "",
                 isOnline = true,
                 name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
                 brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
@@ -103,13 +108,17 @@ object DeviceApi {
                 networkRssi = deviceStateInfo.info.wifi.rssi ?: 0
             )
 
+            if (callback != null) {
+                callback(updatedDevice)
+                return
+            }
             if (updatedDevice != device) {
                 scope.launch {
                     application!!.repository.update(updatedDevice)
                 }
             }
         } else {
-            onFailure(device)
+            onFailure(device, callback = callback)
         }
     }
 }

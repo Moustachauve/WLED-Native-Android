@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import ca.cgagnier.wlednativeandroid.AutoDiscoveryActivity
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListFoundAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDiscoverDeviceBinding
@@ -35,7 +36,6 @@ class DiscoverDeviceFragment : DialogFragment(),
         DiscoverDeviceViewModelFactory((requireActivity().application as DevicesApplication).repository)
     }
 
-    private lateinit var deviceDiscovery: DeviceDiscovery
     private lateinit var deviceListAdapter: DeviceListFoundAdapter
 
     private var _binding: FragmentDiscoverDeviceBinding? = null
@@ -43,13 +43,14 @@ class DiscoverDeviceFragment : DialogFragment(),
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        deviceDiscovery = DeviceDiscovery(context)
-        deviceDiscovery.registerDeviceDiscoveredListener(this)
+        (requireActivity().application as DevicesApplication).deviceDiscovery
+            .registerDeviceDiscoveredListener(this)
     }
 
     override fun onDetach() {
         super.onDetach()
-        deviceDiscovery.unregisterDeviceDiscoveredListener(this)
+        (requireActivity().application as DevicesApplication).deviceDiscovery
+            .unregisterDeviceDiscoveredListener(this)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -83,13 +84,14 @@ class DiscoverDeviceFragment : DialogFragment(),
     }
 
     override fun onPause() {
-        deviceDiscovery.stop()
+        (requireActivity().application as DevicesApplication).deviceDiscovery.stop()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        deviceDiscovery.start()
+        (requireActivity() as AutoDiscoveryActivity).stopAutoDiscovery()
+        (requireActivity().application as DevicesApplication).deviceDiscovery.start()
 
         val alertDialog = dialog as AlertDialog
 
@@ -107,7 +109,9 @@ class DiscoverDeviceFragment : DialogFragment(),
     }
 
     override fun onDestroy() {
-        deviceDiscovery.stop()
+        (requireActivity().application as DevicesApplication).deviceDiscovery.stop()
+        (requireActivity().application as DevicesApplication).deviceDiscovery
+            .unregisterDeviceDiscoveredListener(this)
         super.onDestroy()
     }
 
@@ -120,11 +124,11 @@ class DiscoverDeviceFragment : DialogFragment(),
     }
 
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
-
         val deviceName = serviceInfo.serviceName ?: ""
         val device = Device(serviceInfo.host.hostAddress!!, deviceName,
             isCustomName = false,
-            isHidden = false
+            isHidden = false,
+            macAddress = ""
         )
         if (deviceListViewModel.contains(device)) {
             return

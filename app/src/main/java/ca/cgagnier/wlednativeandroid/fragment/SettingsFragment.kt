@@ -52,7 +52,6 @@ class SettingsFragment : DialogFragment() {
             }
         }
 
-        // TODO do autoDiscovery system
         binding.switchAutoDiscovery.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch {
                 devicesApp.userPreferencesRepository.updateAutoDiscovery(isChecked)

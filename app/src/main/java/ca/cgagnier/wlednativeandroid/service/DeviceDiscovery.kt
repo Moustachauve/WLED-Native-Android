@@ -19,8 +19,8 @@ class DeviceDiscovery(val context: Context) {
     private var discoveryListener: NsdManager.DiscoveryListener? = null
     private val listeners = ArrayList<DeviceDiscoveredListener>()
 
-    val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-    val multicastLock: MulticastLock = wifi.createMulticastLock("multicastLock")
+    private val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private val multicastLock: MulticastLock = wifi.createMulticastLock("multicastLock")
 
     private val parent = this
 

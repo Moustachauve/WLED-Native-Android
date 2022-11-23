@@ -230,6 +230,7 @@ class DeviceListFragment : Fragment(),
     }
 
     override fun onRefresh() {
+        (requireActivity() as AutoDiscoveryActivity).startAutoDiscovery()
         refreshListFromApi(false)
     }
 
