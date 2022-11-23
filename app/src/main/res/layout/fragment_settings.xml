@@ -20,7 +20,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/listing_options" />
+                android:text="@string/listing_options"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textColor="?colorPrimary" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switch_auto_discovery"
@@ -38,7 +40,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/theme" />
+                android:text="@string/theme"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textColor="?colorPrimary" />
             <RadioGroup
                 android:id="@+id/radio_theme_group"
                 android:layout_width="match_parent"
