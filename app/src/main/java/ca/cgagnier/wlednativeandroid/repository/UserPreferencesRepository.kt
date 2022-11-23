@@ -25,6 +25,8 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
 
     val themeMode get() = dataStore.data.map { it.theme }
     val selectedDeviceAddress get() = dataStore.data.map { it.selectedDeviceAddress }
+    val autoDiscovery get() = dataStore.data.map { it.automaticDiscovery }
+    val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
 
     suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
@@ -44,9 +46,21 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         }
     }
 
-    suspend fun updateThemeMode(themeSettings: ThemeSettings){
+    suspend fun updateThemeMode(themeSettings: ThemeSettings) {
         dataStore.updateData {
             it.toBuilder().setTheme(themeSettings).build()
+        }
+    }
+
+    suspend fun updateAutoDiscovery(autoDiscover: Boolean) {
+        dataStore.updateData {
+            it.toBuilder().setAutomaticDiscovery(autoDiscover).build()
+        }
+    }
+
+    suspend fun updateShowOfflineDeviceLast(showOfflineDeviceLast: Boolean) {
+        dataStore.updateData {
+            it.toBuilder().setShowOfflineLast(showOfflineDeviceLast).build()
         }
     }
 }

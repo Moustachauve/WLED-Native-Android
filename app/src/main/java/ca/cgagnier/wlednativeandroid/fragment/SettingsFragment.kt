@@ -23,11 +23,21 @@ class SettingsFragment : DialogFragment() {
 
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.themeMode.collect {
-                when(it){
+                when (it) {
                     ThemeSettings.Light -> binding.radioThemeLight.isChecked = true
                     ThemeSettings.Dark -> binding.radioThemeDark.isChecked = true
                     else -> binding.radioThemeAuto.isChecked = true
                 }
+            }
+        }
+        lifecycleScope.launch {
+            devicesApp.userPreferencesRepository.autoDiscovery.collect {
+                binding.switchAutoDiscovery.isChecked = it
+            }
+        }
+        lifecycleScope.launch {
+            devicesApp.userPreferencesRepository.showOfflineDevicesLast.collect {
+                binding.switchOfflineLast.isChecked = it
             }
         }
 
@@ -38,9 +48,21 @@ class SettingsFragment : DialogFragment() {
                     R.id.radio_theme_dark-> ThemeSettings.Dark
                     else -> ThemeSettings.Auto
                 }
-                lifecycleScope.launch {
-                    devicesApp.userPreferencesRepository.updateThemeMode(mode)
-                }
+                devicesApp.userPreferencesRepository.updateThemeMode(mode)
+            }
+        }
+
+        // TODO do autoDiscovery system
+        binding.switchAutoDiscovery.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch {
+                devicesApp.userPreferencesRepository.updateAutoDiscovery(isChecked)
+            }
+        }
+
+        // TODO When this is on, add a separation before offline devices (Future update)
+        binding.switchOfflineLast.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch {
+                devicesApp.userPreferencesRepository.updateShowOfflineDeviceLast(isChecked)
             }
         }
 

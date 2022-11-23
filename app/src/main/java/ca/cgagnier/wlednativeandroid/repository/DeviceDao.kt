@@ -45,4 +45,7 @@ interface DeviceDao {
 
     @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY LOWER(name) ASC")
     fun getAlphabetizedVisibleDevices(): Flow<List<Device>>
+
+    @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY isOnline DESC, LOWER(name) ASC")
+    fun getAlphabetizedVisibleDevicesOfflineLast(): Flow<List<Device>>
 }

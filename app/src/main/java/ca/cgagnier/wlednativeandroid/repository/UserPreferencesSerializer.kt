@@ -9,6 +9,8 @@ import java.io.OutputStream
 class UserPreferencesSerializer : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.newBuilder()
         .setThemeValue(ThemeSettings.Auto_VALUE)
+        .setAutomaticDiscovery(true)
+        .setShowOfflineLast(true)
         .build()
 
     override suspend fun readFrom(input: InputStream): UserPreferences {

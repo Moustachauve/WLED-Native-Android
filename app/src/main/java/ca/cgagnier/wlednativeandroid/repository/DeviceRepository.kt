@@ -8,6 +8,7 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
     private val deviceDao = deviceDatabase.deviceDao()
     val allDevices: Flow<List<Device>> = deviceDao.getAlphabetizedDevices()
     val allVisibleDevices: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevices()
+    val allVisibleDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevicesOfflineLast()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

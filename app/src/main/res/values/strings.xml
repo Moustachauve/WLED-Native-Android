@@ -42,4 +42,7 @@
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="system_default">System default</string>
+    <string name="listing_options">Listing Options</string>
+    <string name="automatically_discover_new_devices">Automatically Discover New Devices</string>
+    <string name="show_offline_devices_last">Show Offline Devices Last</string>
 </resources>

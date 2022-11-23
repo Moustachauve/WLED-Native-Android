@@ -4,15 +4,21 @@ import androidx.lifecycle.*
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class DeviceListViewModel(private val repository: DeviceRepository,
     private val userPreferencesRepository: UserPreferencesRepository): ViewModel() {
 
-    val allDevices: LiveData<List<Device>> = repository.allVisibleDevices.asLiveData()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val allDevices: LiveData<List<Device>> = userPreferencesRepository.showOfflineDevicesLast.flatMapLatest { showOfflineLast ->
+        if (showOfflineLast) {
+            repository.allVisibleDevicesOfflineLast
+        } else {
+            repository.allVisibleDevices
+        }
+    }.asLiveData()
 
     val activeDevice: LiveData<Device?> = getActiveDevice().asLiveData()
 
