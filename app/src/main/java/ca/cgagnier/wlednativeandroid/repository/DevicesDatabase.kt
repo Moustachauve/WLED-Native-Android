@@ -6,7 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ca.cgagnier.wlednativeandroid.model.Device
 
-@Database(entities = [Device::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Device::class],
+    version = 1,
+    exportSchema = true
+)
 abstract class DevicesDatabase: RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
 
