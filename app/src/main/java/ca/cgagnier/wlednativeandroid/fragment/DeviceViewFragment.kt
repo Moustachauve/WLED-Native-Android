@@ -107,7 +107,7 @@ class DeviceViewFragment : Fragment() {
         }
 
         var fromRestore = false
-        val webViewFactory = WebViewViewModel.Factory(requireActivity().applicationContext)
+        val webViewFactory = WebViewViewModel.Factory(requireActivity())
         webViewViewModel = ViewModelProvider(this, webViewFactory)[WebViewViewModel::class.java]
         webViewViewModel.webView().observe(viewLifecycleOwner) { webView: WebView ->
             _webview = webView
