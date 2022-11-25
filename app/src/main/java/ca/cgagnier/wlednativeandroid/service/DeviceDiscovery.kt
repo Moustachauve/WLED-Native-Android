@@ -52,14 +52,12 @@ class DeviceDiscovery(val context: Context) {
             override fun onServiceFound(service: NsdServiceInfo?) {
                 Log.d(TAG, "Service discovery success [$service]")
                 if (service != null) {
-                    when {
-                        service.serviceType != SERVICE_TYPE -> // Service type is the string containing the protocol and
-                            // transport layer for this service.
-                            Log.d(TAG, "Unknown Service Type: ${service.serviceType}")
-                        service.serviceName.contains(SERVICE_NAME) -> nsdManager.resolveService(service, ResolveListener(parent, nsdManager))
+                    if (service.serviceType != SERVICE_TYPE) {
+                        Log.d(TAG, "Unknown Service Type: ${service.serviceType}")
+                        return
                     }
+                    return nsdManager.resolveService(service, ResolveListener(parent, nsdManager))
                 }
-
             }
 
             override fun onServiceLost(service: NsdServiceInfo?) {
@@ -132,9 +130,8 @@ class DeviceDiscovery(val context: Context) {
     companion object {
         const val TAG = "DEVICE_DISCOVERY"
         const val SERVICE_TYPE = "_wled._tcp."
-        const val SERVICE_NAME = "wled"
 
-        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+        private const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
 
         @SuppressLint("WifiManagerPotentialLeak")
