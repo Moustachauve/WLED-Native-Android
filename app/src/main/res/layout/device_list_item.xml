@@ -84,6 +84,7 @@
             android:max="255"
             android:progress="10"
             android:thumb="@drawable/ic_baseline_brightness_high_24"
+            android:contentDescription="@string/description_brightness_slider"
             app:layout_constraintEnd_toStartOf="@id/power_status_switch"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"

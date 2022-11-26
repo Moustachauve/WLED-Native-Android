@@ -42,6 +42,7 @@
             app:layoutManager="LinearLayoutManager"
             android:layout_marginTop="?dialogPreferredPadding"
             android:minHeight="50dp"
+            android:contentDescription="@string/description_list_of_discovered_devices"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

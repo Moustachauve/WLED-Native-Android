@@ -22,9 +22,10 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/device_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="wrap_content"
                 app:layout_collapseMode="pin"
-                app:navigationIcon="?attr/homeAsUpIndicator">
+                app:navigationIcon="?attr/homeAsUpIndicator"
+                app:navigationContentDescription="@string/description_back_button">
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 

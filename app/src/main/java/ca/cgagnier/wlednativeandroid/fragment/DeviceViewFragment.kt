@@ -191,7 +191,7 @@ class DeviceViewFragment : Fragment() {
 
 
                             shouldShowErrorPage = true
-                            //view?.loadUrl("about:blank")
+                            view?.loadUrl("about:blank")
                             view?.clearHistory()
                         }
                         super.onReceivedError(view, request, error)
