@@ -116,7 +116,7 @@ class DeviceListAdapter(
         switch.trackTintList = ColorStateList(
             arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()), intArrayOf(
                 fixedColor,
-                context.getThemeColor(R.attr.colorSurfaceVariant)
+                context.getThemeColor(R.attr.deviceListBackgroundColor)
             )
         )
         switch.trackDecorationTintList = ColorStateList(

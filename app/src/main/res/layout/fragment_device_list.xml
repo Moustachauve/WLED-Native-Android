@@ -17,7 +17,7 @@
             android:id="@+id/drawer_layout"
             android:layout_width="410dp"
             android:layout_height="match_parent"
-            android:background="?colorSurfaceVariant">
+            android:background="?deviceListBackgroundColor">
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">

@@ -7,5 +7,5 @@
         android:top="10dp" />
     <corners android:radius="20dp" />
 
-    <solid android:color="?colorSurfaceVariant" />
+    <solid android:color="?deviceListBackgroundColor" />
 </shape>
