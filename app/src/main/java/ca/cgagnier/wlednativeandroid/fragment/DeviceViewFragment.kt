@@ -130,9 +130,11 @@ class DeviceViewFragment : Fragment() {
                             val webBackForwardList = view.copyBackForwardList()
                             val currentIndex = webBackForwardList.currentIndex
                             if (webBackForwardList.getItemAtIndex(currentIndex - 1).url == request?.url.toString()) {
+                                Log.i(TAG_NAME, "Overriding url, going back")
                                 view.goBack()
                                 return true
                             } else if (request?.url?.path == "/") {
+                                Log.i(TAG_NAME, "Overriding url, going back -${currentIndex}")
                                 view.goBackOrForward(-currentIndex)
                             }
                         }
@@ -156,9 +158,13 @@ class DeviceViewFragment : Fragment() {
                                 shouldShowErrorPage = false
                                 view?.loadUrl("file:///android_asset/device_error.html")
                             } else {
-                                deviceListViewModel.activeDevice.value?.let { view?.loadUrl(it.address) }
+                                deviceListViewModel.activeDevice.value?.let {
+                                    Log.i(TAG_NAME, "Requesting '${it.address}'")
+                                    view?.loadUrl("http://${it.address}")
+                                }
                             }
                         } else if (shouldResetHistory) {
+                            Log.i(TAG_NAME, "Clearing history")
                             shouldResetHistory = false
                             view?.clearHistory()
                             updateNavigationState()
@@ -185,7 +191,7 @@ class DeviceViewFragment : Fragment() {
 
 
                             shouldShowErrorPage = true
-                            view?.loadUrl("about:blank")
+                            //view?.loadUrl("about:blank")
                             view?.clearHistory()
                         }
                         super.onReceivedError(view, request, error)
