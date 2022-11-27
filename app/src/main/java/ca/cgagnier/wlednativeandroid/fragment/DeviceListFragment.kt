@@ -3,6 +3,7 @@ package ca.cgagnier.wlednativeandroid.fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.MenuProvider
@@ -43,12 +44,23 @@ class DeviceListFragment : Fragment(),
     private val binding get() = _binding!!
     private var layoutChangedListener: ViewTreeObserver.OnGlobalLayoutListener? = null
 
+    private val loopHandler = Handler(Looper.getMainLooper())
+
     private lateinit var deviceListAdapter: DeviceListAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onResume() {
         super.onResume()
         refreshListFromApi(false)
+
+        Log.i(TAG, "Starting Refresh timer")
+        refreshTimer(loopHandler, 5000)
+    }
+
+    override fun onPause() {
+        Log.i(TAG, "Stopping Refresh timer")
+        loopHandler.removeCallbacksAndMessages(null)
+        super.onPause()
     }
 
     override fun onCreateView(
@@ -151,12 +163,10 @@ class DeviceListFragment : Fragment(),
             view.viewTreeObserver.removeOnGlobalLayoutListener(layoutChangedListener)
         }
         view.viewTreeObserver.addOnGlobalLayoutListener(layoutChangedListener)
-
-        val mainHandler = Handler(Looper.getMainLooper())
-        refreshTimer(mainHandler, 5000)
     }
 
     private fun refreshTimer(handler: Handler, delay: Long) {
+        Log.i(TAG, "Refreshing devices from timer")
         refreshListFromApi(true)
         handler.postDelayed({refreshTimer(handler, delay)}, delay)
     }
@@ -279,5 +289,9 @@ class DeviceListFragment : Fragment(),
             // list pane.
             isEnabled = false
         }
+    }
+
+    companion object {
+        const val TAG = "DeviceListFragment"
     }
 }

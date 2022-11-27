@@ -67,7 +67,7 @@ class SettingsFragment : DialogFragment() {
 
         val builder = MaterialAlertDialogBuilder(requireActivity())
         builder.setMessage(R.string.settings)
-            .setPositiveButton(R.string.done, null)
+            .setPositiveButton(R.string.settings_done, null)
             .setView(binding.root)
 
         return builder.create()

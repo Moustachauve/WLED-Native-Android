@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WLED Native</string>
+    <string name="app_name" translatable="false">WLED Native</string>
     <string name="app_logo">WLED Logo</string>
     <string name="add_a_device">Add or Discover a Device</string>
     <string name="looking_for_devices">Discovering Devices</string>
@@ -7,10 +7,10 @@
     <string name="add_device">Add Device</string>
     <string name="ip_address_or_url">IP Address or URL</string>
     <string name="custom_name">Custom Name</string>
-    <string name="leave_this_empty_to_use_the_device_name">Leave this empty to use the device name</string>
+    <string name="leave_this_empty_to_use_the_device_name">Leave this field empty to use the device name</string>
     <string name="please_enter_value">Please enter a value</string>
     <string name="please_enter_valid_value">Please enter a valid value</string>
-    <string name="done">Done</string>
+    <string name="settings_done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>
     <string name="default_device_name">(New Device)</string>
@@ -47,6 +47,6 @@
     <string name="show_offline_devices_last">Show Offline Devices Last</string>
     <string name="description_brightness_slider">Brightness Slider</string>
     <string name="description_menu_button">Open Menu</string>
-    <string name="description_back_button">Open Menu</string>
+    <string name="description_back_button">Go Back</string>
     <string name="description_list_of_discovered_devices">List of discovered devices</string>
 </resources>

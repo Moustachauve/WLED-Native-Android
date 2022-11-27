@@ -99,8 +99,10 @@ class DeviceDiscovery(val context: Context) {
     }
 
     fun notifyListeners(serviceInfo: NsdServiceInfo) {
-        for (listener in parent.listeners) {
-            listener.onDeviceDiscovered(serviceInfo)
+        // We copy it to make sure the list doesn't change while we go through it
+        val listenersCopy = parent.listeners.toArray()
+        for (listener in listenersCopy) {
+            (listener as DeviceDiscoveredListener).onDeviceDiscovered(serviceInfo)
         }
     }
 
