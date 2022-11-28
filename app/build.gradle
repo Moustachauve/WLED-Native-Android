@@ -11,7 +11,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "ca.cgagnier.wlednativeandroid"
+        applicationId "ca.cgagnier.illumidel"
         minSdk 23
         targetSdk 33
         versionCode 13
