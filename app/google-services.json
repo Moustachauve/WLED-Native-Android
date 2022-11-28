@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "213779048662",
+    "project_id": "api-7500504901490971999-992284",
+    "storage_bucket": "api-7500504901490971999-992284.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213779048662:android:d7af49b3591427d5fd0177",
+        "android_client_info": {
+          "package_name": "ca.cgagnier.wlednativeandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "213779048662-7ui3cg3qrbl85qtth7oc00s5lpr6s9ac.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPAwtNLAQb0g7r3guQloAkboOHnaq1gOo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "213779048662-7ui3cg3qrbl85qtth7oc00s5lpr6s9ac.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
