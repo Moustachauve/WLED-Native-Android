@@ -44,7 +44,7 @@
                             android:layout_height="45dp"
                             android:layout_gravity="center"
                             android:adjustViewBounds="true"
-                            android:src="@drawable/wled_logo_akemi"/>
+                            android:src="@drawable/illumidel_logo"/>
                     </com.google.android.material.appbar.MaterialToolbar>
                 </com.google.android.material.appbar.AppBarLayout>
 

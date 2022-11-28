@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name" translatable="false">WLED Native</string>
-    <string name="app_logo">WLED Logo</string>
+    <string name="app_name" translatable="false">Illumidel</string>
+    <string name="app_logo">Illumidel\'s Logo</string>
     <string name="add_a_device">Add or Discover a Device</string>
     <string name="looking_for_devices">Discovering Devices</string>
     <string name="add_device_manually">Add Manually</string>
@@ -32,7 +32,7 @@
     <string name="navigate_backward">Go Backward</string>
     <string name="you_dont_have_any_devices_yet">You don\'t have any devices yet</string>
     <string name="find_my_device">Find my Device</string>
-    <string name="awkward_akemi_character">Awkward Akemi character</string>
+    <string name="awkward_akemi_character">Illumidel\'s Logo</string>
     <string name="device_list">My Devices</string>
     <string name="new_device_found">New Device Found</string>
     <string name="device_view">Device View</string>

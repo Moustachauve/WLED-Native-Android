@@ -22,7 +22,7 @@
             app:layout_constraintVertical_bias="0.15"
             android:maxHeight="100dp"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/akemi_018_teeth"
+            app:srcCompat="@drawable/illumidel_no_text"
             android:contentDescription="@string/awkward_akemi_character" />
 
         <TextView

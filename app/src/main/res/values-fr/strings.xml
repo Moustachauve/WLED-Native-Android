@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_logo">Logo WLED</string>
+    <string name="app_logo">Logo Illumidel</string>
     <string name="add_a_device">Ajouter ou découvrir un appareil</string>
     <string name="looking_for_devices">Recherche d\'appareils en cours</string>
     <string name="add_device_manually">Ajouter manuellement</string>
@@ -30,7 +30,7 @@
     <string name="navigate_backward">Reculer</string>
     <string name="you_dont_have_any_devices_yet">Il n\'y a aucun appareil pour le moment</string>
     <string name="find_my_device">Trouver mon appareil</string>
-    <string name="awkward_akemi_character">Mascotte Akemi gênée</string>
+    <string name="awkward_akemi_character">Logo Illumidel</string>
     <string name="device_list">Mes appareils</string>
     <string name="new_device_found">Nouvel appareil trouvé</string>
     <string name="device_view">Vue de l\'appareil</string>
