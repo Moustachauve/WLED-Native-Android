@@ -7,6 +7,8 @@ import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.api.JsonApi
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -77,6 +79,7 @@ object DeviceApi {
     private fun onFailure(device: Device, t: Throwable? = null, callback: ((Device) -> Unit)? = null) {
         if (t != null) {
             Log.e(TAG, t.message!!)
+            Firebase.crashlytics.log("onFailure: ${t.message!!}")
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
         if (callback != null) {
