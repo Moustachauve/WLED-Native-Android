@@ -50,7 +50,7 @@ class DeviceListAdapter(
             }
 
             itemBinding.powerStatusSwitch.setOnClickListener {
-                val deviceSetPost = JsonPost(isOn = !device.isPoweredOn)
+                val deviceSetPost = JsonPost(isOn = itemBinding.powerStatusSwitch.isChecked)
                 DeviceApi.postJson(device, deviceSetPost)
             }
 
