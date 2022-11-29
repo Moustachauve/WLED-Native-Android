@@ -40,6 +40,16 @@ class SettingsFragment : DialogFragment() {
                 binding.switchOfflineLast.isChecked = it
             }
         }
+        lifecycleScope.launch {
+            devicesApp.userPreferencesRepository.sendCrashData.collect {
+                binding.switchSendCrashData.isChecked = it
+            }
+        }
+        lifecycleScope.launch {
+            devicesApp.userPreferencesRepository.sendPerformanceData.collect {
+                binding.switchSendPerformanceData.isChecked = it
+            }
+        }
 
         binding.radioThemeGroup.setOnCheckedChangeListener { _, checkedId ->
             lifecycleScope.launch {
@@ -62,6 +72,18 @@ class SettingsFragment : DialogFragment() {
         binding.switchOfflineLast.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch {
                 devicesApp.userPreferencesRepository.updateShowOfflineDeviceLast(isChecked)
+            }
+        }
+
+        binding.switchSendCrashData.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch {
+                devicesApp.userPreferencesRepository.updateSendCrashData(isChecked)
+            }
+        }
+
+        binding.switchSendPerformanceData.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch {
+                devicesApp.userPreferencesRepository.updateSendPerformanceData(isChecked)
             }
         }
 

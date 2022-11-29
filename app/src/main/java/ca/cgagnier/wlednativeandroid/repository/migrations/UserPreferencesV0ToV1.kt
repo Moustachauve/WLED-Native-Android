@@ -13,6 +13,8 @@ class UserPreferencesV0ToV1: DataMigration<UserPreferences> {
             .setThemeValue(ThemeSettings.Auto_VALUE)
             .setAutomaticDiscovery(true)
             .setShowOfflineLast(true)
+            .setSendCrashData(false)
+            .setSendPerformanceData(false)
             .setVersion(1)
             .build()
     }

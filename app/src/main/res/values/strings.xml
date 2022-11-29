@@ -49,4 +49,7 @@
     <string name="description_menu_button">Open Menu</string>
     <string name="description_back_button">Go Back</string>
     <string name="description_list_of_discovered_devices">List of discovered devices</string>
+    <string name="privacy">Privacy</string>
+    <string name="send_crash_data_to_developer">Send Crash Data To Developer</string>
+    <string name="send_performance_data_to_developer">Send Performance Data to Developer</string>
 </resources>

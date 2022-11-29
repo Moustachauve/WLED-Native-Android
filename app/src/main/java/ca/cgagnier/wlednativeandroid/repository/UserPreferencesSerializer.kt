@@ -11,6 +11,8 @@ class UserPreferencesSerializer : Serializer<UserPreferences> {
         .setThemeValue(ThemeSettings.Auto_VALUE)
         .setAutomaticDiscovery(true)
         .setShowOfflineLast(true)
+        .setSendCrashData(false)
+        .setSendPerformanceData(false)
         .build()
 
     override suspend fun readFrom(input: InputStream): UserPreferences {
