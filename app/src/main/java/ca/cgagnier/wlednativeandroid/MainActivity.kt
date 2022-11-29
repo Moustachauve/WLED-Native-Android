@@ -95,6 +95,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         } catch (e: Exception) {
             isConnectedToWledAP = false
             Log.e(TAG, "Error when checking isConnectedToWledAP: " + e.message, e)
+            Firebase.crashlytics.recordException(e)
         }
 
         if (isConnectedToWledAP) {
@@ -112,6 +113,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
                             connectionManager.bindProcessToNetwork(network)
                         } catch (e: Exception) {
                             e.printStackTrace()
+                            Firebase.crashlytics.recordException(e)
                         }
                     }
                 })

@@ -40,6 +40,7 @@ object DeviceApi {
             stateInfoCall = getJsonApi(device).getStateInfo()
         } catch (e: IllegalArgumentException) {
             Log.wtf(TAG, "Device has invalid address: " + device.address)
+            Firebase.crashlytics.recordException(e)
             scope.launch {
                 application!!.repository.delete(device)
             }
