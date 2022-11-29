@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId "ca.cgagnier.wlednativeandroid"
-        minSdk 23
+        minSdk 24
         targetSdk 33
         versionCode 13
         versionName "2.1.4"

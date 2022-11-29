@@ -42,9 +42,7 @@ class DeviceListViewModel(private val repository: DeviceRepository,
     }
 
     fun updateActiveDevice(device: Device) = viewModelScope.launch {
-        if (device.address != (getActiveDevice().first()?.address ?: "")) {
-            expectDeviceChange = true
-        }
+        expectDeviceChange = true
         userPreferencesRepository.updateSelectedDevice(device)
     }
 

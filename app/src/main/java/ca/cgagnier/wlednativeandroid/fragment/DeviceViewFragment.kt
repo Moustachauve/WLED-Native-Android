@@ -126,14 +126,14 @@ class DeviceViewFragment : Fragment() {
                         view: WebView?,
                         request: WebResourceRequest?
                     ): Boolean {
-                        if (view?.canGoBack() == true) {
+                        if (!request?.isRedirect!! && view?.canGoBack() == true) {
                             val webBackForwardList = view.copyBackForwardList()
                             val currentIndex = webBackForwardList.currentIndex
-                            if (webBackForwardList.getItemAtIndex(currentIndex - 1).url == request?.url.toString()) {
+                            if (webBackForwardList.getItemAtIndex(currentIndex - 1).url == request.url.toString()) {
                                 Log.i(TAG_NAME, "Overriding url, going back")
                                 view.goBack()
                                 return true
-                            } else if (request?.url?.path == "/") {
+                            } else if (request.url?.path == "/") {
                                 Log.i(TAG_NAME, "Overriding url, going back -${currentIndex}")
                                 view.goBackOrForward(-currentIndex)
                             }
@@ -240,11 +240,11 @@ class DeviceViewFragment : Fragment() {
             }
             Log.i(TAG_NAME, "observed device")
             deviceListViewModel.expectDeviceChange = false
+            updateTitle()
+
             // Let the "page finished" event load the new url
             _webview.loadUrl("about:blank")
             _webview.clearHistory()
-
-            updateTitle()
             updateNavigationState()
         }
     }
