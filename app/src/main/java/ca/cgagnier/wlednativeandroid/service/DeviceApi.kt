@@ -79,7 +79,7 @@ object DeviceApi {
     private fun onFailure(device: Device, t: Throwable? = null, callback: ((Device) -> Unit)? = null) {
         if (t != null) {
             Log.e(TAG, t.message!!)
-            Firebase.crashlytics.log("onFailure: ${t.message!!}")
+            Firebase.crashlytics.recordException(t)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
         if (callback != null) {
