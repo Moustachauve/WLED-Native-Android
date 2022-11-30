@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.activityViewModels
 import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddEditBinding
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModel
@@ -32,6 +33,8 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
         _binding = FragmentDeviceAddEditBinding.inflate(layoutInflater)
 
         val device = manageDevicesViewModel.activeDevice.value!!
+
+        binding.dialogTitle.text = context?.getString(R.string.edit_device)
 
         binding.deviceAddressTextInputLayout.isEnabled = false
         binding.deviceAddressTextInputLayout.editText?.setText(device.address)
