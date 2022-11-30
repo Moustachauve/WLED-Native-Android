@@ -1,23 +1,31 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
-import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.databinding.FragmentSettingsBinding
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
 
-class SettingsFragment : DialogFragment() {
+class SettingsFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentSettingsBinding.inflate(layoutInflater)
         val devicesApp = (requireActivity().application as DevicesApplication)
 
@@ -86,12 +94,14 @@ class SettingsFragment : DialogFragment() {
                 devicesApp.userPreferencesRepository.updateSendPerformanceData(isChecked)
             }
         }
+        return binding.root
+    }
 
-        val builder = MaterialAlertDialogBuilder(requireActivity())
-        builder.setMessage(R.string.settings)
-            .setPositiveButton(R.string.settings_done, null)
-            .setView(binding.root)
-
-        return builder.create()
+    override fun onResume() {
+        val alertDialog = dialog as BottomSheetDialog
+        alertDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        alertDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        alertDialog.behavior.skipCollapsed = true
+        super.onResume()
     }
 }

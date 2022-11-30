@@ -15,7 +15,16 @@
             android:orientation="vertical"
             android:paddingStart="?dialogPreferredPadding"
             android:paddingEnd="?dialogPreferredPadding"
+            android:paddingTop="?dialogPreferredPadding"
+            android:paddingBottom="?dialogPreferredPadding"
             tools:context=".fragment.DeviceAddManuallyFragment">
+            <TextView
+                android:id="@+id/dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:paddingBottom="?dialogPreferredPadding" />
 
             <TextView
                 android:layout_width="match_parent"

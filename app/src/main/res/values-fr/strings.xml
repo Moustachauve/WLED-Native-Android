@@ -47,7 +47,6 @@
     <string name="description_menu_button">Ouvrir le menu</string>
     <string name="description_back_button">Revenir en arrière</string>
     <string name="description_list_of_discovered_devices">Liste des appareils découverts</string>
-    <string name="settings_done">Terminé</string>
     <string name="privacy">Confidentialité</string>
     <string name="send_crash_data_to_developer">Partager les informations de débogage avec le développeur</string>
     <string name="send_performance_data_to_developer">Partager les informations de performance avec le développeur</string>
