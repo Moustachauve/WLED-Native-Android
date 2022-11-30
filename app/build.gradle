@@ -17,8 +17,8 @@ android {
         applicationId "ca.cgagnier.wlednativeandroid"
         minSdk 24
         targetSdk 33
-        versionCode 16
-        versionName "2.1.7"
+        versionCode 17
+        versionName "2.2.0"
         resConfigs("en", "fr")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
