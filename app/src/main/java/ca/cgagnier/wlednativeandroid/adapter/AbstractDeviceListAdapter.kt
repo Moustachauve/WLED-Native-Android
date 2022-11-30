@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ca.cgagnier.wlednativeandroid.model.Device
 
-abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHolder> : ListAdapter<Device, VH>(DiffCallback) {
+abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHolder>(
+    diffCallback: DiffUtil.ItemCallback<Device> = DiffCallback) : ListAdapter<Device, VH>(diffCallback) {
 
     abstract class ViewHolder(itemBinding: ViewDataBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
@@ -57,7 +58,7 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
     }
 
     companion object {
-        private val DiffCallback = object : DiffUtil.ItemCallback<Device>() {
+        protected val DiffCallback = object : DiffUtil.ItemCallback<Device>() {
             override fun areItemsTheSame(oldItem: Device, newItem: Device): Boolean {
                 return oldItem.address == newItem.address
             }

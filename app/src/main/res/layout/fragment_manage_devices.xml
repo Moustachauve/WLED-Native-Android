@@ -10,8 +10,22 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         tools:context=".fragment.ManageDeviceFragment">
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/manage_devices"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:paddingTop="?dialogPreferredPadding"
+            android:paddingBottom="16dp"
+            android:paddingStart="?dialogPreferredPadding"
+            android:paddingEnd="?dialogPreferredPadding"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <include
             android:id="@+id/empty_data_parent"
@@ -27,11 +41,10 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             app:layoutManager="LinearLayoutManager"
-            android:minHeight="50dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:minHeight="80dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dialog_title"
             app:layout_constrainedHeight="true"
             tools:listitem="@layout/device_list_item_manage" />
 
