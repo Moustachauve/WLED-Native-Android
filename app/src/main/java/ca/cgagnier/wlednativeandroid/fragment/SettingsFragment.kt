@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.DevicesApplication
@@ -99,7 +98,6 @@ class SettingsFragment : BottomSheetDialogFragment() {
 
     override fun onResume() {
         val alertDialog = dialog as BottomSheetDialog
-        alertDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alertDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         alertDialog.behavior.skipCollapsed = true
         super.onResume()
