@@ -32,6 +32,8 @@
 
         <item name="deviceListBackgroundColor">?colorSurface</item>
         <item name="deviceListOnBackgroundColor">?colorOnSurface</item>
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogStyle</item>
     </style>
 
     <style name="WLEDNativeAndroid.MainToolbar" parent="WLEDNativeAndroid">
@@ -41,5 +43,14 @@
 
     <style name="WLEDNativeAndroid.Success" parent="WLEDNativeAndroid">
         <item name="colorPrimary">@color/md_theme_light_success</item>
+    </style>
+
+    <style name="BottomSheetDialogStyle" parent="Theme.Material3.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorPrimaryDark">@color/md_theme_dark_primary</item>
+        <item name="colorAccent">@color/md_theme_light_secondary</item>
     </style>
 </resources>

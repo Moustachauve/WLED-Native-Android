@@ -97,7 +97,6 @@ class DiscoverDeviceFragment : DialogFragment(),
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val newDialog = DeviceAddManuallyFragment()
-            newDialog.showsDialog = true
             newDialog.show(childFragmentManager, "device_add_manually")
             newDialog.registerDeviceAddedListener(this)
         }
