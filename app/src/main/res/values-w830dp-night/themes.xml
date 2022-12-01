@@ -31,6 +31,8 @@
 
         <item name="deviceListBackgroundColor">?colorSurfaceVariant</item>
         <item name="deviceListOnBackgroundColor">?colorOnSurfaceVariant</item>
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogStyle</item>
     </style>
 
     <style name="WLEDNativeAndroid.MainToolbar" parent="WLEDNativeAndroid">

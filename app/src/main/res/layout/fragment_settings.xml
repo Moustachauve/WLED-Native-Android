@@ -15,7 +15,16 @@
             android:orientation="vertical"
             android:paddingStart="?dialogPreferredPadding"
             android:paddingEnd="?dialogPreferredPadding"
+            android:paddingTop="?dialogPreferredPadding"
+            android:paddingBottom="?dialogPreferredPadding"
             tools:context=".fragment.DeviceAddManuallyFragment">
+            <TextView
+                android:id="@+id/dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:paddingBottom="?dialogPreferredPadding" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -63,6 +72,26 @@
                     android:layout_height="match_parent"
                     android:text="@string/system_default"
                     tools:checked="true" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/privacy"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:textColor="?colorPrimary" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_send_crash_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_crash_data_to_developer" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_send_performance_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_performance_data_to_developer" />
             </RadioGroup>
         </LinearLayout>
     </ScrollView>

@@ -43,12 +43,12 @@ interface DeviceDao {
     @RawQuery
     suspend fun insert(query: SupportSQLiteQuery): Device
 
-    @Query("SELECT * FROM Device ORDER BY LOWER(name) ASC")
+    @Query("SELECT * FROM Device ORDER BY LOWER(name) ASC, LOWER(address) ASC")
     fun getAlphabetizedDevices(): Flow<List<Device>>
 
-    @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY LOWER(name) ASC")
+    @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY LOWER(name) ASC, LOWER(address) ASC")
     fun getAlphabetizedVisibleDevices(): Flow<List<Device>>
 
-    @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY isOnline DESC, LOWER(name) ASC")
+    @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY isOnline DESC, LOWER(name) ASC, LOWER(address) ASC")
     fun getAlphabetizedVisibleDevicesOfflineLast(): Flow<List<Device>>
 }

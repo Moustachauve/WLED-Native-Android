@@ -10,7 +10,6 @@
     <string name="leave_this_empty_to_use_the_device_name">Leave this field empty to use the device name</string>
     <string name="please_enter_value">Please enter a value</string>
     <string name="please_enter_valid_value">Please enter a valid value</string>
-    <string name="settings_done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>
     <string name="default_device_name">(New Device)</string>
@@ -49,4 +48,7 @@
     <string name="description_menu_button">Open Menu</string>
     <string name="description_back_button">Go Back</string>
     <string name="description_list_of_discovered_devices">List of discovered devices</string>
+    <string name="privacy">Privacy</string>
+    <string name="send_crash_data_to_developer">Send Crash Data To Developer</string>
+    <string name="send_performance_data_to_developer">Send Performance Data to Developer</string>
 </resources>

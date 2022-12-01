@@ -1,15 +1,14 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
-import android.app.Dialog
 import android.content.Context
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import ca.cgagnier.wlednativeandroid.AutoDiscoveryActivity
-import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListFoundAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDiscoverDeviceBinding
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -20,10 +19,12 @@ import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.DiscoverDeviceViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DiscoverDeviceViewModelFactory
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
-class DiscoverDeviceFragment : DialogFragment(),
+class DiscoverDeviceFragment : BottomSheetDialogFragment(),
     DeviceAddManuallyFragment.NoticeDialogListener,
     DeviceDiscovery.DeviceDiscoveredListener {
 
@@ -53,7 +54,11 @@ class DiscoverDeviceFragment : DialogFragment(),
             .unregisterDeviceDiscoveredListener(this)
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentDiscoverDeviceBinding.inflate(layoutInflater)
         val layoutManager = LinearLayoutManager(binding.root.context)
 
@@ -75,12 +80,16 @@ class DiscoverDeviceFragment : DialogFragment(),
             }
         }
 
-        val builder = MaterialAlertDialogBuilder(requireActivity())
-        builder
-            .setPositiveButton(getString(R.string.add_device_manually), null)
-            .setNeutralButton(R.string.close, null)
-            .setView(binding.root)
-        return builder.create()
+        binding.buttonAddManually.setOnClickListener {
+            val newDialog = DeviceAddManuallyFragment()
+            newDialog.show(childFragmentManager, "device_add_manually")
+            newDialog.registerDeviceAddedListener(this)
+        }
+        binding.buttonCancel.setOnClickListener {
+            dismiss()
+        }
+
+        return binding.root
     }
 
     override fun onPause() {
@@ -89,18 +98,10 @@ class DiscoverDeviceFragment : DialogFragment(),
     }
 
     override fun onResume() {
+        val alertDialog = dialog as BottomSheetDialog
+        alertDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        alertDialog.behavior.skipCollapsed = true
         super.onResume()
-        (requireActivity() as AutoDiscoveryActivity).stopAutoDiscovery()
-        (requireActivity().application as DevicesApplication).deviceDiscovery.start()
-
-        val alertDialog = dialog as AlertDialog
-
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val newDialog = DeviceAddManuallyFragment()
-            newDialog.showsDialog = true
-            newDialog.show(childFragmentManager, "device_add_manually")
-            newDialog.registerDeviceAddedListener(this)
-        }
     }
 
     override fun onDestroyView() {

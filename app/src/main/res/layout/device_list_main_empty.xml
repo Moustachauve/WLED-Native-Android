@@ -7,23 +7,24 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/layout">
+        android:padding="15dp">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/awkward_akemi_character"
+            android:maxHeight="100dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.15"
-            android:maxHeight="100dp"
-            android:adjustViewBounds="true"
-            app:srcCompat="@drawable/illumidel_no_text"
-            android:contentDescription="@string/awkward_akemi_character" />
+            app:srcCompat="@drawable/illumidel_no_text" />
 
         <TextView
             android:id="@+id/textView2"
@@ -31,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/you_dont_have_any_devices_yet"
+            android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

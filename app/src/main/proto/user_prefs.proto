@@ -16,4 +16,6 @@ message UserPreferences {
   bool automatic_discovery = 4;
   int32 version = 5;
   bool show_offline_last = 6;
+  bool send_crash_data = 7;
+  bool send_performance_data = 8;
 }

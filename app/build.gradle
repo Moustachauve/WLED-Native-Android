@@ -12,10 +12,10 @@ android {
 
     defaultConfig {
         applicationId "ca.cgagnier.illumidel"
-        minSdk 23
+        minSdk 24
         targetSdk 33
-        versionCode 13
-        versionName "2.1.4"
+        versionCode 17
+        versionName "2.2.0"
         resConfigs("en", "fr")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

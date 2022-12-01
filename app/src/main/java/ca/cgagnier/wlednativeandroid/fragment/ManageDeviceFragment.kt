@@ -1,9 +1,9 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
-import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.DialogFragment
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,10 +16,13 @@ import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModelFactory
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class ManageDeviceFragment : DialogFragment() {
+class ManageDeviceFragment : BottomSheetDialogFragment() {
 
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
@@ -32,7 +35,11 @@ class ManageDeviceFragment : DialogFragment() {
 
     private lateinit var deviceListAdapter: DeviceListManageAdapter
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val binding = FragmentManageDevicesBinding.inflate(layoutInflater)
         val layoutManager = LinearLayoutManager(binding.root.context)
 
@@ -50,7 +57,6 @@ class ManageDeviceFragment : DialogFragment() {
 
         manageDevicesViewModel.allDevices.observe(this) { devices ->
             devices?.let {
-                deviceListAdapter.submitList(null)
                 deviceListAdapter.submitList(it)
             }
             val isEmpty = devices?.isEmpty() == true
@@ -73,12 +79,14 @@ class ManageDeviceFragment : DialogFragment() {
             dialog.show(childFragmentManager, "device_discovery")
         }
 
-        val builder = MaterialAlertDialogBuilder(requireActivity())
-        builder
-            .setTitle(R.string.manage_devices)
-            .setPositiveButton(R.string.close, null)
-            .setView(binding.root)
-        return builder.create()
+        return binding.root
+    }
+
+    override fun onResume() {
+        val alertDialog = dialog as BottomSheetDialog
+        alertDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        alertDialog.behavior.skipCollapsed = true
+        super.onResume()
     }
 
     private fun editItem(item: Device) {

@@ -27,6 +27,8 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     val selectedDeviceAddress get() = dataStore.data.map { it.selectedDeviceAddress }
     val autoDiscovery get() = dataStore.data.map { it.automaticDiscovery }
     val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
+    val sendCrashData get() = dataStore.data.map { it.sendCrashData }
+    val sendPerformanceData get() = dataStore.data.map { it.sendPerformanceData }
 
     suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
@@ -61,6 +63,18 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     suspend fun updateShowOfflineDeviceLast(showOfflineDeviceLast: Boolean) {
         dataStore.updateData {
             it.toBuilder().setShowOfflineLast(showOfflineDeviceLast).build()
+        }
+    }
+
+    suspend fun updateSendCrashData(sendCrashData: Boolean) {
+        dataStore.updateData {
+            it.toBuilder().setSendCrashData(sendCrashData).build()
+        }
+    }
+
+    suspend fun updateSendPerformanceData(sendPerformanceData: Boolean) {
+        dataStore.updateData {
+            it.toBuilder().setSendPerformanceData(sendPerformanceData).build()
         }
     }
 }
