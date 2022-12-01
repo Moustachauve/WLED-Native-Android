@@ -7,8 +7,6 @@ import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.api.JsonApi
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,7 +38,6 @@ object DeviceApi {
             stateInfoCall = getJsonApi(device).getStateInfo()
         } catch (e: IllegalArgumentException) {
             Log.wtf(TAG, "Device has invalid address: " + device.address)
-            Firebase.crashlytics.recordException(e)
             scope.launch {
                 application!!.repository.delete(device)
             }
@@ -80,7 +77,6 @@ object DeviceApi {
     private fun onFailure(device: Device, t: Throwable? = null, callback: ((Device) -> Unit)? = null) {
         if (t != null) {
             Log.e(TAG, t.message!!)
-            Firebase.crashlytics.recordException(t)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
         if (callback != null) {
