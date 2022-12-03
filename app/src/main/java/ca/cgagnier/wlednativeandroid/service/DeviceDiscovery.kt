@@ -8,6 +8,7 @@ import android.util.Log
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
 import androidx.appcompat.app.AppCompatActivity
+import ca.cgagnier.wlednativeandroid.model.Device
 import java.math.BigInteger
 import java.net.InetAddress
 import java.nio.ByteOrder
@@ -133,7 +134,7 @@ class DeviceDiscovery(val context: Context) {
         const val TAG = "DEVICE_DISCOVERY"
         const val SERVICE_TYPE = "_wled._tcp."
 
-        private const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
 
         @SuppressLint("WifiManagerPotentialLeak")
@@ -147,13 +148,25 @@ class DeviceDiscovery(val context: Context) {
 
             val ipAddressByte: ByteArray = BigInteger.valueOf(ip.toLong()).toByteArray()
             if (ipAddressByte.isEmpty() || ipAddressByte.size <= 1) {
+                Log.w(TAG, "IP Address is empty or smaller than 1")
                 return false
             }
 
             val inetAddress: InetAddress = InetAddress.getByAddress(ipAddressByte)
             val ipAddress = inetAddress.hostAddress
 
+            Log.w(TAG, "Ip address: $ipAddress")
             return ipAddress == DEFAULT_WLED_AP_IP
+        }
+
+        fun getDefaultAPDevice(): Device {
+            return Device(
+                address = DEFAULT_WLED_AP_IP,
+                name = "WLED AP Mode",
+                isCustomName = true,
+                isHidden = true,
+                macAddress = ""
+            )
         }
     }
 }

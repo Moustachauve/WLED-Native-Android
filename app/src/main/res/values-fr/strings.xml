@@ -50,4 +50,7 @@
     <string name="privacy">Confidentialité</string>
     <string name="send_crash_data_to_developer">Partager les informations de débogage avec le développeur</string>
     <string name="send_performance_data_to_developer">Partager les informations de performance avec le développeur</string>
+    <string name="device_ap_mode">WLED mode PA</string>
+    <string name="device_ap_mode_detected">WLED mode PA détecté</string>
+    <string name="device_ap_mode_detected_click">Appuyez ici pour ouvrir</string>
 </resources>

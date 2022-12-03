@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
+import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,7 +24,7 @@ class DeviceListViewModel(private val repository: DeviceRepository,
     val activeDevice: LiveData<Device?> = getActiveDevice().asLiveData()
 
     var isTwoPane = MutableLiveData(false)
-    var expectDeviceChange = true
+    var expectDeviceChange = false
 
     fun insert(device: Device) = viewModelScope.launch {
         repository.insert(device)
@@ -49,7 +50,9 @@ class DeviceListViewModel(private val repository: DeviceRepository,
     private fun getActiveDevice(): Flow<Device?> {
         return userPreferencesRepository.selectedDeviceAddress.map {
             var device: Device? = null
-            if (it != "") {
+            if (it == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
+                device = DeviceDiscovery.getDefaultAPDevice()
+            } else if (it != "") {
                 device = repository.findDeviceByAddress(it)
             }
             if (device == null && allDevices.value?.isNotEmpty() == true) {

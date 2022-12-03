@@ -1,11 +1,16 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -25,10 +30,13 @@ import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 
 
 class DeviceListFragment : Fragment(),
@@ -52,6 +60,7 @@ class DeviceListFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         refreshListFromApi(false)
+        checkIfConnectedInAPMode(true)
 
         Log.i(TAG, "Starting Refresh timer")
         refreshTimer(loopHandler, 5000)
@@ -113,11 +122,7 @@ class DeviceListFragment : Fragment(),
         )
 
         deviceListAdapter = DeviceListAdapter { device: Device ->
-            deviceListViewModel.updateActiveDevice(device)
-
-            deviceListAdapter.isSelectable = !slidingPaneLayout.isSlideable
-            deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
-            binding.slidingPaneLayout.openPane()
+            openDevice(device)
         }
 
 
@@ -141,6 +146,9 @@ class DeviceListFragment : Fragment(),
 
         var duringSetup = true
         val activeDeviceObserver = Observer<Device?> {
+            if (it.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
+                duringSetup = false
+            }
             if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange) {
                 slidingPaneLayout.openPane()
             }
@@ -155,6 +163,11 @@ class DeviceListFragment : Fragment(),
 
         binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
             openAddDeviceFragment()
+        }
+
+        binding.apModeContainer.setOnClickListener {
+            val device = DeviceDiscovery.getDefaultAPDevice()
+            openDevice(device)
         }
 
         layoutChangedListener = ViewTreeObserver.OnGlobalLayoutListener {
@@ -239,9 +252,18 @@ class DeviceListFragment : Fragment(),
         dialog.show(childFragmentManager, "device_manage")
     }
 
+    private fun openDevice(device: Device) {
+        deviceListViewModel.updateActiveDevice(device)
+
+        deviceListAdapter.isSelectable = !binding.slidingPaneLayout.isSlideable
+        deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
+        binding.slidingPaneLayout.openPane()
+    }
+
     override fun onRefresh() {
         (requireActivity() as AutoDiscoveryActivity).startAutoDiscovery()
         refreshListFromApi(false)
+        checkIfConnectedInAPMode()
     }
 
     private fun refreshListFromApi(silentUpdate: Boolean) {
@@ -249,6 +271,47 @@ class DeviceListFragment : Fragment(),
             for (device in deviceListViewModel.allDevices.value!!) {
                 DeviceApi.update(device, silentUpdate)
             }
+        }
+    }
+
+    private fun checkIfConnectedInAPMode(openDevice: Boolean = false) {
+        Log.i(TAG, "Checking if connected to AP mode")
+        var isConnectedToWledAP: Boolean
+        try {
+            isConnectedToWledAP = DeviceDiscovery.isConnectedToWledAP(requireContext())
+        } catch (e: Exception) {
+            isConnectedToWledAP = false
+            Log.e(TAG, "Error in checkIfConnectedInAPMode: " + e.message, e)
+            Firebase.crashlytics.recordException(e)
+        }
+
+        binding.apModeContainer.visibility = if (isConnectedToWledAP) View.VISIBLE else View.GONE
+
+        if (isConnectedToWledAP) {
+            Log.i(TAG, "Device is in AP Mode!")
+
+            val connectionManager =
+                requireContext().getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE) as ConnectivityManager?
+
+            val request = NetworkRequest.Builder()
+            request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+
+            connectionManager!!.requestNetwork(
+                request.build(),
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        try {
+                            connectionManager.bindProcessToNetwork(network)
+                            if (openDevice) {
+                                val device = DeviceDiscovery.getDefaultAPDevice()
+                                deviceListViewModel.updateActiveDevice(device)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Firebase.crashlytics.recordException(e)
+                        }
+                    }
+                })
         }
     }
 
