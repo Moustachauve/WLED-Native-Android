@@ -146,7 +146,7 @@ class DeviceListFragment : Fragment(),
 
         var duringSetup = true
         val activeDeviceObserver = Observer<Device?> {
-            if (it.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
+            if (it != null && it.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
                 duringSetup = false
             }
             if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange) {
