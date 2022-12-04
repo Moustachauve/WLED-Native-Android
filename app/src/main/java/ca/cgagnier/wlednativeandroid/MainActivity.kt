@@ -1,9 +1,5 @@
 package ca.cgagnier.wlednativeandroid
 
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.os.Handler
@@ -73,34 +69,6 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
 
         checkMigration()
-
-        var isConnectedToWledAP: Boolean
-        try {
-            isConnectedToWledAP = DeviceDiscovery.isConnectedToWledAP(applicationContext)
-        } catch (e: Exception) {
-            isConnectedToWledAP = false
-            Log.e(TAG, "Error when checking isConnectedToWledAP: " + e.message, e)
-        }
-
-        if (isConnectedToWledAP) {
-            val connectionManager =
-                applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager?
-
-            val request = NetworkRequest.Builder()
-            request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-
-            connectionManager!!.requestNetwork(
-                request.build(),
-                object : ConnectivityManager.NetworkCallback() {
-                    override fun onAvailable(network: Network) {
-                        try {
-                            connectionManager.bindProcessToNetwork(network)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                })
-        }
 
         setContentView(binding.root)
     }

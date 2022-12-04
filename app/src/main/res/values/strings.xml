@@ -51,4 +51,7 @@
     <string name="privacy">Privacy</string>
     <string name="send_crash_data_to_developer">Send Crash Data To Developer</string>
     <string name="send_performance_data_to_developer">Send Performance Data to Developer</string>
+    <string name="device_ap_mode">WLED AP Mode</string>
+    <string name="device_ap_mode_detected">WLED AP Mode Detected</string>
+    <string name="device_ap_mode_detected_click">Click here to open Device</string>
 </resources>

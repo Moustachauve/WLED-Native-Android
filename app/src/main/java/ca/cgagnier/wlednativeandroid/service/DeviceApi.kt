@@ -89,7 +89,7 @@ object DeviceApi {
     }
 
     fun onSuccess(device: Device, response: Response<DeviceStateInfo>, callback: ((Device) -> Unit)? = null) {
-        if (response.code() == 200) {
+        if (response.code() == 200 && response.isSuccessful && response.body() != null) {
             val deviceStateInfo = response.body()!!
             val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
@@ -118,7 +118,13 @@ object DeviceApi {
                 }
             }
         } else {
-            onFailure(device, callback = callback)
+            Firebase.crashlytics.log("Response success, but not valid")
+            Firebase.crashlytics.setCustomKey("response code", response.code())
+            Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
+            Firebase.crashlytics.setCustomKey("response errorBody", response.errorBody().toString())
+            Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
+
+            onFailure(device, Exception("Response success, but not valid"), callback = callback)
         }
     }
 }
