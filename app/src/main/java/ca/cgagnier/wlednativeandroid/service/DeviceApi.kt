@@ -118,12 +118,6 @@ object DeviceApi {
                 }
             }
         } else {
-            Firebase.crashlytics.log("Response success, but not valid")
-            Firebase.crashlytics.setCustomKey("response code", response.code())
-            Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
-            Firebase.crashlytics.setCustomKey("response errorBody", response.errorBody().toString())
-            Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
-
             onFailure(device, Exception("Response success, but not valid"), callback = callback)
         }
     }
