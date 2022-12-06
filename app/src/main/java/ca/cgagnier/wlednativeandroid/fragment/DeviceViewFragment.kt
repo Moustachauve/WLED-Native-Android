@@ -225,8 +225,6 @@ class DeviceViewFragment : Fragment() {
             }
 
             binding.deviceWebViewContainer.addView(webView)
-
-
         }
 
         deviceListViewModel.activeDevice.observe(viewLifecycleOwner) {
