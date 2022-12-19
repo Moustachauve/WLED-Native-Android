@@ -107,7 +107,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         (application as DevicesApplication).deviceDiscovery
             .registerDeviceDiscoveredListener(this)
         (application as DevicesApplication).deviceDiscovery.start()
-        autoDiscoveryLoopHandler.postDelayed({stopAutoDiscovery()}, 10000)
+        autoDiscoveryLoopHandler.postDelayed({stopAutoDiscovery()}, 25000)
     }
 
     override fun stopAutoDiscovery() {
