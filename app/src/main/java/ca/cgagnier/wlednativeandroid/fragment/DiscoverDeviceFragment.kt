@@ -46,6 +46,7 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
         super.onAttach(context)
         (requireActivity().application as DevicesApplication).deviceDiscovery
             .registerDeviceDiscoveredListener(this)
+        (requireActivity().application as DevicesApplication).deviceDiscovery.start()
     }
 
     override fun onDetach() {

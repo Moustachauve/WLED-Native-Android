@@ -9,6 +9,8 @@ import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
 import androidx.appcompat.app.AppCompatActivity
 import ca.cgagnier.wlednativeandroid.model.Device
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import java.math.BigInteger
 import java.net.InetAddress
 import java.nio.ByteOrder
@@ -33,12 +35,16 @@ class DeviceDiscovery(val context: Context) {
         discoveryListener = object : NsdManager.DiscoveryListener {
 
             override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
-                Log.e(TAG, "Discovery failed: Error code:$errorCode")
+                Log.e(TAG, "Discovery start failed: Error code:$errorCode")
+                Firebase.crashlytics.setCustomKey("errorCode", errorCode)
+                Firebase.crashlytics.recordException(Exception("Discovery start failed"))
                 nsdManager.stopServiceDiscovery(this)
             }
 
             override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
-                Log.e(TAG, "Discovery failed: Error code:$errorCode")
+                Log.e(TAG, "Discovery stop failed: Error code:$errorCode")
+                Firebase.crashlytics.setCustomKey("errorCode", errorCode)
+                Firebase.crashlytics.recordException(Exception("Discovery stop failed"))
                 nsdManager.stopServiceDiscovery(this)
             }
 
@@ -54,7 +60,9 @@ class DeviceDiscovery(val context: Context) {
                 Log.d(TAG, "Service discovery success [$service]")
                 if (service != null) {
                     if (service.serviceType != SERVICE_TYPE) {
-                        Log.d(TAG, "Unknown Service Type: ${service.serviceType}")
+                        Log.d(TAG, "Unknown service type: ${service.serviceType}")
+                        Firebase.crashlytics.setCustomKey("ServiceType", service.serviceType)
+                        Firebase.crashlytics.recordException(Exception("Unknown service type"))
                         return
                     }
                     return nsdManager.resolveService(service, ResolveListener(parent, nsdManager))
@@ -63,6 +71,8 @@ class DeviceDiscovery(val context: Context) {
 
             override fun onServiceLost(service: NsdServiceInfo?) {
                 Log.e(TAG, "service lost: $service")
+                Firebase.crashlytics.setCustomKey("service", service.toString())
+                Firebase.crashlytics.recordException(Exception("service lost"))
             }
         }
     }
@@ -111,13 +121,21 @@ class DeviceDiscovery(val context: Context) {
 
         override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
             Log.e(TAG, "Resolve failed $errorCode")
+            Firebase.crashlytics.setCustomKey("errorCode", errorCode)
             when (errorCode) {
                 NsdManager.FAILURE_ALREADY_ACTIVE -> {
                     Log.e(TAG, "FAILURE ALREADY ACTIVE")
                     nsdManager.resolveService(serviceInfo, ResolveListener(parent, nsdManager))
                 }
-                NsdManager.FAILURE_INTERNAL_ERROR -> Log.e(TAG, "FAILURE_INTERNAL_ERROR")
-                NsdManager.FAILURE_MAX_LIMIT -> Log.e(TAG, "FAILURE_MAX_LIMIT")
+                NsdManager.FAILURE_INTERNAL_ERROR -> {
+                    Log.e(TAG, "FAILURE_INTERNAL_ERROR")
+                    Firebase.crashlytics.recordException(Exception("Resolve FAILURE_INTERNAL_ERROR"))
+                }
+                NsdManager.FAILURE_MAX_LIMIT -> {
+                    Log.e(TAG, "FAILURE_MAX_LIMIT")
+                    Firebase.crashlytics.recordException(Exception("Resolve FAILURE_MAX_LIMIT"))
+                }
+                else -> Firebase.crashlytics.recordException(Exception("Resolve failed"))
             }
         }
 
@@ -125,6 +143,9 @@ class DeviceDiscovery(val context: Context) {
             Log.i(TAG, "Resolve Succeeded. [$serviceInfo]")
             if (serviceInfo != null) {
                 parent.notifyListeners(serviceInfo)
+            } else {
+                Log.e(TAG, "Resolve Succeeded, but serviceInfo null.")
+                Firebase.crashlytics.recordException(Exception("Resolve Succeeded, but serviceInfo null"))
             }
         }
 
