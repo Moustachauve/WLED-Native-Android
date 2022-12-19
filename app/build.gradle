@@ -17,8 +17,8 @@ android {
         applicationId "ca.cgagnier.wlednativeandroid"
         minSdk 24
         targetSdk 33
-        versionCode 20
-        versionName "2.2.3"
+        versionCode 21
+        versionName "2.2.4"
         resConfigs("en", "fr")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -74,7 +74,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
 
     implementation "androidx.recyclerview:recyclerview:1.2.1"
-    implementation "androidx.fragment:fragment-ktx:1.5.4"
+    implementation "androidx.fragment:fragment-ktx:1.5.5"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation 'androidx.webkit:webkit:1.5.0'
