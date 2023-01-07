@@ -10,7 +10,7 @@ class UserPreferencesV0ToV1: DataMigration<UserPreferences> {
 
     override suspend fun migrate(currentData: UserPreferences): UserPreferences {
         return currentData.toBuilder()
-            .setThemeValue(ThemeSettings.Auto_VALUE)
+            .setThemeValue(ThemeSettings.Dark_VALUE )
             .setAutomaticDiscovery(true)
             .setShowOfflineLast(true)
             .setSendCrashData(false)

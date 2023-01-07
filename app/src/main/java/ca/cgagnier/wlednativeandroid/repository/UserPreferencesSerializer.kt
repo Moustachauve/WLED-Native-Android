@@ -8,7 +8,7 @@ import java.io.OutputStream
 
 class UserPreferencesSerializer : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.newBuilder()
-        .setThemeValue(ThemeSettings.Auto_VALUE)
+        .setThemeValue(ThemeSettings.Dark_VALUE)
         .setAutomaticDiscovery(true)
         .setShowOfflineLast(true)
         .setSendCrashData(false)
