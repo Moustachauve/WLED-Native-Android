@@ -38,14 +38,20 @@ class DeviceDiscovery(val context: Context) {
                 Log.e(TAG, "Discovery start failed: Error code:$errorCode")
                 Firebase.crashlytics.setCustomKey("errorCode", errorCode)
                 Firebase.crashlytics.recordException(Exception("Discovery start failed"))
-                nsdManager.stopServiceDiscovery(this)
+                try {
+                    nsdManager.stopServiceDiscovery(this)
+                } finally {
+                }
             }
 
             override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
                 Log.e(TAG, "Discovery stop failed: Error code:$errorCode")
                 Firebase.crashlytics.setCustomKey("errorCode", errorCode)
                 Firebase.crashlytics.recordException(Exception("Discovery stop failed"))
-                nsdManager.stopServiceDiscovery(this)
+                try {
+                    nsdManager.stopServiceDiscovery(this)
+                } finally {
+                }
             }
 
             override fun onDiscoveryStarted(serviceType: String?) {
