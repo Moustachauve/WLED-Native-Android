@@ -1,9 +1,7 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
+import android.content.Intent
+import android.net.*
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -28,7 +26,6 @@ import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
@@ -202,6 +199,12 @@ class DeviceListFragment : Fragment(),
                         openAddDeviceFragment()
                         true
                     }
+                    R.id.action_visit_help -> {
+                        val browserIntent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://illumidel.com/videos/"))
+                        startActivity(browserIntent)
+                        true
+                    }
                     else -> false
                 }
             }
@@ -225,6 +228,16 @@ class DeviceListFragment : Fragment(),
                 }
                 R.id.action_settings -> {
                     openSettings()
+                }
+                R.id.action_visit_website -> {
+                    val browserIntent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://illumidel.com/"))
+                    startActivity(browserIntent)
+                }
+                R.id.action_visit_help -> {
+                    val browserIntent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://illumidel.com/videos/"))
+                    startActivity(browserIntent)
                 }
             }
             drawerLayout.close()

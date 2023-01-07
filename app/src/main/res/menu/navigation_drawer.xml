@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/main_item"
-        android:title="@string/app_name">
-        <menu>
-            <item
-                android:id="@+id/action_device_add"
-                android:title="@string/add_a_device"
-                android:icon="@drawable/ic_baseline_add_24" />
-            <item
-                android:id="@+id/action_refresh"
-                android:title="@string/refresh_list"
-                android:icon="@drawable/ic_baseline_refresh_24" />
-            <item
-                android:id="@+id/action_manage_device"
-                android:title="@string/manage_devices"
-                android:icon="@drawable/ic_baseline_edit_note_24" />
-            <item
-                android:id="@+id/action_settings"
-                android:title="@string/settings"
-                android:icon="@drawable/ic_baseline_settings_24" />
-        </menu>
-    </item>
+    <group android:id="@+id/group_app_control">
+        <item
+            android:id="@+id/action_device_add"
+            android:title="@string/add_a_device"
+            android:icon="@drawable/ic_baseline_add_24" />
+        <item
+            android:id="@+id/action_refresh"
+            android:title="@string/refresh_list"
+            android:icon="@drawable/ic_baseline_refresh_24" />
+        <item
+            android:id="@+id/action_manage_device"
+            android:title="@string/manage_devices"
+            android:icon="@drawable/ic_baseline_edit_note_24" />
+        <item
+            android:id="@+id/action_settings"
+            android:title="@string/settings"
+            android:icon="@drawable/ic_baseline_settings_24" />
+    </group>
+    <group android:id="@+id/group_external_links">
+        <item
+            android:id="@+id/action_visit_website"
+            android:title="@string/visit_website"
+            android:icon="@drawable/ic_baseline_launch_24" />
+        <item
+            android:id="@+id/action_visit_help"
+            android:title="@string/help"
+            android:icon="@drawable/ic_baseline_help_24" />
+    </group>
 </menu>

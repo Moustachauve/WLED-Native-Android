@@ -145,7 +145,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
-                app:menu="@menu/navigation_drawer"/>
+                app:menu="@menu/navigation_drawer"
+                app:headerLayout="@layout/navigation_header"/>
         </androidx.drawerlayout.widget.DrawerLayout>
 
         <androidx.fragment.app.FragmentContainerView

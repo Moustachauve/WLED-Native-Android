@@ -54,4 +54,6 @@
     <string name="device_ap_mode">WLED mode PA</string>
     <string name="device_ap_mode_detected">WLED mode PA détecté</string>
     <string name="device_ap_mode_detected_click">Appuyez ici pour ouvrir</string>
+    <string name="visit_website">Visiter Illumidel.com</string>
+    <string name="help">Aide</string>
 </resources>

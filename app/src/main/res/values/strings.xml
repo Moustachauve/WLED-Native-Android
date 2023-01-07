@@ -55,4 +55,6 @@
     <string name="device_ap_mode">WLED AP Mode</string>
     <string name="device_ap_mode_detected">WLED AP Mode Detected</string>
     <string name="device_ap_mode_detected_click">Click here to open Device</string>
+    <string name="visit_website">Visit Illumidel.com</string>
+    <string name="help">Help</string>
 </resources>
