@@ -225,11 +225,10 @@ class DeviceViewFragment : Fragment() {
             }
 
             binding.deviceWebViewContainer.addView(webView)
-
-
         }
 
         deviceListViewModel.activeDevice.observe(viewLifecycleOwner) {
+            updateTitle()
             if (fromRestore) {
                 fromRestore = false
                 return@observe
@@ -240,7 +239,6 @@ class DeviceViewFragment : Fragment() {
             }
             Log.i(TAG_NAME, "observed device")
             deviceListViewModel.expectDeviceChange = false
-            updateTitle()
 
             // Let the "page finished" event load the new url
             _webview.loadUrl("about:blank")
@@ -275,6 +273,14 @@ class DeviceViewFragment : Fragment() {
             updateNavigationState()
         }
 
+        deviceListViewModel.doRefreshWeb.observe(viewLifecycleOwner) {
+            if (!it) {
+                return@observe
+            }
+            deviceListViewModel.doRefreshWeb.value = false
+            refresh()
+        }
+
         toolbar.addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Handle for example visibility of menu items
@@ -300,6 +306,11 @@ class DeviceViewFragment : Fragment() {
                         navigateForward()
                         true
                     }
+                    R.id.action_browse_refresh -> {
+                        Log.i(TAG_NAME, "Manual refresh requested")
+                        refresh()
+                        true
+                    }
 
                     else -> {
                         false
@@ -309,7 +320,16 @@ class DeviceViewFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    fun refresh() {
+        updateTitle()
+        deviceListViewModel.activeDevice.value?.let {
+            Log.i(TAG_NAME, "Requesting '${it.address}'")
+            _webview.loadUrl("http://${it.address}")
+        }
+    }
+
     private fun updateTitle() {
+        Log.i(TAG_NAME, "Updating title")
         binding.deviceToolbar.title =
             deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
         binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address

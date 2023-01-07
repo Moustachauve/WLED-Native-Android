@@ -17,6 +17,7 @@
     <string name="is_offline">Offline</string>
     <string name="network_status">Network Status</string>
     <string name="refresh_list">Refresh List</string>
+    <string name="refresh">Refresh List</string>
     <string name="manage_devices">Manage Devices</string>
     <string name="remove">Remove</string>
     <string name="edit_device">Edit Device</string>

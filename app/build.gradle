@@ -14,8 +14,8 @@ android {
         applicationId "ca.cgagnier.illumidel"
         minSdk 24
         targetSdk 33
-        versionCode 20
-        versionName "2.2.3"
+        versionCode 22
+        versionName "2.2.5"
         resConfigs("en", "fr")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,8 +34,10 @@ android {
     buildTypes {
         isConnectedToWledAP
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            android.buildTypes.release.ndk.debugSymbolLevel = 'full'
         }
     }
     compileOptions {
@@ -71,7 +73,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
 
     implementation "androidx.recyclerview:recyclerview:1.2.1"
-    implementation "androidx.fragment:fragment-ktx:1.5.4"
+    implementation "androidx.fragment:fragment-ktx:1.5.5"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation 'androidx.webkit:webkit:1.5.0'
@@ -89,8 +91,8 @@ dependencies {
     implementation  "com.google.protobuf:protobuf-javalite:3.18.0"
 
     testImplementation "junit:junit:4.13.2"
-    androidTestImplementation "androidx.test.ext:junit:1.1.4"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
 
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")

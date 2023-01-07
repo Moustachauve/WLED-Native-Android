@@ -251,11 +251,13 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun openDevice(device: Device) {
+        Log.i(TAG, "Opening device ${device.address}")
         deviceListViewModel.updateActiveDevice(device)
 
         deviceListAdapter.isSelectable = !binding.slidingPaneLayout.isSlideable
         deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
         binding.slidingPaneLayout.openPane()
+        deviceListViewModel.doRefreshWeb.value = true
     }
 
     override fun onRefresh() {
