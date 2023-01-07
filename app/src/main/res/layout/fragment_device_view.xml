@@ -25,7 +25,16 @@
                 android:layout_height="wrap_content"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="?attr/homeAsUpIndicator"
-                app:navigationContentDescription="@string/description_back_button">
+                app:navigationContentDescription="@string/description_back_button"
+                app:titleCentered="true">
+                <ImageView
+                    android:id="@+id/toolbar_logo"
+                    android:contentDescription="@string/app_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/illumidel_logo"/>
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 

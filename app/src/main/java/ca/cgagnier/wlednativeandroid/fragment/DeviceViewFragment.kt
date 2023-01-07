@@ -96,7 +96,6 @@ class DeviceViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG_NAME, "Device view created")
         setMenu(binding.deviceToolbar)
-        updateTitle()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.deviceToolbarContainer) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -228,7 +227,6 @@ class DeviceViewFragment : Fragment() {
         }
 
         deviceListViewModel.activeDevice.observe(viewLifecycleOwner) {
-            updateTitle()
             if (fromRestore) {
                 fromRestore = false
                 return@observe
@@ -321,18 +319,10 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun refresh() {
-        updateTitle()
         deviceListViewModel.activeDevice.value?.let {
             Log.i(TAG_NAME, "Requesting '${it.address}'")
             _webview.loadUrl("http://${it.address}")
         }
-    }
-
-    private fun updateTitle() {
-        Log.i(TAG_NAME, "Updating title")
-        binding.deviceToolbar.title =
-            deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
-        binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
     }
 
     fun navigateBack(): Boolean {
