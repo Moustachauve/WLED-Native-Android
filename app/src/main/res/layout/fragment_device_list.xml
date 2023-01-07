@@ -34,7 +34,7 @@
                     <com.google.android.material.appbar.MaterialToolbar
                         android:id="@+id/main_toolbar"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="110dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:navigationIcon="@drawable/ic_baseline_menu_24"
                         app:navigationContentDescription="@string/description_menu_button"
@@ -44,8 +44,8 @@
                             android:id="@+id/toolbar_logo"
                             android:contentDescription="@string/app_logo"
                             android:layout_width="wrap_content"
-                            android:layout_height="45dp"
-                            android:layout_gravity="center"
+                            android:layout_height="70dp"
+                            android:layout_gravity="bottom|center"
                             android:adjustViewBounds="true"
                             android:src="@drawable/illumidel_logo"/>
                     </com.google.android.material.appbar.MaterialToolbar>
@@ -130,12 +130,13 @@
                     android:id="@+id/empty_data_parent"
                     layout="@layout/device_list_main_empty"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/main_toolbar_layout"
+                    app:layout_constraintVertical_bias="0.1"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 

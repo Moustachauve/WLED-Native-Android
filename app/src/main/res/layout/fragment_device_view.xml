@@ -31,7 +31,7 @@
                     android:id="@+id/toolbar_logo"
                     android:contentDescription="@string/app_logo"
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:src="@drawable/illumidel_logo"/>
