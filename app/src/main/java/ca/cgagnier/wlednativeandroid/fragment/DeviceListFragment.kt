@@ -63,7 +63,7 @@ class DeviceListFragment : Fragment(),
         checkIfConnectedInAPMode(true)
 
         Log.i(TAG, "Starting Refresh timer")
-        refreshTimer(loopHandler, 5000)
+        refreshTimer(loopHandler, 10000)
     }
 
     override fun onPause() {
