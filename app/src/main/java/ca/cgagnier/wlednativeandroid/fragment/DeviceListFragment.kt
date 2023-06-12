@@ -35,8 +35,6 @@ import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 
 
 class DeviceListFragment : Fragment(),
@@ -284,7 +282,6 @@ class DeviceListFragment : Fragment(),
         } catch (e: Exception) {
             isConnectedToWledAP = false
             Log.e(TAG, "Error in checkIfConnectedInAPMode: " + e.message, e)
-            Firebase.crashlytics.recordException(e)
         }
 
         binding.apModeContainer.visibility = if (isConnectedToWledAP) View.VISIBLE else View.GONE
@@ -310,7 +307,6 @@ class DeviceListFragment : Fragment(),
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            Firebase.crashlytics.recordException(e)
                         }
                     }
                 })

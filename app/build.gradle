@@ -1,13 +1,10 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.gms.google-services'
     id "com.google.protobuf"
     id 'kotlin-android'
     id "kotlin-kapt"
     id "org.jetbrains.kotlin.kapt"
     id 'androidx.navigation.safeargs.kotlin'
-    id 'com.google.firebase.crashlytics'
-    id 'com.google.firebase.firebase-perf'
 }
 
 android {
@@ -105,11 +102,6 @@ dependencies {
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
-
-    // Firebase stuff
-    implementation platform('com.google.firebase:firebase-bom:31.1.0')
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-perf-ktx'
 }
 
 protobuf {

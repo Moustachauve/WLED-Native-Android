@@ -19,9 +19,6 @@ import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.perf.ktx.performance
 import kotlinx.coroutines.launch
 
 
@@ -57,13 +54,11 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.sendCrashData.collect {
                 Log.i(TAG, "Setting crashData to $it")
-                Firebase.crashlytics.setCrashlyticsCollectionEnabled(it)
             }
         }
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.sendCrashData.collect {
                 Log.i(TAG, "Setting performance data to $it")
-                Firebase.performance.isPerformanceCollectionEnabled = it
             }
         }
 
