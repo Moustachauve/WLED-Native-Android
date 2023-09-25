@@ -3,11 +3,11 @@ plugins {
     id 'com.google.gms.google-services'
     id "com.google.protobuf"
     id 'kotlin-android'
-    id "kotlin-kapt"
-    id "org.jetbrains.kotlin.kapt"
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.firebase.crashlytics'
     id 'com.google.firebase.firebase-perf'
+    id 'com.google.devtools.ksp'
+    id 'org.jetbrains.kotlin.kapt'
 }
 
 android {
@@ -25,8 +25,14 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments += [
+                        "room.schemaLocation": "$projectDir/schemas".toString(),
+                        "room.incremental"   : "true"
+                ]
             }
+        }
+        ksp {
+            arg('room.schemaLocation', "$projectDir/schemas")
         }
     }
 
@@ -80,7 +86,7 @@ dependencies {
     implementation 'androidx.webkit:webkit:1.8.0'
 
     implementation("com.squareup.moshi:moshi:$moshiVersion")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit2_version"
@@ -89,7 +95,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.10'
 
-    implementation  "com.google.protobuf:protobuf-javalite:3.21.11"
+    implementation "com.google.protobuf:protobuf-javalite:3.21.11"
 
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.1.5"
@@ -98,16 +104,16 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
-    // To use Kotlin annotation processing tool (kapt)
-    kapt("androidx.room:room-compiler:$room_version")
+    // To use Kotlin Symbol Processing (KSP)
+    ksp("androidx.room:room-compiler:$room_version")
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
     // Firebase stuff
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-perf-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.3'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.4.1'
 }
 
 protobuf {
