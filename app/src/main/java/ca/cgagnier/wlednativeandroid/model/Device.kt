@@ -14,7 +14,7 @@ data class Device(
     val name: String,
     val isCustomName: Boolean,
     val isHidden: Boolean,
-    @ColumnInfo(defaultValue = "")
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val macAddress: String,
     val brightness: Int = 0,
     val color: Int = Color.WHITE,
@@ -22,6 +22,14 @@ data class Device(
     val isOnline: Boolean = false,
     val isRefreshing: Boolean = false,
     val networkRssi: Int = -101,
+    // TODO: Check board type for ethernet only boards
+    @ColumnInfo(defaultValue = "0")
+    val isEthernet: Boolean = false,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val platformName: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val version: String = UNKNOWN_VALUE,
+
 ) {
     @Ignore
     var isSliding = false
@@ -47,5 +55,9 @@ data class Device(
             return R.drawable.twotone_signal_wifi_1_bar_24
         }
         return R.drawable.twotone_signal_wifi_0_bar_24
+    }
+
+    companion object {
+        const val UNKNOWN_VALUE = "__unknown__"
     }
 }

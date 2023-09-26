@@ -79,7 +79,7 @@ class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
             name = deviceName,
             isCustomName = deviceName != "",
             isHidden = isHidden,
-            macAddress = ""
+            macAddress = Device.UNKNOWN_VALUE
         )
 
         deviceListViewModel.insert(device)

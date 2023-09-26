@@ -114,6 +114,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.3'
     implementation 'com.google.firebase:firebase-perf-ktx:20.4.1'
+
+    implementation 'org.kohsuke:github-api:1.315'
 }
 
 protobuf {

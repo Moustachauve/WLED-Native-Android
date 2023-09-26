@@ -130,7 +130,7 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
         val device = Device(serviceInfo.host.hostAddress!!, deviceName,
             isCustomName = false,
             isHidden = false,
-            macAddress = ""
+            macAddress = Device.UNKNOWN_VALUE
         )
         if (deviceListViewModel.contains(device)) {
             return

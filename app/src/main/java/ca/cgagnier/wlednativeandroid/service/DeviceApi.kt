@@ -98,7 +98,7 @@ object DeviceApi {
             val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
             val updatedDevice = device.copy(
-                macAddress = deviceStateInfo.info.mac ?: "",
+                macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
                 isOnline = true,
                 name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
                 brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
@@ -109,7 +109,10 @@ object DeviceApi {
                     colorInfo[2]
                 ) else Color.WHITE,
                 isRefreshing = false,
-                networkRssi = deviceStateInfo.info.wifi.rssi ?: 0
+                networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
+                isEthernet = false,
+                platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
+                version = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
             )
 
             if (callback != null) {
