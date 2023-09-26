@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
+    primaryKeys = ["versionTagName", "name"],
     foreignKeys = [ForeignKey(
         entity = Version::class,
         parentColumns = arrayOf("tagName"),
@@ -14,11 +15,10 @@ import androidx.room.PrimaryKey
     )]
 )
 data class Asset(
-    @PrimaryKey
-    val id: Int,
+
     @ColumnInfo(index = true)
     val versionTagName: String,
     val name: String,
-    val size: Int,
+    val size: Long,
     val downloadUrl: String,
 )

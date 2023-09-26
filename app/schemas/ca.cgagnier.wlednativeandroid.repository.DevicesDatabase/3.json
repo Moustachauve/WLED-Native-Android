@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "289c7a09f52932736aacaacf5f6e6dd8",
+    "identityHash": "9139ac6c47af1b68272fd63ced1ac5fb",
     "entities": [
       {
         "tableName": "Device",
@@ -108,7 +108,7 @@
       },
       {
         "tableName": "Version",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `prerelease` INTEGER NOT NULL, `publishedDate` TEXT NOT NULL, `htmlUrl` TEXT NOT NULL, PRIMARY KEY(`tagName`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `isPrerelease` INTEGER NOT NULL, `publishedDate` TEXT NOT NULL, `htmlUrl` TEXT NOT NULL, PRIMARY KEY(`tagName`))",
         "fields": [
           {
             "fieldPath": "tagName",
@@ -129,8 +129,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "prerelease",
-            "columnName": "prerelease",
+            "fieldPath": "isPrerelease",
+            "columnName": "isPrerelease",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -158,14 +158,8 @@
       },
       {
         "tableName": "Asset",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `versionTagName` TEXT NOT NULL, `name` TEXT NOT NULL, `size` INTEGER NOT NULL, `downloadUrl` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`versionTagName`) REFERENCES `Version`(`tagName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`versionTagName` TEXT NOT NULL, `name` TEXT NOT NULL, `size` INTEGER NOT NULL, `downloadUrl` TEXT NOT NULL, PRIMARY KEY(`versionTagName`, `name`), FOREIGN KEY(`versionTagName`) REFERENCES `Version`(`tagName`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "versionTagName",
             "columnName": "versionTagName",
@@ -194,7 +188,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "versionTagName",
+            "name"
           ]
         },
         "indices": [
@@ -226,7 +221,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '289c7a09f52932736aacaacf5f6e6dd8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9139ac6c47af1b68272fd63ced1ac5fb')"
     ]
   }
 }

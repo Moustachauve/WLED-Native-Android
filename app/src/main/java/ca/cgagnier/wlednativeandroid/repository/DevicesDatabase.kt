@@ -25,6 +25,7 @@ import ca.cgagnier.wlednativeandroid.model.Version
 abstract class DevicesDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
     abstract fun versionDao(): VersionDao
+    abstract fun assetDao(): AssetDao
 
     companion object {
         @Volatile

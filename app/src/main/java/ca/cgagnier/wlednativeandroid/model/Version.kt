@@ -2,6 +2,8 @@ package ca.cgagnier.wlednativeandroid.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.net.URL
+import java.util.Date
 
 @Entity
 data class Version(
@@ -9,7 +11,7 @@ data class Version(
     val tagName: String,
     val name: String,
     val description: String,
-    val prerelease: Boolean,
+    val isPrerelease: Boolean,
     val publishedDate: String,
     val htmlUrl: String,
 )

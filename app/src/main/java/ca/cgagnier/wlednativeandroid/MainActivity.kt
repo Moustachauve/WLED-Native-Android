@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -17,11 +20,14 @@ import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
+import ca.cgagnier.wlednativeandroid.service.update.UpdateService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.perf.ktx.performance
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -32,12 +38,14 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
     private val deviceListViewModel: DeviceListViewModel by viewModels {
         DeviceListViewModelFactory(
             (application as DevicesApplication).repository,
-            (application as DevicesApplication).userPreferencesRepository)
+            (application as DevicesApplication).userPreferencesRepository
+        )
     }
 
     private var isAutoDiscoveryEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        updateVersions()
         val devicesApp = (application as DevicesApplication)
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.themeMode.collect {
@@ -107,7 +115,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         (application as DevicesApplication).deviceDiscovery
             .registerDeviceDiscoveredListener(this)
         (application as DevicesApplication).deviceDiscovery.start()
-        autoDiscoveryLoopHandler.postDelayed({stopAutoDiscovery()}, 25000)
+        autoDiscoveryLoopHandler.postDelayed({ stopAutoDiscovery() }, 25000)
     }
 
     override fun stopAutoDiscovery() {
@@ -136,10 +144,11 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         Log.i(TAG, "Device discovered!")
         val deviceIp = serviceInfo.host.hostAddress!!
         val deviceName = serviceInfo.serviceName ?: ""
-        val device = Device(deviceIp, deviceName,
+        val device = Device(
+            deviceIp, deviceName,
             isCustomName = false,
             isHidden = false,
-            macAddress = ""
+            macAddress = Device.UNKNOWN_VALUE
         )
 
         if (deviceListViewModel.contains(device)) {
@@ -151,8 +160,11 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         DeviceApi.update(device, true) {
             lifecycleScope.launch {
                 val existingDevice = deviceListViewModel.findWithSameMacAddress(it)
-                if (existingDevice != null) {
-                    Log.i(TAG, "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}")
+                if (existingDevice != null && it.macAddress != Device.UNKNOWN_VALUE) {
+                    Log.i(
+                        TAG,
+                        "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
+                    )
                     deviceListViewModel.delete(existingDevice)
                 }
                 deviceListViewModel.insert(device)
@@ -160,13 +172,25 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
     }
 
-    private fun setThemeMode(theme: ThemeSettings){
-        val mode = when(theme){
+    private fun setThemeMode(theme: ThemeSettings) {
+        val mode = when (theme) {
             ThemeSettings.Light -> AppCompatDelegate.MODE_NIGHT_NO
             ThemeSettings.Dark -> AppCompatDelegate.MODE_NIGHT_YES
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
         AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    private fun updateVersions() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val app = (application as DevicesApplication)
+                val updateService = UpdateService(app.versionDao, app.assetDao)
+                updateService.refreshVersions()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     companion object {
