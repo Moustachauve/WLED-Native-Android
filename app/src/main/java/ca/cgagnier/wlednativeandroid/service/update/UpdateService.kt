@@ -1,16 +1,23 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
+import android.content.Context
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Asset
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
-import ca.cgagnier.wlednativeandroid.repository.AssetDao
-import ca.cgagnier.wlednativeandroid.repository.VersionDao
+import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import org.kohsuke.github.GHRelease
 
-class UpdateService(private val versionDao: VersionDao, private val assetDao: AssetDao) {
-    suspend fun refreshVersions() {
-        val allVersions = GithubApi().getAllReleases()
+class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
+
+    suspend fun isUpdateAvailable(device: Device) {
+
+    }
+
+    suspend fun refreshVersions(context: Context) {
+        val allVersions = GithubApi(context).getAllReleases()
+
         if (allVersions == null) {
             Log.w(TAG, "Did not find any version")
             return
@@ -28,8 +35,7 @@ class UpdateService(private val versionDao: VersionDao, private val assetDao: As
             "Inserting " + versionModels.count() + " versions with " +
                     assetsModels.count() + " assets"
         )
-        versionDao.insertMany(versionModels)
-        assetDao.insertMany(assetsModels)
+        versionWithAssetsRepository.insertMany(versionModels, assetsModels)
     }
 
     private fun createVersion(version: GHRelease): Version {

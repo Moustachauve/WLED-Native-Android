@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface VersionDao {
@@ -29,7 +30,5 @@ interface VersionDao {
 
     @Transaction
     @Query("SELECT * FROM version")
-    fun getVersionsWithAsset(): List<VersionWithAssets>
-
-
+    fun getVersionsWithAsset(): Flow<List<VersionWithAssets>>
 }

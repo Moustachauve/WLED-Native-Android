@@ -185,8 +185,8 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val app = (application as DevicesApplication)
-                val updateService = UpdateService(app.versionDao, app.assetDao)
-                updateService.refreshVersions()
+                val updateService = UpdateService(app.versionWithAssetsRepository)
+                updateService.refreshVersions(applicationContext)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

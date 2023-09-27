@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.repository.*
 import ca.cgagnier.wlednativeandroid.repository.migrations.UserPreferencesV0ToV1
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
@@ -13,11 +14,11 @@ private const val DATA_STORE_FILE_NAME = "user_prefs.pb"
 class DevicesApplication : Application() {
 
     val database by lazy { DevicesDatabase.getDatabase(this) }
+
     // TODO: rename this to deviceRepository
     val repository by lazy { DeviceRepository(database) }
     val deviceDiscovery by lazy { DeviceDiscovery(this) }
-    val versionDao by lazy { database.versionDao() }
-    val assetDao by lazy { database.assetDao() }
+    val versionWithAssetsRepository by lazy { VersionWithAssetsRepository(database) }
 
     val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
         fileName = DATA_STORE_FILE_NAME,
@@ -27,5 +28,5 @@ class DevicesApplication : Application() {
         }
     )
 
-    val userPreferencesRepository by lazy { UserPreferencesRepository(userPreferencesStore)  }
+    val userPreferencesRepository by lazy { UserPreferencesRepository(userPreferencesStore) }
 }
