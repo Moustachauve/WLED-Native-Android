@@ -90,7 +90,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
 
         checkMigration()
-        checkForDeviceUpdate()
+        updateDeviceVersionList()
         setContentView(binding.root)
     }
 
@@ -182,24 +182,20 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
     /**
      * Checks for device updates once in a while
      */
-    private fun checkForDeviceUpdate() {
+    private fun updateDeviceVersionList() {
         lifecycleScope.launch(Dispatchers.IO) {
-            updateVersionList()
-        }
-    }
-
-    private suspend fun updateVersionList() {
-        val app = (application as DevicesApplication)
-        app.userPreferencesRepository.lastUpdateCheckDate.collect {
-            val now = System.currentTimeMillis()
-            if (now < it) {
-                Log.i(TAG, "Not updating version list since it was done recently.")
-                return@collect
+            val app = (application as DevicesApplication)
+            app.userPreferencesRepository.lastUpdateCheckDate.collect {
+                val now = System.currentTimeMillis()
+                if (now < it) {
+                    Log.i(TAG, "Not updating version list since it was done recently.")
+                    return@collect
+                }
+                val updateService = UpdateService(app.versionWithAssetsRepository)
+                updateService.refreshVersions(applicationContext)
+                // Set the next date to check in minimum 24 hours from now.
+                app.userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
             }
-            val updateService = UpdateService(app.versionWithAssetsRepository)
-            updateService.refreshVersions(applicationContext)
-            // Set the next date to check in minimum 24 hours from now.
-            app.userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
         }
     }
 
