@@ -20,7 +20,6 @@ import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
-import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import ca.cgagnier.wlednativeandroid.service.update.UpdateService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
@@ -37,7 +36,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
     private val autoDiscoveryLoopHandler = Handler(Looper.getMainLooper())
     private val deviceListViewModel: DeviceListViewModel by viewModels {
         DeviceListViewModelFactory(
-            (application as DevicesApplication).repository,
+            (application as DevicesApplication).deviceRepository,
             (application as DevicesApplication).userPreferencesRepository
         )
     }
@@ -132,7 +131,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
             val userPreferences = devicesApp.userPreferencesRepository.fetchInitialPreferences()
             if (!userPreferences.hasMigratedSharedPref) {
                 Log.i(TAG, "Starting devices migration from V0 to V1")
-                DataMigrationV0toV1(applicationContext, devicesApp.repository).migrate()
+                DataMigrationV0toV1(applicationContext, devicesApp.deviceRepository).migrate()
                 devicesApp.userPreferencesRepository.updateHasMigratedSharedPref(true)
                 Log.i(TAG, "Migration done.")
             }

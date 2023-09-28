@@ -44,7 +44,7 @@ class DeviceListFragment : Fragment(),
 
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
     }
 

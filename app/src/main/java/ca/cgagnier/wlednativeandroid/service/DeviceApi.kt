@@ -31,7 +31,7 @@ object DeviceApi {
             val newDevice = device.copy(isRefreshing = true)
 
             scope.launch {
-                application!!.repository.update(newDevice)
+                application!!.deviceRepository.update(newDevice)
             }
         }
 
@@ -42,7 +42,7 @@ object DeviceApi {
             Log.wtf(TAG, "Device has invalid address: " + device.address)
             Firebase.crashlytics.recordException(e)
             scope.launch {
-                application!!.repository.delete(device)
+                application!!.deviceRepository.delete(device)
             }
             return
         }
@@ -88,7 +88,7 @@ object DeviceApi {
             return
         }
         scope.launch {
-            application!!.repository.update(updatedDevice)
+            application!!.deviceRepository.update(updatedDevice)
         }
     }
 
@@ -121,7 +121,7 @@ object DeviceApi {
             }
             if (updatedDevice != device) {
                 scope.launch {
-                    application!!.repository.update(updatedDevice)
+                    application!!.deviceRepository.update(updatedDevice)
                 }
             }
         } else {

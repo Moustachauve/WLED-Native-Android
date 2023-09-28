@@ -26,11 +26,11 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
 
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
     }
     private val manageDevicesViewModel: ManageDevicesViewModel by activityViewModels {
-        ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).repository)
+        ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
     }
 
     private lateinit var deviceListAdapter: DeviceListManageAdapter

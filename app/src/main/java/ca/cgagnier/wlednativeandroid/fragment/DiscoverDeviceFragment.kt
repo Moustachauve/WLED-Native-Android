@@ -30,11 +30,11 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
 
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
     }
     private val discoverDeviceViewModel: DiscoverDeviceViewModel by activityViewModels {
-        DiscoverDeviceViewModelFactory((requireActivity().application as DevicesApplication).repository)
+        DiscoverDeviceViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
     }
 
     private lateinit var deviceListAdapter: DeviceListFoundAdapter

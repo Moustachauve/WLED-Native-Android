@@ -22,7 +22,7 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private val manageDevicesViewModel: ManageDevicesViewModel by activityViewModels {
-        ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).repository)
+        ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
     }
 
     override fun onCreateView(

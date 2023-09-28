@@ -24,7 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
     }
     private var _binding: FragmentDeviceAddEditBinding? = null
