@@ -29,6 +29,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
     val sendCrashData get() = dataStore.data.map { it.sendCrashData }
     val sendPerformanceData get() = dataStore.data.map { it.sendPerformanceData }
+    val lastUpdateCheckDate get() = dataStore.data.map { it.lastUpdateCheckDate }
 
     suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
@@ -75,6 +76,12 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     suspend fun updateSendPerformanceData(sendPerformanceData: Boolean) {
         dataStore.updateData {
             it.toBuilder().setSendPerformanceData(sendPerformanceData).build()
+        }
+    }
+
+    suspend fun updateLastUpdateCheckDate(lastUpdateCheckDate: Long) {
+        dataStore.updateData {
+            it.toBuilder().setLastUpdateCheckDate(lastUpdateCheckDate).build()
         }
     }
 }

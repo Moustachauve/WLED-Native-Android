@@ -44,7 +44,6 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
     private var isAutoDiscoveryEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        updateVersions()
         val devicesApp = (application as DevicesApplication)
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.themeMode.collect {
@@ -91,7 +90,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
 
         checkMigration()
-
+        checkForDeviceUpdate()
         setContentView(binding.root)
     }
 
@@ -180,15 +179,27 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    private fun updateVersions() {
+    /**
+     * Checks for device updates once in a while
+     */
+    private fun checkForDeviceUpdate() {
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val app = (application as DevicesApplication)
-                val updateService = UpdateService(app.versionWithAssetsRepository)
-                updateService.refreshVersions(applicationContext)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            updateVersionList()
+        }
+    }
+
+    private suspend fun updateVersionList() {
+        val app = (application as DevicesApplication)
+        app.userPreferencesRepository.lastUpdateCheckDate.collect {
+            val now = System.currentTimeMillis()
+            if (now < it) {
+                Log.i(TAG, "Not updating version list since it was done recently.")
+                return@collect
             }
+            val updateService = UpdateService(app.versionWithAssetsRepository)
+            updateService.refreshVersions(applicationContext)
+            // Set the next date to check in minimum 24 hours from now.
+            app.userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
         }
     }
 

@@ -18,4 +18,5 @@ message UserPreferences {
   bool show_offline_last = 6;
   bool send_crash_data = 7;
   bool send_performance_data = 8;
+  int64 last_update_check_date = 9;
 }
