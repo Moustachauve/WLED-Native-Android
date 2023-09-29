@@ -15,6 +15,7 @@
     <string name="default_device_name">(New Device)</string>
     <string name="default_ip" translatable="false">0.0.0.0</string>
     <string name="is_offline">Offline</string>
+    <string name="update_available">Update Available</string>
     <string name="network_status">Network Status</string>
     <string name="refresh_list">Refresh List</string>
     <string name="refresh">Refresh List</string>

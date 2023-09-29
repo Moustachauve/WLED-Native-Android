@@ -14,6 +14,7 @@
     <string name="close">Fermer</string>
     <string name="default_device_name">(Nouvel appareil)</string>
     <string name="is_offline">Hors-ligne</string>
+    <string name="update_available">Mise à jour disponible</string>
     <string name="network_status">Statut du réseau</string>
     <string name="refresh_list">Rafraîchir</string>
     <string name="refresh">Rafraîchir</string>

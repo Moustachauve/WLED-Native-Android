@@ -7,12 +7,18 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
+import com.vdurmont.semver4j.Semver
 import org.kohsuke.github.GHRelease
+
 
 class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
 
-    suspend fun isUpdateAvailable(device: Device) {
-
+    suspend fun hasUpdateAvailable(versionName: String): Boolean {
+        if (versionName == Device.UNKNOWN_VALUE) {
+            return false
+        }
+        val latestVersion = versionWithAssetsRepository.getLatestVersionWithAssets() ?: return false
+        return Semver(latestVersion.version.tagName.drop(1)).isGreaterThan(versionName)
     }
 
     suspend fun refreshVersions(context: Context) {
@@ -44,7 +50,7 @@ class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRe
             version.name,
             version.body,
             version.isPrerelease,
-            version.published_at.toString(),
+            version.published_at,
             version.htmlUrl.toString()
         )
     }

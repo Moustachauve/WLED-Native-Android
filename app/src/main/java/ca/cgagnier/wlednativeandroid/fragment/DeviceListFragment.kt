@@ -45,7 +45,8 @@ class DeviceListFragment : Fragment(),
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
             (requireActivity().application as DevicesApplication).deviceRepository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+            (requireActivity().application as DevicesApplication).userPreferencesRepository
+        )
     }
 
     private var _binding: FragmentDeviceListBinding? = null
@@ -181,7 +182,7 @@ class DeviceListFragment : Fragment(),
     private fun refreshTimer(handler: Handler, delay: Long) {
         Log.i(TAG, "Refreshing devices from timer")
         refreshListFromApi(true)
-        handler.postDelayed({refreshTimer(handler, delay)}, delay)
+        handler.postDelayed({ refreshTimer(handler, delay) }, delay)
     }
 
     override fun onDestroyView() {
@@ -204,6 +205,7 @@ class DeviceListFragment : Fragment(),
                         openAddDeviceFragment()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -216,15 +218,18 @@ class DeviceListFragment : Fragment(),
                 R.id.action_device_add -> {
                     openAddDeviceFragment()
                 }
+
                 R.id.action_refresh -> {
                     if (deviceListAdapter.itemCount > 0) {
                         swipeRefreshLayout.isRefreshing = true
                     }
                     onRefresh()
                 }
+
                 R.id.action_manage_device -> {
                     openManageDevicesFragment()
                 }
+
                 R.id.action_settings -> {
                     openSettings()
                 }

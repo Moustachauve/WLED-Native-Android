@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "9139ac6c47af1b68272fd63ced1ac5fb",
+    "identityHash": "968ee30de3fd12683f35fdcf12c93688",
     "entities": [
       {
         "tableName": "Device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkRssi` INTEGER NOT NULL, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkRssi` INTEGER NOT NULL, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `hasUpdateAvailable` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -95,6 +95,13 @@
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'__unknown__'"
+          },
+          {
+            "fieldPath": "hasUpdateAvailable",
+            "columnName": "hasUpdateAvailable",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -108,7 +115,7 @@
       },
       {
         "tableName": "Version",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `isPrerelease` INTEGER NOT NULL, `publishedDate` TEXT NOT NULL, `htmlUrl` TEXT NOT NULL, PRIMARY KEY(`tagName`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `isPrerelease` INTEGER NOT NULL, `publishedDate` INTEGER NOT NULL, `htmlUrl` TEXT NOT NULL, PRIMARY KEY(`tagName`))",
         "fields": [
           {
             "fieldPath": "tagName",
@@ -137,7 +144,7 @@
           {
             "fieldPath": "publishedDate",
             "columnName": "publishedDate",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -221,7 +228,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9139ac6c47af1b68272fd63ced1ac5fb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '968ee30de3fd12683f35fdcf12c93688')"
     ]
   }
 }

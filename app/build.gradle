@@ -116,6 +116,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf-ktx:20.4.1'
 
     implementation 'org.kohsuke:github-api:1.315'
+    implementation 'com.vdurmont:semver4j:3.1.0'
 }
 
 protobuf {

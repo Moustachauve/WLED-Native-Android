@@ -28,6 +28,9 @@ interface VersionDao {
     @Query("DELETE FROM version")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM version ORDER BY publishedDate DESC LIMIT 1")
+    suspend fun getLatestVersionWithAssets(): VersionWithAssets?
+
     @Transaction
     @Query("SELECT * FROM version")
     fun getVersionsWithAsset(): Flow<List<VersionWithAssets>>

@@ -29,6 +29,8 @@ data class Device(
     val platformName: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val version: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = "0")
+    val hasUpdateAvailable: Boolean = false,
 
 ) {
     @Ignore

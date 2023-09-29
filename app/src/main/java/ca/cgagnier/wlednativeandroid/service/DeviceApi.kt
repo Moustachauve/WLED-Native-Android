@@ -2,11 +2,12 @@ package ca.cgagnier.wlednativeandroid.service
 
 import android.graphics.Color
 import android.util.Log
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
-import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.api.JsonApi
+import ca.cgagnier.wlednativeandroid.service.update.UpdateService
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
@@ -93,45 +94,53 @@ object DeviceApi {
     }
 
     fun onSuccess(device: Device, response: Response<DeviceStateInfo>, callback: ((Device) -> Unit)? = null) {
-        if (response.code() == 200 && response.isSuccessful && response.body() != null) {
-            val deviceStateInfo = response.body()!!
-            val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
+        scope.launch {
+            if (response.code() == 200 && response.isSuccessful && response.body() != null) {
+                val deviceStateInfo = response.body()!!
+                val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
-            val updatedDevice = device.copy(
-                macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
-                isOnline = true,
-                name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
-                brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
-                isPoweredOn = deviceStateInfo.state.isOn,
-                color = if (colorInfo != null) Color.rgb(
-                    colorInfo[0],
-                    colorInfo[1],
-                    colorInfo[2]
-                ) else Color.WHITE,
-                isRefreshing = false,
-                networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
-                isEthernet = false,
-                platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
-                version = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
-            )
+                val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
+                val updateService = UpdateService(application!!.versionWithAssetsRepository)
+                val hasUpdateAvailable = updateService.hasUpdateAvailable(deviceVersion)
 
-            if (callback != null) {
-                callback(updatedDevice)
-                return
-            }
-            if (updatedDevice != device) {
-                scope.launch {
+                val updatedDevice = device.copy(
+                    macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
+                    isOnline = true,
+                    name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
+                    brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
+                    isPoweredOn = deviceStateInfo.state.isOn,
+                    color = if (colorInfo != null) Color.rgb(
+                        colorInfo[0],
+                        colorInfo[1],
+                        colorInfo[2]
+                    ) else Color.WHITE,
+                    isRefreshing = false,
+                    networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
+                    isEthernet = false,
+                    platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
+                    version = deviceVersion,
+                    hasUpdateAvailable = hasUpdateAvailable
+                )
+
+                if (callback != null) {
+                    callback(updatedDevice)
+                    return@launch
+                }
+                if (updatedDevice != device) {
                     application!!.deviceRepository.update(updatedDevice)
                 }
-            }
-        } else {
-            Firebase.crashlytics.log("Response success, but not valid")
-            Firebase.crashlytics.setCustomKey("response code", response.code())
-            Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
-            Firebase.crashlytics.setCustomKey("response errorBody", response.errorBody().toString())
-            Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
+            } else {
+                Firebase.crashlytics.log("Response success, but not valid")
+                Firebase.crashlytics.setCustomKey("response code", response.code())
+                Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
+                Firebase.crashlytics.setCustomKey(
+                    "response errorBody",
+                    response.errorBody().toString()
+                )
+                Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
 
-            onFailure(device, Exception("Response success, but not valid"), callback = callback)
+                onFailure(device, Exception("Response success, but not valid"), callback = callback)
+            }
         }
     }
 }
