@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
-            android:ellipsize="end"
+            android:ellipsize="middle"
             android:maxLines="1"
             android:text="@string/default_ip"
             android:textColor="@drawable/device_item_text_selector"
@@ -95,6 +95,9 @@
             android:gravity="center"
             android:text="@string/update_available"
             android:textColor="@drawable/device_item_text_selector"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginEnd="10dp"
             app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
             app:layout_constraintStart_toEndOf="@id/update_indicator"
             app:layout_constraintEnd_toStartOf="@id/power_status_switch" />
