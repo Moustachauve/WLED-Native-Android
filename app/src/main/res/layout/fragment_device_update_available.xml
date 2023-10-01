@@ -11,7 +11,6 @@
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minWidth="500dp"
         android:background="?deviceListBackgroundColor"
         tools:context=".fragment.ManageDeviceFragment">
 
@@ -93,9 +92,10 @@
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintVertical_bias="0"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toTopOf="@id/buttons"
             app:layout_constraintEnd_toEndOf="parent"
@@ -110,8 +110,10 @@
                 android:paddingTop="2dp"
                 android:paddingEnd="?dialogPreferredPadding"
                 android:paddingBottom="16dp"
+                android:autoLink="all"
+                android:textIsSelectable="true"
                 android:text="" />
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/buttons"

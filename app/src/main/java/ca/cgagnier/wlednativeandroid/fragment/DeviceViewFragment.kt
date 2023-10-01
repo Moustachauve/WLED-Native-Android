@@ -358,7 +358,7 @@ class DeviceViewFragment : Fragment() {
         binding.deviceToolbar.title =
             deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
         binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
-        //updateNavigationState()
+        updateNavigationState()
     }
 
     fun navigateBack(): Boolean {
@@ -385,7 +385,7 @@ class DeviceViewFragment : Fragment() {
         val fragmentManager = activity?.supportFragmentManager!!
         val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
         val newFragment =
-            DeviceUpdateAvailableFragment.newInstance(deviceAddress)
+            DeviceUpdateAvailableFragment.newInstance(deviceAddress, true)
         if (isLargeLayout) {
             // The device is using a large layout, so show the fragment as a
             // dialog.
