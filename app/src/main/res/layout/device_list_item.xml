@@ -82,25 +82,11 @@
             android:contentDescription="@string/network_status"
             app:tint="@drawable/device_item_text_selector"
             app:layout_constraintStart_toEndOf="@id/is_offline"
-            app:layout_constraintEnd_toStartOf="@id/update_indicator_label"
+            app:layout_constraintEnd_toStartOf="@id/power_status_switch"
             app:layout_constraintTop_toTopOf="@id/ip_address_text_view"
             app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
             android:layout_marginTop="4dp"
             app:srcCompat="@drawable/baseline_download_24" />
-
-        <TextView
-            android:id="@+id/update_indicator_label"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/update_available"
-            android:textColor="@drawable/device_item_text_selector"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
-            app:layout_constraintStart_toEndOf="@id/update_indicator"
-            app:layout_constraintEnd_toStartOf="@id/power_status_switch" />
 
         <SeekBar
             android:id="@+id/brightness_seekbar"

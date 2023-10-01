@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences>) {
-    private val TAG: String = "UserPreferencesRepo"
 
     private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
         .catch { exception ->
@@ -83,5 +82,9 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         dataStore.updateData {
             it.toBuilder().setLastUpdateCheckDate(lastUpdateCheckDate).build()
         }
+    }
+
+    companion object {
+        private const val TAG: String = "UserPreferencesRepo"
     }
 }

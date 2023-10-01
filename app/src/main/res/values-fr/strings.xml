@@ -17,7 +17,7 @@
     <string name="update_available">Mise à jour disponible</string>
     <string name="network_status">Statut du réseau</string>
     <string name="refresh_list">Rafraîchir</string>
-    <string name="refresh">Rafraîchir</string>
+    <string name="refresh_page">Rafraîchir</string>
     <string name="manage_devices">Gérer les appareils</string>
     <string name="remove">Retirer</string>
     <string name="edit_device">Modifier l\'appareil</string>
@@ -55,4 +55,7 @@
     <string name="device_ap_mode">WLED mode PA</string>
     <string name="device_ap_mode_detected">WLED mode PA détecté</string>
     <string name="device_ap_mode_detected_click">Appuyez ici pour ouvrir</string>
+    <string name="install">Installer</string>
+    <string name="later">Plus tard</string>
+    <string name="skip_this_version">Sauter cette version</string>
 </resources>

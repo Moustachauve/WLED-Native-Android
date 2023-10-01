@@ -32,7 +32,6 @@ class DeviceListAdapter(
             itemBinding.ipAddressTextView.text = device.address
             itemBinding.isOffline.visibility = if (device.isOnline) View.GONE else View.VISIBLE
             itemBinding.updateIndicator.visibility = if (device.hasUpdateAvailable) View.VISIBLE else View.GONE
-            itemBinding.updateIndicatorLabel.visibility = itemBinding.updateIndicator.visibility
             itemBinding.brightnessSeekbar.progress = device.brightness
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())

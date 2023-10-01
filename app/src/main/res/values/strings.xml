@@ -18,7 +18,7 @@
     <string name="update_available">Update Available</string>
     <string name="network_status">Network Status</string>
     <string name="refresh_list">Refresh List</string>
-    <string name="refresh">Refresh List</string>
+    <string name="refresh_page">Refresh Page</string>
     <string name="manage_devices">Manage Devices</string>
     <string name="remove">Remove</string>
     <string name="edit_device">Edit Device</string>
@@ -56,4 +56,7 @@
     <string name="device_ap_mode">WLED AP Mode</string>
     <string name="device_ap_mode_detected">WLED AP Mode Detected</string>
     <string name="device_ap_mode_detected_click">Click here to open Device</string>
+    <string name="install">Install</string>
+    <string name="later">Later</string>
+    <string name="skip_this_version">Skip this Version</string>
 </resources>

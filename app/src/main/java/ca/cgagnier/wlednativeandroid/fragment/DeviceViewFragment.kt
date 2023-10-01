@@ -10,11 +10,13 @@ import android.util.Log
 import android.view.*
 import android.webkit.*
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -41,6 +43,7 @@ class DeviceViewFragment : Fragment() {
         )
     }
 
+    private var isLargeLayout: Boolean = false
     private lateinit var onBackPressedCallback: OnBackPressedCallback
     private lateinit var webViewViewModel: WebViewViewModel
     private lateinit var _webview: WebView
@@ -88,6 +91,7 @@ class DeviceViewFragment : Fragment() {
     ): View {
         Log.i(TAG_NAME, "Device view creating")
         _binding = FragmentDeviceViewBinding.inflate(layoutInflater, container, false)
+        isLargeLayout = resources.getBoolean(R.bool.large_layout)
         return binding.root
     }
 
@@ -186,8 +190,10 @@ class DeviceViewFragment : Fragment() {
                         error: WebResourceError?
                     ) {
                         if (request?.isForMainFrame == true) {
-                            Log.i(TAG_NAME,
-                                "Error received ${request.url} - ${error?.description}")
+                            Log.i(
+                                TAG_NAME,
+                                "Error received ${request.url} - ${error?.description}"
+                            )
 
 
                             shouldShowErrorPage = true
@@ -283,17 +289,17 @@ class DeviceViewFragment : Fragment() {
 
         toolbar.addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
-                // Handle for example visibility of menu items
-                menu.findItem(R.id.action_browse_back).isEnabled = _webview.canGoBack()
-                menu.findItem(R.id.action_browse_forward).isEnabled = _webview.canGoForward()
-
-                if (deviceListViewModel.isTwoPane.value == true) {
-                    toolbar.navigationIcon = null
-                }
+                updateMenuState(menu)
             }
 
+            @SuppressLint("RestrictedApi")
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.navigate, menu)
+
+                if (menu is MenuBuilder) {
+                    menu.setOptionalIconsVisible(true)
+                }
+                updateMenuState(menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -302,19 +308,38 @@ class DeviceViewFragment : Fragment() {
                         navigateBack()
                         true
                     }
+
                     R.id.action_browse_forward -> {
                         navigateForward()
                         true
                     }
+
                     R.id.action_browse_refresh -> {
                         Log.i(TAG_NAME, "Manual refresh requested")
                         refresh()
                         true
                     }
 
+                    R.id.action_browse_update -> {
+                        showUpdateDialog()
+                        true
+                    }
+
                     else -> {
                         false
                     }
+                }
+            }
+
+            fun updateMenuState(menu: Menu) {
+                // Handle for example visibility of menu items
+                menu.findItem(R.id.action_browse_back).isEnabled = _webview.canGoBack()
+                menu.findItem(R.id.action_browse_forward).isEnabled = _webview.canGoForward()
+                menu.findItem(R.id.action_browse_update).isVisible =
+                    deviceListViewModel.activeDevice.value?.hasUpdateAvailable ?: false
+
+                if (deviceListViewModel.isTwoPane.value == true) {
+                    toolbar.navigationIcon = null
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -333,6 +358,7 @@ class DeviceViewFragment : Fragment() {
         binding.deviceToolbar.title =
             deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
         binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
+        //updateNavigationState()
     }
 
     fun navigateBack(): Boolean {
@@ -353,6 +379,29 @@ class DeviceViewFragment : Fragment() {
 
     fun updateNavigationState() {
         _binding?.deviceToolbar?.invalidateMenu()
+    }
+
+    fun showUpdateDialog() {
+        val fragmentManager = activity?.supportFragmentManager!!
+        val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
+        val newFragment =
+            DeviceUpdateAvailableFragment.newInstance(deviceAddress)
+        if (isLargeLayout) {
+            // The device is using a large layout, so show the fragment as a
+            // dialog.
+            newFragment.show(fragmentManager, "dialog")
+        } else {
+            // The device is smaller, so show the fragment fullscreen.
+            val transaction = fragmentManager.beginTransaction()
+            // For a polished look, specify a transition animation.
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            // To make it fullscreen, use the 'content' root view as the container
+            // for the fragment, which is always the root view for the activity.
+            transaction
+                .add(android.R.id.content, newFragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     companion object {
