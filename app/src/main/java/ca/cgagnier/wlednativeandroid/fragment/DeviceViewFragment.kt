@@ -385,7 +385,7 @@ class DeviceViewFragment : Fragment() {
         val fragmentManager = activity?.supportFragmentManager!!
         val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
         val newFragment =
-            DeviceUpdateAvailableFragment.newInstance(deviceAddress, true)
+            DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
         if (isLargeLayout) {
             // The device is using a large layout, so show the fragment as a
             // dialog.
