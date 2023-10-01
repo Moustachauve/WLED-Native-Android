@@ -25,7 +25,7 @@ class DeviceListViewModel(private val repository: DeviceRepository,
 
     var isTwoPane = MutableLiveData(false)
     var doRefreshWeb = MutableLiveData(false)
-    var expectDeviceChange = false
+    var expectDeviceChange = true
 
     fun insert(device: Device) = viewModelScope.launch {
         repository.insert(device)
