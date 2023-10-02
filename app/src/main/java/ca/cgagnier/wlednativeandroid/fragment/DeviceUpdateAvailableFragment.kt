@@ -34,9 +34,9 @@ private const val IS_LARGE_LAYOUT = "is_large_layout"
  * create an instance of this fragment.
  */
 class DeviceUpdateAvailableFragment : DialogFragment() {
-    private var deviceAddress: String? = null
-    private var device: Device? = null
-    private var version: VersionWithAssets? = null
+    private lateinit var deviceAddress: String
+    private lateinit var device: Device
+    private lateinit var version: VersionWithAssets
     private var _binding: FragmentDeviceUpdateAvailableBinding? = null
     private val binding get() = _binding!!
     private var isLargeLayout: Boolean = false
@@ -44,7 +44,7 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceAddress = it.getString(DEVICE_ADDRESS)
+            deviceAddress = it.getString(DEVICE_ADDRESS)!!
             isLargeLayout = it.getBoolean(IS_LARGE_LAYOUT)
             loadDeviceAndVersion()
         }
@@ -126,19 +126,19 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
         val versionRepository =
             (requireActivity().application as DevicesApplication).versionWithAssetsRepository
         lifecycleScope.launch {
-            device = deviceRepository.findDeviceByAddress(deviceAddress!!)
-            version = versionRepository.getLatestVersionWithAssets()
+            device = deviceRepository.findDeviceByAddress(deviceAddress)!!
+            version = versionRepository.getLatestVersionWithAssets()!!
             updateFields()
         }
     }
 
     private fun updateFields() {
-        binding.deviceName.text = device!!.name
-        binding.deviceAddress.text = device!!.address
-        binding.versionTag.text = version!!.version.tagName
+        binding.deviceName.text = device.name
+        binding.deviceAddress.text = device.address
+        binding.versionTag.text = version.version.tagName
 
-        val markwon = Markwon.create(requireContext())
-        markwon.setMarkdown(binding.versionNotes, version!!.version.description)
+        Markwon.create(requireContext())
+            .setMarkdown(binding.versionNotes, version.version.description)
     }
 
     private fun getScreenWidth(): Int {
@@ -169,9 +169,9 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
     }
 
     private fun skipVersion() {
-        val updatedDevice = device!!.copy(
+        val updatedDevice = device.copy(
             hasUpdateAvailable = false,
-            skipUpdateTag = version!!.version.tagName
+            skipUpdateTag = version.version.tagName
         )
         if (updatedDevice == device) {
             dismiss()
