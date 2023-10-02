@@ -20,6 +20,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object DeviceApi {
     private const val TAG = "DeviceApi"
     private var application: DevicesApplication? = null
+
     @OptIn(DelicateCoroutinesApi::class)
     private val scope = CoroutineScope(newSingleThreadContext(TAG))
 
@@ -49,7 +50,10 @@ object DeviceApi {
         }
 
         stateInfoCall.enqueue(object : Callback<DeviceStateInfo> {
-            override fun onResponse(call: Call<DeviceStateInfo>, response: Response<DeviceStateInfo>) =
+            override fun onResponse(
+                call: Call<DeviceStateInfo>,
+                response: Response<DeviceStateInfo>
+            ) =
                 onSuccess(device, response, callback)
 
             override fun onFailure(call: Call<DeviceStateInfo>, t: Throwable) =
@@ -62,7 +66,10 @@ object DeviceApi {
 
         val stateInfoCall = getJsonApi(device).postJson(jsonData)
         stateInfoCall.enqueue(object : Callback<DeviceStateInfo> {
-            override fun onResponse(call: Call<DeviceStateInfo>, response: Response<DeviceStateInfo>) =
+            override fun onResponse(
+                call: Call<DeviceStateInfo>,
+                response: Response<DeviceStateInfo>
+            ) =
                 onSuccess(device, response)
 
             override fun onFailure(call: Call<DeviceStateInfo>, t: Throwable) =
@@ -78,7 +85,11 @@ object DeviceApi {
             .create(JsonApi::class.java)
     }
 
-    private fun onFailure(device: Device, t: Throwable? = null, callback: ((Device) -> Unit)? = null) {
+    private fun onFailure(
+        device: Device,
+        t: Throwable? = null,
+        callback: ((Device) -> Unit)? = null
+    ) {
         if (t != null) {
             Log.e(TAG, t.message!!)
             Firebase.crashlytics.recordException(t)
@@ -93,7 +104,11 @@ object DeviceApi {
         }
     }
 
-    fun onSuccess(device: Device, response: Response<DeviceStateInfo>, callback: ((Device) -> Unit)? = null) {
+    fun onSuccess(
+        device: Device,
+        response: Response<DeviceStateInfo>,
+        callback: ((Device) -> Unit)? = null
+    ) {
         scope.launch {
             if (response.code() == 200 && response.isSuccessful && response.body() != null) {
                 val deviceStateInfo = response.body()!!
@@ -101,7 +116,8 @@ object DeviceApi {
 
                 val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
                 val updateService = UpdateService(application!!.versionWithAssetsRepository)
-                val hasUpdateAvailable = updateService.hasUpdateAvailable(deviceVersion)
+                val hasUpdateAvailable =
+                    updateService.hasUpdateAvailable(deviceVersion, device.skipUpdateTag)
 
                 val updatedDevice = device.copy(
                     macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,

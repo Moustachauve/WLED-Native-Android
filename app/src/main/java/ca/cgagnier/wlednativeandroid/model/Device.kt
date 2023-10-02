@@ -31,7 +31,8 @@ data class Device(
     val version: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = "0")
     val hasUpdateAvailable: Boolean = false,
-
+    @ColumnInfo(defaultValue = "")
+    val skipUpdateTag: String = "",
 ) {
     @Ignore
     var isSliding = false

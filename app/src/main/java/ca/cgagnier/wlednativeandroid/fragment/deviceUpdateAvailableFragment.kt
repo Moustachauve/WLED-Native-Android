@@ -64,11 +64,14 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
                     // Install update
                     return@setOnItemSelectedListener true
                 }
+
                 R.id.action_later -> {
                     dismiss()
                     return@setOnItemSelectedListener true
                 }
+
                 R.id.action_skip -> {
+                    skipVersion()
                     return@setOnItemSelectedListener true
                 }
             }
@@ -80,14 +83,15 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
+        var width = WindowManager.LayoutParams.MATCH_PARENT
+        var layoutType = WindowManager.LayoutParams.MATCH_PARENT
         if (isLargeLayout) {
-            val window = dialog!!.window!!
-            window.setLayout(
-                (getScreenWidth() * 0.70).toInt(),
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            window.setGravity(Gravity.CENTER)
+            width = (getScreenWidth() * 0.70).toInt()
+            layoutType = WindowManager.LayoutParams.WRAP_CONTENT
         }
+        val window = dialog!!.window!!
+        window.setLayout(width, layoutType)
+        window.setGravity(Gravity.CENTER)
     }
 
     override fun onAttach(context: Context) {
@@ -118,14 +122,6 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
         }
     }
 
-    override fun dismiss() {
-        if (isLargeLayout) {
-            super.dismiss()
-        } else {
-            parentFragmentManager.popBackStack()
-        }
-    }
-
     private fun loadDeviceAndVersion() {
         val deviceRepository =
             (requireActivity().application as DevicesApplication).deviceRepository
@@ -148,26 +144,49 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
     }
 
     private fun getScreenWidth(): Int {
-        val windowManager = requireActivity().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val windowManager =
+            requireActivity().getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val width: Int
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics = windowManager.currentWindowMetrics
             val windowInsets: WindowInsets = windowMetrics.windowInsets
 
             val insets = windowInsets.getInsetsIgnoringVisibility(
-                WindowInsets.Type.navigationBars() or WindowInsets.Type.displayCutout())
+                WindowInsets.Type.navigationBars() or WindowInsets.Type.displayCutout()
+            )
             val insetsWidth = insets.right + insets.left
 
             val b = windowMetrics.bounds
             width = b.width() - insetsWidth
         } else {
             val size = Point()
-            val display = windowManager.defaultDisplay
+            // This branch is only to support old devices, so deprecation is fine.
+            @Suppress("DEPRECATION") val display = windowManager.defaultDisplay
+            @Suppress("DEPRECATION")
             display?.getSize(size)
             width = size.x
         }
 
         return width
+    }
+
+    private fun skipVersion() {
+        val updatedDevice = device!!.copy(
+            hasUpdateAvailable = false,
+            skipUpdateTag = version!!.version.tagName
+        )
+        if (updatedDevice == device) {
+            dismiss()
+            return
+        }
+
+        lifecycleScope.launch {
+            val deviceRepository =
+                (requireActivity().application as DevicesApplication).deviceRepository
+            deviceRepository.update(updatedDevice)
+            dismiss()
+        }
+
     }
 
     companion object {
