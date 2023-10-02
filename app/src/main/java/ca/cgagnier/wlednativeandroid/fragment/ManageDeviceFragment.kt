@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListManageAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentManageDevicesBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModel
@@ -90,8 +90,7 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
     }
 
     private fun editItem(item: Device) {
-        manageDevicesViewModel.updateActiveDevice(item)
-        val dialog = DeviceEditFragment()
+        val dialog = DeviceEditFragment.newInstance(item.address)
         dialog.showsDialog = true
         dialog.show(requireActivity().supportFragmentManager, "device_edit")
     }

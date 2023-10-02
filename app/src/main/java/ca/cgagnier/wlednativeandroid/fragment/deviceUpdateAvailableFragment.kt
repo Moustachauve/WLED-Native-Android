@@ -25,8 +25,6 @@ import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.launch
 
-
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val DEVICE_ADDRESS = "device_address"
 private const val IS_LARGE_LAYOUT = "is_large_layout"
 

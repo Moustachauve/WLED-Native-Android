@@ -5,24 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddEditBinding
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
-import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModel
-import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 
 class DeviceEditFragment : BottomSheetDialogFragment() {
+    private lateinit var deviceAddress: String
+    private lateinit var device: Device
 
     private var _binding: FragmentDeviceAddEditBinding? = null
     private val binding get() = _binding!!
 
-    private val manageDevicesViewModel: ManageDevicesViewModel by activityViewModels {
-        ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            deviceAddress = it.getString(DEVICE_ADDRESS)!!
+        }
     }
 
     override fun onCreateView(
@@ -31,24 +36,7 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDeviceAddEditBinding.inflate(layoutInflater)
-
-        val device = manageDevicesViewModel.activeDevice.value!!
-
-        binding.dialogTitle.text = context?.getString(R.string.edit_device)
-
-        binding.deviceAddressTextInputLayout.isEnabled = false
-        binding.deviceAddressTextInputLayout.editText?.setText(device.address)
-        binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
-        binding.customNameTextInputLayout.requestFocus()
-        binding.hideDeviceCheckBox.isChecked = device.isHidden
-
-        binding.buttonSave.setOnClickListener {
-            submitClickListener()
-        }
-        binding.buttonCancel.setOnClickListener {
-            dismiss()
-        }
-
+        loadDevice()
         return binding.root
     }
 
@@ -64,15 +52,58 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
         val deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
 
-        val device = manageDevicesViewModel.activeDevice.value!!.copy(
+        val updatedDevice = device.copy(
             name = deviceName,
             isCustomName = deviceName != "",
             isHidden = isHidden
         )
 
-        manageDevicesViewModel.insert(device)
-        DeviceApi.update(device, false)
+        lifecycleScope.launch {
+            (requireActivity().application as DevicesApplication).deviceRepository.insert(updatedDevice)
+            DeviceApi.update(updatedDevice, false)
+            dismiss()
+        }
+    }
 
-        dismiss()
+    private fun loadDevice() {
+        val deviceRepository =
+            (requireActivity().application as DevicesApplication).deviceRepository
+        lifecycleScope.launch {
+            device = deviceRepository.findDeviceByAddress(deviceAddress)!!
+            updateFields()
+        }
+    }
+
+    private fun updateFields() {
+        binding.dialogTitle.text = context?.getString(R.string.edit_device)
+
+        binding.deviceAddressTextInputLayout.isEnabled = false
+        binding.deviceAddressTextInputLayout.editText?.setText(device.address)
+        binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
+        binding.customNameTextInputLayout.requestFocus()
+        binding.hideDeviceCheckBox.isChecked = device.isHidden
+
+        binding.buttonSave.setOnClickListener {
+            submitClickListener()
+        }
+        binding.buttonCancel.setOnClickListener {
+            dismiss()
+        }
+    }
+
+    companion object {
+        private const val DEVICE_ADDRESS = "device_address"
+
+        /**
+         * @param deviceAddress Address of device that can be updated
+         * @return A new instance of DeviceEditFragment.
+         */
+        @JvmStatic
+        fun newInstance(deviceAddress: String) =
+            DeviceEditFragment().apply {
+                arguments = Bundle().apply {
+                    putString(DEVICE_ADDRESS, deviceAddress)
+                }
+            }
     }
 }
