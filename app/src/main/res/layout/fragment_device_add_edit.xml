@@ -109,8 +109,8 @@
 
             <ImageView
                 android:id="@+id/icon_update"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:contentDescription="@string/update_available"
                 android:showText="false"
                 android:layout_marginTop="3dp"
@@ -123,8 +123,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/icon_update"

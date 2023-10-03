@@ -115,8 +115,11 @@ class DeviceEditFragment : DialogFragment() {
         binding.layoutUpdateAvailable.visibility =
             if (device.hasUpdateAvailable()) View.VISIBLE else View.GONE
         if (device.hasUpdateAvailable()) {
-            binding.versionFromTo.text =
-                getString(R.string.from_version_to_version, device.version, device.version)
+            binding.versionFromTo.text = getString(
+                R.string.from_version_to_version,
+                "v$device.version",
+                device.newUpdateVersionTagAvailable
+            )
         }
 
         firstLoad = false
