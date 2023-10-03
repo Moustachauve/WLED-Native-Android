@@ -13,15 +13,19 @@ import org.kohsuke.github.GHRelease
 
 class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
 
-    suspend fun hasUpdateAvailable(versionName: String, ignoreVersion: String): Boolean {
+    suspend fun getUpdateVersionTagAvailable(versionName: String, ignoreVersion: String): String {
         if (versionName == Device.UNKNOWN_VALUE) {
-            return false
+            return ""
         }
-        val latestVersion = versionWithAssetsRepository.getLatestVersionWithAssets() ?: return false
+        val latestVersion = versionWithAssetsRepository.getLatestVersionWithAssets() ?: return ""
         if (latestVersion.version.tagName == ignoreVersion) {
-            return false
+            return ""
         }
-        return Semver(latestVersion.version.tagName.drop(1)).isGreaterThan(versionName)
+        return if (Semver(latestVersion.version.tagName.drop(1)).isGreaterThan(versionName)) {
+            latestVersion.version.tagName
+        } else {
+            ""
+        }
     }
 
     suspend fun refreshVersions(context: Context) {

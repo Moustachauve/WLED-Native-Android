@@ -170,7 +170,7 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
 
     private fun skipVersion() {
         val updatedDevice = device.copy(
-            hasUpdateAvailable = false,
+            newUpdateVersionTagAvailable = "",
             skipUpdateTag = version.version.tagName
         )
         if (updatedDevice == device) {

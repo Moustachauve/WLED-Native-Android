@@ -22,4 +22,9 @@
         android:title="@string/refresh_page"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_manage_device"
+        android:icon="@drawable/ic_baseline_edit_24"
+        android:title="@string/properties"
+        app:showAsAction="ifRoom" />
 </menu>

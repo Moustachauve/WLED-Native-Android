@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "9482ce7b2abc6708fb607ede298660e0",
+    "identityHash": "4b4287219efa8324cdcbb3face6d1a23",
     "entities": [
       {
         "tableName": "Device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkRssi` INTEGER NOT NULL, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `hasUpdateAvailable` INTEGER NOT NULL DEFAULT 0, `skipUpdateTag` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkRssi` INTEGER NOT NULL, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -97,11 +97,11 @@
             "defaultValue": "'__unknown__'"
           },
           {
-            "fieldPath": "hasUpdateAvailable",
-            "columnName": "hasUpdateAvailable",
-            "affinity": "INTEGER",
+            "fieldPath": "newUpdateVersionTagAvailable",
+            "columnName": "newUpdateVersionTagAvailable",
+            "affinity": "TEXT",
             "notNull": true,
-            "defaultValue": "0"
+            "defaultValue": "''"
           },
           {
             "fieldPath": "skipUpdateTag",
@@ -235,7 +235,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9482ce7b2abc6708fb607ede298660e0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4b4287219efa8324cdcbb3face6d1a23')"
     ]
   }
 }

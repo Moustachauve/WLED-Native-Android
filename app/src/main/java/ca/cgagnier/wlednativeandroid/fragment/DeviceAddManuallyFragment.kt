@@ -9,10 +9,10 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddEditBinding
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
@@ -46,6 +46,8 @@ class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
         binding.deviceAddressTextInputLayout.requestFocus()
         val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(binding.deviceAddressTextInputLayout, InputMethodManager.SHOW_IMPLICIT)
+
+        binding.buttonCheckForUpdate.visibility = View.GONE
 
         binding.buttonSave.setOnClickListener {
             submitClickListener()

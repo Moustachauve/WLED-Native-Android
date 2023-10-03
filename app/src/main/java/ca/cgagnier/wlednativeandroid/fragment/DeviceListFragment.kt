@@ -8,7 +8,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -23,12 +29,13 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ca.cgagnier.wlednativeandroid.*
+import ca.cgagnier.wlednativeandroid.AutoDiscoveryActivity
+import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
@@ -194,7 +201,7 @@ class DeviceListFragment : Fragment(),
         toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.home, menu)
-                val actionBar = activity?.actionBar
+                val actionBar = requireActivity().actionBar
 
                 actionBar?.setDisplayHomeAsUpEnabled(true)
             }

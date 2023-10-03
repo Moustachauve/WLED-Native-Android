@@ -28,7 +28,12 @@ object DeviceApi {
         application = devicesApplication
     }
 
-    fun update(device: Device, silentUpdate: Boolean, callback: ((Device) -> Unit)? = null) {
+    fun update(
+        device: Device,
+        silentUpdate: Boolean,
+        saveChanges: Boolean = true,
+        callback: ((Device) -> Unit)? = null
+    ) {
         if (!silentUpdate) {
             val newDevice = device.copy(isRefreshing = true)
 
@@ -54,14 +59,14 @@ object DeviceApi {
                 call: Call<DeviceStateInfo>,
                 response: Response<DeviceStateInfo>
             ) =
-                onSuccess(device, response, callback)
+                onSuccess(device, response, saveChanges, callback)
 
             override fun onFailure(call: Call<DeviceStateInfo>, t: Throwable) =
                 onFailure(device, t, callback)
         })
     }
 
-    fun postJson(device: Device, jsonData: JsonPost) {
+    fun postJson(device: Device, jsonData: JsonPost, saveChanges: Boolean = true) {
         Log.d(TAG, "Posting update to device [${device.address}]")
 
         val stateInfoCall = getJsonApi(device).postJson(jsonData)
@@ -70,7 +75,7 @@ object DeviceApi {
                 call: Call<DeviceStateInfo>,
                 response: Response<DeviceStateInfo>
             ) =
-                onSuccess(device, response)
+                onSuccess(device, response, saveChanges)
 
             override fun onFailure(call: Call<DeviceStateInfo>, t: Throwable) =
                 onFailure(device, t)
@@ -107,6 +112,7 @@ object DeviceApi {
     fun onSuccess(
         device: Device,
         response: Response<DeviceStateInfo>,
+        saveChanges: Boolean,
         callback: ((Device) -> Unit)? = null
     ) {
         scope.launch {
@@ -116,8 +122,8 @@ object DeviceApi {
 
                 val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
                 val updateService = UpdateService(application!!.versionWithAssetsRepository)
-                val hasUpdateAvailable =
-                    updateService.hasUpdateAvailable(deviceVersion, device.skipUpdateTag)
+                val updateVersionTagAvailable =
+                    updateService.getUpdateVersionTagAvailable(deviceVersion, device.skipUpdateTag)
 
                 val updatedDevice = device.copy(
                     macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
@@ -135,15 +141,16 @@ object DeviceApi {
                     isEthernet = false,
                     platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
                     version = deviceVersion,
-                    hasUpdateAvailable = hasUpdateAvailable
+                    newUpdateVersionTagAvailable = updateVersionTagAvailable
                 )
+
+                if (saveChanges && updatedDevice != device) {
+                    application!!.deviceRepository.update(updatedDevice)
+                }
 
                 if (callback != null) {
                     callback(updatedDevice)
                     return@launch
-                }
-                if (updatedDevice != device) {
-                    application!!.deviceRepository.update(updatedDevice)
                 }
             } else {
                 Firebase.crashlytics.log("Response success, but not valid")

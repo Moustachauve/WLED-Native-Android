@@ -29,8 +29,8 @@ data class Device(
     val platformName: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val version: String = UNKNOWN_VALUE,
-    @ColumnInfo(defaultValue = "0")
-    val hasUpdateAvailable: Boolean = false,
+    @ColumnInfo(defaultValue = "")
+    val newUpdateVersionTagAvailable: String = "",
     @ColumnInfo(defaultValue = "")
     val skipUpdateTag: String = "",
 ) {
@@ -58,6 +58,10 @@ data class Device(
             return R.drawable.twotone_signal_wifi_1_bar_24
         }
         return R.drawable.twotone_signal_wifi_0_bar_24
+    }
+
+    fun hasUpdateAvailable(): Boolean {
+        return newUpdateVersionTagAvailable != ""
     }
 
     companion object {

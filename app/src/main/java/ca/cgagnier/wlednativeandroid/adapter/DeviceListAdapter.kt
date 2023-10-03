@@ -31,7 +31,7 @@ class DeviceListAdapter(
                 if (device.name == "") context.getString(R.string.default_device_name) else device.name
             itemBinding.ipAddressTextView.text = device.address
             itemBinding.isOffline.visibility = if (device.isOnline) View.GONE else View.VISIBLE
-            itemBinding.updateIndicator.visibility = if (device.hasUpdateAvailable) View.VISIBLE else View.GONE
+            itemBinding.updateIndicator.visibility = if (device.hasUpdateAvailable()) View.VISIBLE else View.GONE
             itemBinding.brightnessSeekbar.progress = device.brightness
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())

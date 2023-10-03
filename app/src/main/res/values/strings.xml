@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" translatable="false">WLED Native</string>
     <string name="app_logo">WLED Logo</string>
     <string name="add_a_device">Add or Discover a Device</string>
@@ -22,6 +22,7 @@
     <string name="manage_devices">Manage Devices</string>
     <string name="remove">Remove</string>
     <string name="edit_device">Edit Device</string>
+    <string name="edit_device_with_name">Edit Device - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
     <string name="remove_device">Remove Device</string>
     <string name="remove_device_confirm">Remove a device?</string>
     <string name="remove_device_confirm_text">Do you really want to remove %1$s [%2$s]?</string>
@@ -59,4 +60,11 @@
     <string name="install">Install</string>
     <string name="later">Later</string>
     <string name="skip_this_version">Skip this Version</string>
+    <string name="properties">Properties</string>
+    <string name="check_for_update">Check for Update</string>
+    <string name="from_version_to_version">
+        From <xliff:g example="v0.13.0" id="old_version">%1$s</xliff:g> To <xliff:g example="v0.14.0" id="new_version">%2$s</xliff:g>
+    </string>
+    <string name="see_update_details">See Update</string>
+    <string name="checking_progress_update">Checking…</string>
 </resources>

@@ -155,7 +155,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
         Log.i(TAG, "IP: ${deviceIp}\tName: ${deviceName}\t")
 
-        DeviceApi.update(device, true) {
+        DeviceApi.update(device, silentUpdate = true, saveChanges = false) {
             lifecycleScope.launch {
                 val existingDevice = deviceListViewModel.findWithSameMacAddress(it)
                 if (existingDevice != null && it.macAddress != Device.UNKNOWN_VALUE) {

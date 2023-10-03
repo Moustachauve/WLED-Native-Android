@@ -324,6 +324,11 @@ class DeviceViewFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_manage_device -> {
+                        showEditDevice()
+                        true
+                    }
+
                     else -> {
                         false
                     }
@@ -335,7 +340,7 @@ class DeviceViewFragment : Fragment() {
                 menu.findItem(R.id.action_browse_back).isEnabled = _webview.canGoBack()
                 menu.findItem(R.id.action_browse_forward).isEnabled = _webview.canGoForward()
                 menu.findItem(R.id.action_browse_update).isVisible =
-                    deviceListViewModel.activeDevice.value?.hasUpdateAvailable ?: false
+                    deviceListViewModel.activeDevice.value?.hasUpdateAvailable() ?: false
 
                 if (deviceListViewModel.isTwoPane.value == true) {
                     toolbar.navigationIcon = null
@@ -381,11 +386,17 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun showUpdateDialog() {
-        val fragmentManager = activity?.supportFragmentManager!!
+        val fragmentManager = requireActivity().supportFragmentManager
         val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
         val newFragment =
             DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
         newFragment.show(fragmentManager, "dialog")
+    }
+
+    fun showEditDevice() {
+        val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
+        val dialog = DeviceEditFragment.newInstance(deviceAddress)
+        dialog.show(requireActivity().supportFragmentManager, "device_edit")
     }
 
     companion object {
