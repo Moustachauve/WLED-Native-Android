@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.repository
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import ca.cgagnier.wlednativeandroid.model.Device
 import kotlinx.coroutines.flow.Flow
 
@@ -20,6 +21,11 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
     @WorkerThread
     suspend fun findDeviceByAddress(address: String): Device? {
         return deviceDao.findDeviceByAddress(address)
+    }
+
+    @WorkerThread
+    fun findLiveDeviceByAddress(address: String): LiveData<Device> {
+        return deviceDao.findLiveDeviceByAddress(address)
     }
 
     @Suppress("RedundantSuspendModifier")

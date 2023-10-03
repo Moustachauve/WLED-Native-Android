@@ -93,10 +93,11 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
     }
 
     private fun loadDevice() {
-        lifecycleScope.launch {
-            device = deviceRepository.findDeviceByAddress(deviceAddress)!!
-            updateFields()
-        }
+        deviceRepository.findLiveDeviceByAddress(deviceAddress)
+            .observe(viewLifecycleOwner) {
+                device = it
+                updateFields()
+            }
     }
 
     private fun updateFields() {
@@ -149,12 +150,7 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
         val updateService = UpdateService(versionWithAssetsRepository)
         lifecycleScope.launch(Dispatchers.IO) {
             updateService.refreshVersions(requireContext())
-            DeviceApi.update(device, false) {
-                device = it
-                requireActivity().runOnUiThread {
-                    updateFields()
-                }
-            }
+            DeviceApi.update(device, false)
         }
     }
 

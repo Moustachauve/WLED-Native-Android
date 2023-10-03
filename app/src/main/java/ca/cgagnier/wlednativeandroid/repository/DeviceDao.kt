@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.repository
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -30,6 +31,9 @@ interface DeviceDao {
 
     @Query("SELECT * FROM device WHERE address = :address")
     suspend fun findDeviceByAddress(address: String): Device?
+
+    @Query("SELECT * FROM device WHERE address = :address")
+    fun findLiveDeviceByAddress(address: String): LiveData<Device>
 
     @Query("SELECT * FROM device WHERE macAddress != '' AND macAddress = :address")
     suspend fun findDeviceByMacAddress(address: String): Device?
