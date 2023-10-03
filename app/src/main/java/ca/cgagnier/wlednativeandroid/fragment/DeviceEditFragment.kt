@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
@@ -15,13 +15,11 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.UpdateService
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DeviceEditFragment : BottomSheetDialogFragment() {
+class DeviceEditFragment : DialogFragment() {
+    private var firstLoad = true
     private lateinit var deviceAddress: String
     private lateinit var device: Device
 
@@ -67,14 +65,6 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        val alertDialog = dialog as BottomSheetDialog
-        alertDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        alertDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        alertDialog.behavior.skipCollapsed = true
-        super.onResume()
-    }
-
     private fun submitClickListener() {
         val deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
@@ -109,7 +99,9 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
         binding.customNameTextInputLayout.requestFocus()
         binding.hideDeviceCheckBox.isChecked = device.isHidden
 
-        TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
+        if (!firstLoad) {
+            TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
+        }
 
         binding.buttonCheckForUpdate.visibility =
             if (device.hasUpdateAvailable()) View.GONE else View.VISIBLE
@@ -126,6 +118,8 @@ class DeviceEditFragment : BottomSheetDialogFragment() {
             binding.versionFromTo.text =
                 getString(R.string.from_version_to_version, device.version, device.version)
         }
+
+        firstLoad = false
     }
 
     private fun checkForUpdate() {
