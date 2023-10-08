@@ -20,7 +20,7 @@ import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
-import ca.cgagnier.wlednativeandroid.service.update.UpdateService
+import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -140,6 +140,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
 
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
         Log.i(TAG, "Device discovered!")
+        @Suppress("DEPRECATION")
         val deviceIp = serviceInfo.host.hostAddress!!
         val deviceName = serviceInfo.serviceName ?: ""
         val device = Device(
@@ -191,8 +192,8 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
                     Log.i(TAG, "Not updating version list since it was done recently.")
                     return@collect
                 }
-                val updateService = UpdateService(app.versionWithAssetsRepository)
-                updateService.refreshVersions(applicationContext)
+                val releaseService = ReleaseService(app.versionWithAssetsRepository)
+                releaseService.refreshVersions(applicationContext)
                 // Set the next date to check in minimum 24 hours from now.
                 app.userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
             }

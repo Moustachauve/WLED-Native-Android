@@ -7,7 +7,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.service.api.JsonApi
-import ca.cgagnier.wlednativeandroid.service.update.UpdateService
+import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
@@ -121,9 +121,9 @@ object DeviceApi {
                 val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
                 val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
-                val updateService = UpdateService(application!!.versionWithAssetsRepository)
+                val releaseService = ReleaseService(application!!.versionWithAssetsRepository)
                 val updateVersionTagAvailable =
-                    updateService.getUpdateVersionTagAvailable(deviceVersion, device.skipUpdateTag)
+                    releaseService.getUpdateVersionTagAvailable(deviceVersion, device.skipUpdateTag)
 
                 val updatedDevice = device.copy(
                     macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,

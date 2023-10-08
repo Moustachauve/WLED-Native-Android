@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "d314a598a8f8ce454966aa4b17fa2bfe",
+    "identityHash": "e307c1f99504800e840096977e013c45",
     "entities": [
       {
         "tableName": "Device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkRssi` INTEGER NOT NULL, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkBssid` TEXT NOT NULL DEFAULT '__unknown__', `networkRssi` INTEGER NOT NULL DEFAULT __unknown__, `networkSignal` INTEGER NOT NULL DEFAULT 0, `networkChannel` INTEGER NOT NULL DEFAULT 0, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', `productType` TEXT NOT NULL DEFAULT 'wled', `branch` TEXT NOT NULL DEFAULT 'stable', PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -70,10 +70,32 @@
             "notNull": true
           },
           {
+            "fieldPath": "networkBssid",
+            "columnName": "networkBssid",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'__unknown__'"
+          },
+          {
             "fieldPath": "networkRssi",
             "columnName": "networkRssi",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "__unknown__"
+          },
+          {
+            "fieldPath": "networkSignal",
+            "columnName": "networkSignal",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "networkChannel",
+            "columnName": "networkChannel",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "isEthernet",
@@ -109,6 +131,20 @@
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "''"
+          },
+          {
+            "fieldPath": "productType",
+            "columnName": "productType",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'wled'"
+          },
+          {
+            "fieldPath": "branch",
+            "columnName": "branch",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'stable'"
           }
         ],
         "primaryKey": {
@@ -235,7 +271,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd314a598a8f8ce454966aa4b17fa2bfe')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e307c1f99504800e840096977e013c45')"
     ]
   }
 }

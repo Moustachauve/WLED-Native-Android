@@ -20,4 +20,7 @@ class VersionWithAssetsRepository(deviceDatabase: DevicesDatabase) {
     suspend fun getLatestVersionWithAssets(): VersionWithAssets? {
         return versionDao.getLatestVersionWithAssets()
     }
+    suspend fun getVersionByTag(tagName: String): VersionWithAssets? {
+        return versionDao.getVersionByTagName(tagName)
+    }
 }

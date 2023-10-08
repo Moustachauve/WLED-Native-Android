@@ -59,7 +59,11 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
         binding.buttons.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.action_install -> {
-                    // Install update
+                    dismiss()
+                    DeviceUpdateInstallingFragment.newInstance(
+                        deviceAddress,
+                        version.version.tagName
+                    ).show(parentFragmentManager, "dialog")
                     return@setOnItemSelectedListener true
                 }
 

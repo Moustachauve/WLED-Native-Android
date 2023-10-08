@@ -64,4 +64,7 @@
     <string name="from_version_to_version">De %1$s à %2$s</string>
     <string name="see_update_details">Installer</string>
     <string name="checking_progress_update">Recherche en cours…</string>
+    <string name="updating">%1$s - Installation</string>
+    <string name="please_do_not_close_the_app_or_turn_off_the_device">Ne fermez pas l\'application et n\'éteignez pas l\'appareil.</string>
+    <string name="starting_up">Démarrage</string>
 </resources>

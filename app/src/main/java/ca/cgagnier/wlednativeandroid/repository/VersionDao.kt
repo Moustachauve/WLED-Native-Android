@@ -33,6 +33,10 @@ interface VersionDao {
     suspend fun getLatestVersionWithAssets(): VersionWithAssets?
 
     @Transaction
+    @Query("SELECT * FROM version WHERE tagName = :tagName LIMIT 1")
+    suspend fun getVersionByTagName(tagName: String): VersionWithAssets?
+
+    @Transaction
     @Query("SELECT * FROM version")
     fun getVersionsWithAsset(): Flow<List<VersionWithAssets>>
 }

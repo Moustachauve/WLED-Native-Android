@@ -21,8 +21,14 @@ data class Device(
     val isPoweredOn: Boolean = false,
     val isOnline: Boolean = false,
     val isRefreshing: Boolean = false,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val networkBssid: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val networkRssi: Int = -101,
-    // TODO: Check board type for ethernet only boards
+    @ColumnInfo(defaultValue = "0")
+    val networkSignal: Int = 0,
+    @ColumnInfo(defaultValue = "0")
+    val networkChannel: Int = 0,
     @ColumnInfo(defaultValue = "0")
     val isEthernet: Boolean = false,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
@@ -33,6 +39,10 @@ data class Device(
     val newUpdateVersionTagAvailable: String = "",
     @ColumnInfo(defaultValue = "")
     val skipUpdateTag: String = "",
+    @ColumnInfo(defaultValue = "wled")
+    val productType: String = "wled",
+    @ColumnInfo(defaultValue = "stable")
+    val branch: String = "stable",
 ) {
     @Ignore
     var isSliding = false

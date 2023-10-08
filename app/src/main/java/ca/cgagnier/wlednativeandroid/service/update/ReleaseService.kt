@@ -11,7 +11,7 @@ import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import com.vdurmont.semver4j.Semver
 
 
-class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
+class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
 
     suspend fun getUpdateVersionTagAvailable(versionName: String, ignoreVersion: String): String {
         if (versionName == Device.UNKNOWN_VALUE) {

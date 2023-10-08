@@ -14,7 +14,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApi
-import ca.cgagnier.wlednativeandroid.service.update.UpdateService
+import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -144,9 +144,9 @@ class DeviceEditFragment : DialogFragment() {
     }
 
     private fun refreshUpdates() {
-        val updateService = UpdateService(versionWithAssetsRepository)
+        val releaseService = ReleaseService(versionWithAssetsRepository)
         lifecycleScope.launch(Dispatchers.IO) {
-            updateService.refreshVersions(requireContext())
+            releaseService.refreshVersions(requireContext())
             DeviceApi.update(device, false)
         }
     }
