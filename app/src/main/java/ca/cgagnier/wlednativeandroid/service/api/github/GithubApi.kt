@@ -43,6 +43,5 @@ class GithubApi(val context: Context) {
         const val BASE_URL = "https://api.github.com"
         const val REPO_OWNER = "Aircoookie"
         const val REPO_NAME = "WLED"
-        const val CACHE_MAX_AGE = 3600
     }
 }
