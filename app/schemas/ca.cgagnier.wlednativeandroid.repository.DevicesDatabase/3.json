@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "4b4287219efa8324cdcbb3face6d1a23",
+    "identityHash": "d314a598a8f8ce454966aa4b17fa2bfe",
     "entities": [
       {
         "tableName": "Device",
@@ -122,7 +122,7 @@
       },
       {
         "tableName": "Version",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `isPrerelease` INTEGER NOT NULL, `publishedDate` INTEGER NOT NULL, `htmlUrl` TEXT NOT NULL, PRIMARY KEY(`tagName`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagName` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `isPrerelease` INTEGER NOT NULL, `publishedDate` TEXT NOT NULL, `htmlUrl` TEXT NOT NULL, PRIMARY KEY(`tagName`))",
         "fields": [
           {
             "fieldPath": "tagName",
@@ -151,7 +151,7 @@
           {
             "fieldPath": "publishedDate",
             "columnName": "publishedDate",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -235,7 +235,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4b4287219efa8324cdcbb3face6d1a23')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd314a598a8f8ce454966aa4b17fa2bfe')"
     ]
   }
 }

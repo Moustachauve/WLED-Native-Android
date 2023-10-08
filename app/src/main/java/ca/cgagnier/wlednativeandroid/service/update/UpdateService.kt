@@ -5,10 +5,10 @@ import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
+import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import com.vdurmont.semver4j.Semver
-import org.kohsuke.github.GHRelease
 
 
 class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
@@ -51,21 +51,20 @@ class UpdateService(private val versionWithAssetsRepository: VersionWithAssetsRe
         versionWithAssetsRepository.insertMany(versionModels, assetsModels)
     }
 
-    private fun createVersion(version: GHRelease): Version {
+    private fun createVersion(version: Release): Version {
         return Version(
             version.tagName,
             version.name,
             version.body,
-            version.isPrerelease,
-            version.published_at,
-            version.htmlUrl.toString()
+            version.prerelease,
+            version.publishedAt,
+            version.htmlUrl
         )
     }
 
-    private fun createAssetsForVersion(version: GHRelease): List<Asset> {
-        val allAssets = version.listAssets()
+    private fun createAssetsForVersion(version: Release): List<Asset> {
         val assetsModels = mutableListOf<Asset>()
-        for (asset in allAssets) {
+        for (asset in version.assets) {
             assetsModels.add(
                 Asset(
                     version.tagName,

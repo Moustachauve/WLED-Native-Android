@@ -5,7 +5,6 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
@@ -23,7 +22,6 @@ import ca.cgagnier.wlednativeandroid.model.Version
         AutoMigration(from = 2, to = 3)
     ]
 )
-@TypeConverters(Converters::class)
 abstract class DevicesDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
     abstract fun versionDao(): VersionDao

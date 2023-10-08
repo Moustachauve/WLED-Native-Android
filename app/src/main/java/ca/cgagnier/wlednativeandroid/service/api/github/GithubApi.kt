@@ -2,40 +2,45 @@ package ca.cgagnier.wlednativeandroid.service.api.github
 
 import android.content.Context
 import android.util.Log
+import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import org.kohsuke.github.GHRelease
-import org.kohsuke.github.GHRepository
-import org.kohsuke.github.GitHub
-import org.kohsuke.github.GitHubBuilder
-import org.kohsuke.github.PagedIterable
-import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 
-class GithubApi(context: Context) {
-    private val github: GitHub
-    private val repo: GHRepository
-
-    init {
-        val cache = Cache(context.cacheDir, 10 * 1024 * 1024) // 10MB cache
-        val connector =
-            OkHttpGitHubConnector(OkHttpClient.Builder().cache(cache).build(), CACHE_MAX_AGE)
-        github = GitHubBuilder().withConnector(connector).build()
-        val remainingLimit = github.rateLimit.getRemaining()
-        Log.d(TAG, "Github API: $remainingLimit remaining calls")
-
-        repo = github.getUser(REPO_OWNER).getRepository(REPO_NAME)
+class GithubApi(val context: Context) {
+    fun getAllReleases(): List<Release>? {
+        Log.d(TAG, "retrieving latest release")
+        try {
+            val api = getApi()
+            val release = api.getAllReleases(REPO_OWNER, REPO_NAME)
+            val execute = release.execute()
+            val body = execute.body()
+            return body
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+            throw Exception("Could not get all releases: ${e.toString()}")
+        }
     }
 
-    fun getAllReleases(): PagedIterable<GHRelease>? {
-        Log.d(TAG, "retrieving latest release")
-        val allReleases = repo.listReleases()
-        Log.d(TAG, "found ${allReleases.count()} releases")
-        return allReleases
+    private fun getApi(): GithubApiEndpoints {
+        val cache = Cache(context.cacheDir, 10 * 1024 * 1024) // 10MB cache
+        val httpOkClient = OkHttpClient.Builder()
+            .cache(cache)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .client(httpOkClient)
+            .build()
+            .create(GithubApiEndpoints::class.java)
     }
 
     companion object {
         const val TAG = "github-release"
+        const val BASE_URL = "https://api.github.com"
         const val REPO_OWNER = "Aircoookie"
         const val REPO_NAME = "WLED"
         const val CACHE_MAX_AGE = 3600
