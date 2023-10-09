@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListFoundAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDiscoverDeviceBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.DiscoverDeviceViewModel
@@ -137,7 +137,7 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
         }
 
         deviceListViewModel.insert(device)
-        DeviceApi.update(device, false)
+        DeviceApiService.update(device, false)
 
         activity?.runOnUiThread {
             discoverDeviceViewModel.insert(device)

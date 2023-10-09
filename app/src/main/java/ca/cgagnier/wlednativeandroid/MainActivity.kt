@@ -18,7 +18,7 @@ import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
@@ -74,7 +74,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
 
         super.onCreate(savedInstanceState)
-        DeviceApi.setApplication(application as DevicesApplication)
+        DeviceApiService.setApplication(application as DevicesApplication)
         binding = ActivityMainBinding.inflate(layoutInflater)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -156,7 +156,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
         Log.i(TAG, "IP: ${deviceIp}\tName: ${deviceName}\t")
 
-        DeviceApi.update(device, silentUpdate = true, saveChanges = false) {
+        DeviceApiService.update(device, silentUpdate = true, saveChanges = false) {
             lifecycleScope.launch {
                 val existingDevice = deviceListViewModel.findWithSameMacAddress(it)
                 if (existingDevice != null && it.macAddress != Device.UNKNOWN_VALUE) {

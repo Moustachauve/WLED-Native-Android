@@ -62,6 +62,10 @@ class DeviceUpdateService(
         return githubApi.downloadReleaseBinary(versionWithAssets.version, asset)
     }
 
+    suspend fun installUpdate() {
+        val deviceApi = ca.cgagnier.wlednativeandroid.service.DeviceApiService
+    }
+
     companion object {
 
     }

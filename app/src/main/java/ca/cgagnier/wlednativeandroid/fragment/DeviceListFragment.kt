@@ -36,7 +36,7 @@ import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
@@ -283,7 +283,7 @@ class DeviceListFragment : Fragment(),
     private fun refreshListFromApi(silentUpdate: Boolean) {
         if (deviceListViewModel.allDevices.value != null) {
             for (device in deviceListViewModel.allDevices.value!!) {
-                DeviceApi.update(device, silentUpdate)
+                DeviceApiService.update(device, silentUpdate)
             }
         }
     }

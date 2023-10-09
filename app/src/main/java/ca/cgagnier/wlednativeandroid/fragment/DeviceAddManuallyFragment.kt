@@ -13,7 +13,7 @@ import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddEditBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -85,7 +85,7 @@ class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
         )
 
         deviceListViewModel.insert(device)
-        DeviceApi.update(device, false)
+        DeviceApiService.update(device, false)
 
         notifyListeners(device)
         dismiss()

@@ -6,7 +6,7 @@ import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
-import ca.cgagnier.wlednativeandroid.service.api.JsonApi
+import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
@@ -17,7 +17,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-object DeviceApi {
+object DeviceApiService {
     private const val TAG = "DeviceApi"
     private var application: DevicesApplication? = null
 
@@ -82,12 +82,12 @@ object DeviceApi {
         })
     }
 
-    private fun getJsonApi(device: Device): JsonApi {
+    private fun getJsonApi(device: Device): DeviceApi {
         return Retrofit.Builder()
             .baseUrl(device.getDeviceUrl())
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
-            .create(JsonApi::class.java)
+            .create(DeviceApi::class.java)
     }
 
     private fun onFailure(
