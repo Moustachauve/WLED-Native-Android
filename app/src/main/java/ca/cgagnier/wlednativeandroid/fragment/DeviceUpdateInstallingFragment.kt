@@ -81,7 +81,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     }
 
     private fun startUpdate() {
-        binding.textStatus.text = getString(R.string.downloading_binaries)
+        binding.textStatus.text = getString(R.string.downloading_binary)
         val updateService = DeviceUpdateService(requireContext(), device, version)
         if (!updateService.couldDetermineAsset()) {
             // TODO Handle no asset found

@@ -67,6 +67,6 @@
     <string name="updating">Mise à jour de %1$s</string>
     <string name="please_do_not_close_the_app_or_turn_off_the_device">Ne fermez pas l\'application et n\'éteignez pas l\'appareil.</string>
     <string name="starting_up">Démarrage</string>
-    <string name="downloading_binaries">Téléchargement</string>
+    <string name="downloading_binary">Téléchargement</string>
     <string name="installing_update">Installation en cours</string>
 </resources>
