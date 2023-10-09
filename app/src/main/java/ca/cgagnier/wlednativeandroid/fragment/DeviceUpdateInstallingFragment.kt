@@ -2,6 +2,7 @@ package ca.cgagnier.wlednativeandroid.fragment
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,10 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateInstallingBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import ca.cgagnier.wlednativeandroid.service.api.DownloadState
+import ca.cgagnier.wlednativeandroid.service.update.DeviceUpdateService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -30,6 +34,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     private lateinit var device: Device
     private lateinit var versionTag: String
     private lateinit var version: VersionWithAssets
+
     private var _binding: FragmentDeviceUpdateInstallingBinding? = null
     private val binding get() = _binding!!
 
@@ -76,11 +81,51 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     }
 
     private fun startUpdate() {
+        binding.textStatus.text = getString(R.string.downloading_binaries)
+        val updateService = DeviceUpdateService(requireContext(), device, version)
+        if (!updateService.couldDetermineAsset()) {
+            // TODO Handle no asset found
+            return
+        }
+        val asset = updateService.getAsset()
+        binding.textVersionTag.text = asset.name
+        binding.progressUpdate.isIndeterminate = false
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            updateService.downloadBinary().collect { downloadState ->
+                when (downloadState) {
+                    is DownloadState.Downloading -> {
+                        Log.d(TAG, "progress=${downloadState.progress}")
+                        activity?.runOnUiThread {
+                            binding.progressUpdate.isIndeterminate = false
+                            binding.progressUpdate.progress = downloadState.progress
+                        }
+                    }
+                    is DownloadState.Failed -> {
+                        Log.e(TAG, "Fail")
+                        //showError()
+                    }
+                    is DownloadState.Finished -> {
+                        Log.d(TAG, "Finished")
+                        activity?.runOnUiThread {
+                            binding.progressUpdate.isIndeterminate = true
+                            installUpdate()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun installUpdate() {
+        binding.textStatus.text = getString(R.string.installing_update)
+        dialog?.setCancelable(false)
         binding.buttonCancel.isEnabled = false
-        //dialog?.setCancelable(false)
+        // TODO: Install the update
     }
 
     companion object {
+        const val TAG = "DeviceUpdateInstallingFragment"
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
