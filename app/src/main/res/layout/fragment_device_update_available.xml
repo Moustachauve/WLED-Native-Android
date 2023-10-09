@@ -44,26 +44,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                        android:maxLines="1"
                         app:layout_constrainedWidth="true"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/version_tag"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/version_tag"
-                        android:text="@string/default_ip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="?dialogPreferredPadding"
-                        android:paddingBottom="2dp"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                        app:layout_constrainedWidth="true"
-                        app:layout_constraintBottom_toBottomOf="@id/dialog_title"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/dialog_title" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/device_name"

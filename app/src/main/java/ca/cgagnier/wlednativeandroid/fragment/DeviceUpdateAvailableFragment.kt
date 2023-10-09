@@ -139,7 +139,6 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
     private fun updateFields() {
         binding.deviceName.text = device.name
         binding.deviceAddress.text = device.address
-        binding.versionTag.text = version.version.tagName
 
         Markwon.create(requireContext())
             .setMarkdown(binding.versionNotes, version.version.description)
