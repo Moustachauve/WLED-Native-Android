@@ -39,6 +39,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image_update_success"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:showText="false"
+            android:visibility="gone"
+            android:theme="@style/WLEDNativeAndroid.Success"
+            app:tint="?colorPrimary"
+            app:srcCompat="@drawable/ic_twotone_check_circle_outline_24"
+            app:layout_constraintStart_toStartOf="@id/progress_update"
+            app:layout_constraintEnd_toEndOf="@id/progress_update"
+            app:layout_constraintTop_toTopOf="@id/progress_update"
+            app:layout_constraintBottom_toBottomOf="@id/progress_update" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image_update_failed"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:showText="false"
+            android:visibility="gone"
+            android:theme="@style/WLEDNativeAndroid.Fail"
+            app:tint="?colorPrimary"
+            app:srcCompat="@drawable/baseline_error_outline_24"
+            app:layout_constraintStart_toStartOf="@id/progress_update"
+            app:layout_constraintEnd_toEndOf="@id/progress_update"
+            app:layout_constraintTop_toTopOf="@id/progress_update"
+            app:layout_constraintBottom_toBottomOf="@id/progress_update" />
+
         <TextView
             android:id="@+id/text_status"
             android:text="@string/starting_up"

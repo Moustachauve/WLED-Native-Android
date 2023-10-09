@@ -3,7 +3,6 @@ package ca.cgagnier.wlednativeandroid.service.api.github
 import android.content.Context
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Asset
-import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
 import kotlinx.coroutines.Dispatchers
@@ -34,13 +33,12 @@ class GithubApi(val context: Context) {
         }
     }
 
-    suspend fun downloadReleaseBinary(version: Version, asset: Asset): Flow<DownloadState> {
+    suspend fun downloadReleaseBinary(
+        asset: Asset,
+        targetFile: File
+    ): Flow<DownloadState> {
         val api = getApi()
-        val downloadDir = File(context.cacheDir.absolutePath, version.tagName)
-        downloadDir.mkdirs()
-        val downloadFile = File(downloadDir, asset.name)
-
-        return api.downloadReleaseBinary(asset.downloadUrl).saveFile(downloadFile)
+        return api.downloadReleaseBinary(asset.downloadUrl).saveFile(targetFile)
     }
 
     private suspend fun ResponseBody.saveFile(destinationFile: File): Flow<DownloadState> {
@@ -48,8 +46,8 @@ class GithubApi(val context: Context) {
             emit(DownloadState.Downloading(0))
 
             try {
-                byteStream().use { inputStream->
-                    destinationFile.outputStream().use { outputStream->
+                byteStream().use { inputStream ->
+                    destinationFile.outputStream().use { outputStream ->
                         val totalBytes = contentLength()
                         val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
                         var progressBytes = 0L

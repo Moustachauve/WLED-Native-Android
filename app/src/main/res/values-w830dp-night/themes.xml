@@ -43,4 +43,8 @@
     <style name="WLEDNativeAndroid.Success" parent="WLEDNativeAndroid">
         <item name="colorPrimary">@color/md_theme_dark_success</item>
     </style>
+
+    <style name="WLEDNativeAndroid.Fail" parent="WLEDNativeAndroid">
+        <item name="colorPrimary">@color/md_theme_dark_error</item>
+    </style>
 </resources>

@@ -11,11 +11,16 @@ import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.io.File
 
 object DeviceApiService {
     private const val TAG = "DeviceApi"
@@ -165,5 +170,12 @@ object DeviceApiService {
                 onFailure(device, Exception("Response success, but not valid"), callback = callback)
             }
         }
+    }
+
+    fun installUpdate(device: Device, binaryFile: File): Call<ResponseBody> {
+        val reqFile = binaryFile.asRequestBody("application/octet-stream".toMediaTypeOrNull())
+        return getJsonApi(device).updateDevice(
+            MultipartBody.Part.createFormData("file", "binary", reqFile)
+        )
     }
 }

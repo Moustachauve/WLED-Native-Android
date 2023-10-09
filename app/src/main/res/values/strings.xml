@@ -72,4 +72,7 @@
     <string name="starting_up">Starting Up</string>
     <string name="downloading_binary">Downloading Binary</string>
     <string name="installing_update">Installing Update</string>
+    <string name="update_failed">Update Failed</string>
+    <string name="done">Done</string>
+    <string name="update_completed">Update Completed!</string>
 </resources>

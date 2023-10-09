@@ -14,11 +14,16 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateInstallingBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
 import ca.cgagnier.wlednativeandroid.service.update.DeviceUpdateService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 private const val DEVICE_ADDRESS = "device_address"
@@ -59,6 +64,9 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        binding.buttonCancel.setOnClickListener {
+            dismiss()
+        }
         return binding.root
     }
 
@@ -103,13 +111,15 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     }
                     is DownloadState.Failed -> {
                         Log.e(TAG, "Fail")
-                        //showError()
+                        activity?.runOnUiThread {
+                            displayFailure()
+                        }
                     }
                     is DownloadState.Finished -> {
                         Log.d(TAG, "Finished")
                         activity?.runOnUiThread {
                             binding.progressUpdate.isIndeterminate = true
-                            installUpdate()
+                            installUpdate(updateService)
                         }
                     }
                 }
@@ -117,11 +127,64 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         }
     }
 
-    private fun installUpdate() {
+    private fun installUpdate(updateService: DeviceUpdateService) {
         binding.textStatus.text = getString(R.string.installing_update)
         dialog?.setCancelable(false)
         binding.buttonCancel.isEnabled = false
-        // TODO: Install the update
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            updateService.installUpdate().enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    activity?.runOnUiThread {
+                        displaySuccess()
+                        updateDeviceUpdated()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    activity?.runOnUiThread {
+                        displayFailure()
+                    }
+                }
+            })
+        }
+    }
+
+    private fun displaySuccess() {
+        binding.progressUpdate.visibility = View.INVISIBLE
+        binding.textUpdatingWarning.visibility = View.GONE
+        binding.imageUpdateSuccess.visibility = View.VISIBLE
+        binding.textStatus.text = getString(R.string.update_completed)
+        binding.buttonCancel.text = getString(R.string.done)
+        dialog?.setCancelable(true)
+        binding.buttonCancel.isEnabled = true
+    }
+
+    private fun displayFailure() {
+        binding.progressUpdate.visibility = View.INVISIBLE
+        binding.textUpdatingWarning.visibility = View.GONE
+        binding.imageUpdateFailed.visibility = View.VISIBLE
+        binding.textStatus.text = getString(R.string.update_failed)
+        binding.buttonCancel.text = getString(R.string.done)
+        dialog?.setCancelable(true)
+        binding.buttonCancel.isEnabled = true
+    }
+
+    private fun updateDeviceUpdated() {
+        device = device.copy(
+            version = version.version.tagName.drop(1),
+            newUpdateVersionTagAvailable = ""
+        )
+
+        lifecycleScope.launch {
+            val deviceRepository =
+                (requireActivity().application as DevicesApplication).deviceRepository
+            deviceRepository.update(device)
+            DeviceApiService.update(device, false)
+        }
     }
 
     companion object {

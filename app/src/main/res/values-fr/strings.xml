@@ -69,4 +69,7 @@
     <string name="starting_up">Démarrage</string>
     <string name="downloading_binary">Téléchargement</string>
     <string name="installing_update">Installation en cours</string>
+    <string name="update_failed">Échec de l\'installation</string>
+    <string name="done">Terminer</string>
+    <string name="update_completed">Mise à jour complétée!</string>
 </resources>
