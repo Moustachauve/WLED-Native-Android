@@ -60,7 +60,7 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
             when (it.itemId) {
                 R.id.action_install -> {
                     dismiss()
-                    DeviceUpdateInstallingFragment.newInstance(
+                    DeviceUpdateDisclaimerFragment.newInstance(
                         deviceAddress,
                         version.version.tagName
                     ).show(parentFragmentManager, "dialog")

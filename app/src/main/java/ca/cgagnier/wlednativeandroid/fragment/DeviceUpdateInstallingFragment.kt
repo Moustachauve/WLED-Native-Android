@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
@@ -29,11 +28,7 @@ import retrofit2.Response
 private const val DEVICE_ADDRESS = "device_address"
 private const val VERSION_TAG = "version_tag"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DeviceUpdateAvailableFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class DeviceUpdateInstallingFragment : DialogFragment() {
     private lateinit var deviceAddress: String
     private lateinit var device: Device

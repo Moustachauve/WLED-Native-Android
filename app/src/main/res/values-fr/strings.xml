@@ -72,4 +72,9 @@
     <string name="update_failed">Échec de l\'installation</string>
     <string name="done">Terminer</string>
     <string name="update_completed">Mise à jour complétée!</string>
+    <string name="are_you_sure">Êtes-vous sûr?</string>
+    <string name="device_update_disclamer_part1">Vous êtes sur le point d\'installer une nouvelle version de WLED sur votre appareil. Si vous aviez une version personnalisée auparavant, vous pouriez perdre des fonctionalités (par exemple, si vous aviez des « usermods », ils pourraient ne plus fonctionner).</string>
+    <string name="device_update_disclaimer_part2">Si quelqu\'un a installé cet appareil pour vous, vous devriez confirmer avec eux qu\'il n\'y a pas de risque à installer cette nouvelle version.</string>
+    <string name="device_update_disclaimer_part3">WLED et WLED Native ne sont pas responsable si quelque chose ne fonctionne plus dû à une mise à jour.</string>
+    <string name="install_update">Installer la mise à jour</string>
 </resources>
