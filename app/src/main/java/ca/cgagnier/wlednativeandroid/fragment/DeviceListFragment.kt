@@ -157,11 +157,16 @@ class DeviceListFragment : Fragment(),
             if (it != null && it.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
                 duringSetup = false
             }
-            if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange) {
+            if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange && !slidingPaneLayout.isOpen) {
+                Log.d(TAG, "opening slidingPaneLayout")
                 slidingPaneLayout.openPane()
             }
             duringSetup = false
             if (it != null) {
+                val previousSelectedDevice = deviceListAdapter.getSelectedDevice()
+                if (previousSelectedDevice?.address == it.address) {
+                    return@Observer
+                }
                 binding.deviceListRecyclerView.scrollToPosition(
                     deviceListAdapter.setSelectedDevice(it)
                 )

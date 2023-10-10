@@ -43,6 +43,7 @@ object DeviceApiService {
             val newDevice = device.copy(isRefreshing = true)
 
             scope.launch {
+                Log.d(TAG, "Saving non-silent update")
                 application!!.deviceRepository.update(newDevice)
             }
         }
@@ -110,6 +111,7 @@ object DeviceApiService {
             return
         }
         scope.launch {
+            Log.d(TAG, "Saving device API onFailure")
             application!!.deviceRepository.update(updatedDevice)
         }
     }
@@ -150,6 +152,7 @@ object DeviceApiService {
                 )
 
                 if (saveChanges && updatedDevice != device) {
+                    Log.d(TAG, "Saving update of device from API")
                     application!!.deviceRepository.update(updatedDevice)
                 }
 

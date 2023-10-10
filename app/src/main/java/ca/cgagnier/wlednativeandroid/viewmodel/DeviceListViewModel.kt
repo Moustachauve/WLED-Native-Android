@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
@@ -28,10 +29,12 @@ class DeviceListViewModel(private val repository: DeviceRepository,
     var expectDeviceChange = true
 
     fun insert(device: Device) = viewModelScope.launch {
+        Log.d(TAG, "Inserting device")
         repository.insert(device)
     }
 
     fun delete(device: Device) = viewModelScope.launch {
+        Log.d(TAG, "Deleting device")
         repository.delete(device)
     }
 
@@ -44,23 +47,30 @@ class DeviceListViewModel(private val repository: DeviceRepository,
     }
 
     fun updateActiveDevice(device: Device) = viewModelScope.launch {
+        Log.d(TAG, "Update active device")
         expectDeviceChange = true
         userPreferencesRepository.updateSelectedDevice(device)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getActiveDevice(): Flow<Device?> {
-        return userPreferencesRepository.selectedDeviceAddress.map {
-            var device: Device? = null
+        return userPreferencesRepository.selectedDeviceAddress.flatMapLatest {
+            Log.d(TAG, "selectedDeviceAddress changed")
+            var device: Flow<Device?> = flow { emit(null) }
             if (it == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
-                device = DeviceDiscovery.getDefaultAPDevice()
+                device = flow { emit(DeviceDiscovery.getDefaultAPDevice()) }
             } else if (it != "") {
-                device = repository.findDeviceByAddress(it)
+                device = repository.findLiveDeviceByAddress(it)
             }
-            if (device == null && allDevices.value?.isNotEmpty() == true) {
-                device = allDevices.value?.first()
+            if (device.first() == null && allDevices.value?.isNotEmpty() == true) {
+                device = repository.findFirstLiveDevice()
             }
             device
         }
+    }
+
+    companion object {
+        const val TAG = "DeviceListViewModel"
     }
 }
 

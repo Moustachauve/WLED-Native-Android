@@ -1,7 +1,6 @@
 package ca.cgagnier.wlednativeandroid.repository
 
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import ca.cgagnier.wlednativeandroid.model.Device
 import kotlinx.coroutines.flow.Flow
 
@@ -22,9 +21,12 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
     }
 
     @WorkerThread
-    fun findLiveDeviceByAddress(address: String): LiveData<Device> {
+    fun findLiveDeviceByAddress(address: String): Flow<Device?> {
         return deviceDao.findLiveDeviceByAddress(address)
     }
+
+    @WorkerThread
+    fun findFirstLiveDevice(): Flow<Device?> = deviceDao.getFirstVisibleDeviceOfflineLast()
 
     @WorkerThread
     suspend fun findDeviceByMacAddress(address: String): Device? {

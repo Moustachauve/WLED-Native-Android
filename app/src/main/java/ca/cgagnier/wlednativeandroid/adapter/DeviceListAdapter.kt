@@ -36,7 +36,7 @@ class DeviceListAdapter(
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())
 
-            itemBinding.container.isSelected = isSelectable && selectedDevice?.address == device.address
+            itemBinding.container.isSelected = isSelectable && internalSelectedDevice?.address == device.address
 
             setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
             setSwitchColor(itemBinding.powerStatusSwitch, device.color)

@@ -1,10 +1,12 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
@@ -76,6 +78,7 @@ class DeviceEditFragment : DialogFragment() {
         )
 
         lifecycleScope.launch {
+            Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
             DeviceApiService.update(updatedDevice, false)
             dismiss()
@@ -83,10 +86,12 @@ class DeviceEditFragment : DialogFragment() {
     }
 
     private fun loadDevice() {
-        deviceRepository.findLiveDeviceByAddress(deviceAddress)
+        deviceRepository.findLiveDeviceByAddress(deviceAddress).asLiveData()
             .observe(viewLifecycleOwner) {
-                device = it
-                updateFields()
+                if (it != null) {
+                    device = it
+                    updateFields()
+                }
             }
     }
 
@@ -139,6 +144,7 @@ class DeviceEditFragment : DialogFragment() {
             skipUpdateTag = ""
         )
         lifecycleScope.launch {
+            Log.d(TAG, "Saving skipUpdateTag")
             deviceRepository.update(device)
         }
     }
@@ -160,6 +166,7 @@ class DeviceEditFragment : DialogFragment() {
     }
 
     companion object {
+        private const val TAG = "DeviceEditFragment"
         private const val DEVICE_ADDRESS = "device_address"
 
         /**

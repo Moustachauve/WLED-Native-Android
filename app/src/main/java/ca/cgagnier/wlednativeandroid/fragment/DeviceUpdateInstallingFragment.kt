@@ -175,6 +175,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         )
 
         lifecycleScope.launch {
+            Log.d(TAG, "Saving deviceUpdated")
             val deviceRepository =
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(device)

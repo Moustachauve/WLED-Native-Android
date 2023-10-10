@@ -27,6 +27,7 @@ import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceViewBinding
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.WebViewViewModel
@@ -42,6 +43,7 @@ class DeviceViewFragment : Fragment() {
         )
     }
 
+    private var activeDevice: Device? = null
     private var isLargeLayout: Boolean = false
     private lateinit var onBackPressedCallback: OnBackPressedCallback
     private lateinit var webViewViewModel: WebViewViewModel
@@ -161,7 +163,7 @@ class DeviceViewFragment : Fragment() {
                                 shouldShowErrorPage = false
                                 view?.loadUrl("file:///android_asset/device_error.html")
                             } else {
-                                deviceListViewModel.activeDevice.value?.let {
+                                activeDevice?.let {
                                     Log.i(TAG_NAME, "Requesting '${it.address}'")
                                     view?.loadUrl("http://${it.address}")
                                 }
@@ -233,6 +235,7 @@ class DeviceViewFragment : Fragment() {
         }
 
         deviceListViewModel.activeDevice.observe(viewLifecycleOwner) {
+            activeDevice = it
             updateTitle()
             if (fromRestore) {
                 fromRestore = false
@@ -269,6 +272,8 @@ class DeviceViewFragment : Fragment() {
         )
         toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
         toolbar.setNavigationOnClickListener {
+            Log.d(DeviceListFragment.TAG, "closing slidingPaneLayout")
+            deviceListViewModel.expectDeviceChange = false
             onBackPressedCallback.isEnabled = false
             requireActivity().onBackPressedDispatcher.onBackPressed()
             onBackPressedCallback.isEnabled = true
@@ -340,7 +345,7 @@ class DeviceViewFragment : Fragment() {
                 menu.findItem(R.id.action_browse_back).isEnabled = _webview.canGoBack()
                 menu.findItem(R.id.action_browse_forward).isEnabled = _webview.canGoForward()
                 menu.findItem(R.id.action_browse_update).isVisible =
-                    deviceListViewModel.activeDevice.value?.hasUpdateAvailable() ?: false
+                    activeDevice?.hasUpdateAvailable() ?: false
 
                 if (deviceListViewModel.isTwoPane.value == true) {
                     toolbar.navigationIcon = null
@@ -351,7 +356,7 @@ class DeviceViewFragment : Fragment() {
 
     fun refresh() {
         updateTitle()
-        deviceListViewModel.activeDevice.value?.let {
+        activeDevice?.let {
             Log.i(TAG_NAME, "Requesting '${it.address}'")
             _webview.loadUrl("http://${it.address}")
         }
@@ -360,8 +365,8 @@ class DeviceViewFragment : Fragment() {
     private fun updateTitle() {
         Log.i(TAG_NAME, "Updating title")
         binding.deviceToolbar.title =
-            deviceListViewModel.activeDevice.value?.name ?: getString(R.string.select_a_device)
-        binding.deviceToolbar.subtitle = deviceListViewModel.activeDevice.value?.address
+            activeDevice?.name ?: getString(R.string.select_a_device)
+        binding.deviceToolbar.subtitle = activeDevice?.address
         updateNavigationState()
     }
 
@@ -387,14 +392,14 @@ class DeviceViewFragment : Fragment() {
 
     fun showUpdateDialog() {
         val fragmentManager = requireActivity().supportFragmentManager
-        val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
+        val deviceAddress = activeDevice?.address ?: return
         val newFragment =
             DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
         newFragment.show(fragmentManager, "dialog")
     }
 
     fun showEditDevice() {
-        val deviceAddress = deviceListViewModel.activeDevice.value?.address ?: return
+        val deviceAddress = activeDevice?.address ?: return
         val dialog = DeviceEditFragment.newInstance(deviceAddress)
         dialog.show(requireActivity().supportFragmentManager, "device_edit")
     }

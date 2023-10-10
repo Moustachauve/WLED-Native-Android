@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.repository
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -33,7 +32,7 @@ interface DeviceDao {
     suspend fun findDeviceByAddress(address: String): Device?
 
     @Query("SELECT * FROM device WHERE address = :address")
-    fun findLiveDeviceByAddress(address: String): LiveData<Device>
+    fun findLiveDeviceByAddress(address: String): Flow<Device>
 
     @Query("SELECT * FROM device WHERE macAddress != '' AND macAddress = :address")
     suspend fun findDeviceByMacAddress(address: String): Device?
@@ -55,4 +54,7 @@ interface DeviceDao {
 
     @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY isOnline DESC, LOWER(name) ASC, LOWER(address) ASC")
     fun getAlphabetizedVisibleDevicesOfflineLast(): Flow<List<Device>>
+
+    @Query("SELECT * FROM Device WHERE isHidden == 0 ORDER BY isOnline DESC, LOWER(name) ASC, LOWER(address) ASC LIMIT 1")
+    fun getFirstVisibleDeviceOfflineLast(): Flow<Device?>
 }

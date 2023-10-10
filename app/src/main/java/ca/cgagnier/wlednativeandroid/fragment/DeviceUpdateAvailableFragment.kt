@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -182,6 +183,7 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
         }
 
         lifecycleScope.launch {
+            Log.d(TAG, "Saving skipUpdateTag from update available dialog")
             val deviceRepository =
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(updatedDevice)
@@ -191,6 +193,7 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
     }
 
     companion object {
+        private const val TAG = "DeviceUpdateAvailableFragment"
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.

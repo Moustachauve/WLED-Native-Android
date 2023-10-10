@@ -33,6 +33,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
     suspend fun updateSelectedDevice(device: Device) {
+        Log.d(TAG, "updateSelectedDevice")
         dataStore.updateData { preferences ->
             preferences.toBuilder()
                 .setSelectedDeviceAddress(device.address)
@@ -41,6 +42,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     }
 
     suspend fun updateHasMigratedSharedPref(hasMigrated: Boolean) {
+        Log.d(TAG, "updateHasMigratedSharedPref")
         dataStore.updateData { preferences ->
             preferences.toBuilder()
                 .setHasMigratedSharedPref(hasMigrated)
@@ -49,36 +51,42 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     }
 
     suspend fun updateThemeMode(themeSettings: ThemeSettings) {
+        Log.d(TAG, "updateThemeMode")
         dataStore.updateData {
             it.toBuilder().setTheme(themeSettings).build()
         }
     }
 
     suspend fun updateAutoDiscovery(autoDiscover: Boolean) {
+        Log.d(TAG, "updateAutoDiscovery")
         dataStore.updateData {
             it.toBuilder().setAutomaticDiscovery(autoDiscover).build()
         }
     }
 
     suspend fun updateShowOfflineDeviceLast(showOfflineDeviceLast: Boolean) {
+        Log.d(TAG, "updateShowOfflineDeviceLast")
         dataStore.updateData {
             it.toBuilder().setShowOfflineLast(showOfflineDeviceLast).build()
         }
     }
 
     suspend fun updateSendCrashData(sendCrashData: Boolean) {
+        Log.d(TAG, "updateSendCrashData")
         dataStore.updateData {
             it.toBuilder().setSendCrashData(sendCrashData).build()
         }
     }
 
     suspend fun updateSendPerformanceData(sendPerformanceData: Boolean) {
+        Log.d(TAG, "updateSendPerformanceData")
         dataStore.updateData {
             it.toBuilder().setSendPerformanceData(sendPerformanceData).build()
         }
     }
 
     suspend fun updateLastUpdateCheckDate(lastUpdateCheckDate: Long) {
+        Log.d(TAG, "updateLastUpdateCheckDate")
         dataStore.updateData {
             it.toBuilder().setLastUpdateCheckDate(lastUpdateCheckDate).build()
         }
