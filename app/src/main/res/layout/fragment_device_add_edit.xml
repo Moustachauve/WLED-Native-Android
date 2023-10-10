@@ -103,7 +103,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/button_save"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/button_check_for_update"
             tools:visibility="visible">
 
@@ -141,7 +141,8 @@
                     android:id="@+id/version_from_to"
                     android:text="@string/from_version_to_version"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"/>
             </LinearLayout>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_update"
@@ -154,7 +155,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -163,7 +164,7 @@
             app:layout_constraintEnd_toStartOf="@id/button_save"
             app:layout_constraintTop_toBottomOf="@id/layout_update_available"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

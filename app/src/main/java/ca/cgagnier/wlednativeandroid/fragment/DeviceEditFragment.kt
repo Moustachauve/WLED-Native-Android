@@ -122,7 +122,7 @@ class DeviceEditFragment : DialogFragment() {
         if (device.hasUpdateAvailable()) {
             binding.versionFromTo.text = getString(
                 R.string.from_version_to_version,
-                "v$device.version",
+                "v${device.version}",
                 device.newUpdateVersionTagAvailable
             )
         }
