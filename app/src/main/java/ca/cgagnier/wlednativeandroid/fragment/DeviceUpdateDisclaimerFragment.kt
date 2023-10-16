@@ -45,6 +45,7 @@ class DeviceUpdateDisclaimerFragment : DialogFragment() {
             dismiss()
         }
         binding.buttonContinue.setOnClickListener {
+            dismiss()
             DeviceUpdateInstallingFragment.newInstance(
                 deviceAddress,
                 versionTag
