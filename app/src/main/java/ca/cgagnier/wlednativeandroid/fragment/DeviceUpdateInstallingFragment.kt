@@ -84,6 +84,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     }
 
     private fun startUpdate() {
+        Log.d(TAG, "Starting update")
         binding.textStatus.text = getString(R.string.downloading_binary)
         val updateService = DeviceUpdateService(requireContext(), device, version)
         if (!updateService.couldDetermineAsset()) {
@@ -95,6 +96,14 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         binding.progressUpdate.isIndeterminate = false
 
         lifecycleScope.launch(Dispatchers.IO) {
+            if (updateService.isAssetFileCached()) {
+                Log.d(TAG, "asset is already downloaded, reusing")
+                activity?.runOnUiThread {
+                    installUpdate(updateService)
+                }
+                return@launch
+            }
+
             updateService.downloadBinary().collect { downloadState ->
                 when (downloadState) {
                     is DownloadState.Downloading -> {
@@ -113,7 +122,6 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     is DownloadState.Finished -> {
                         Log.d(TAG, "File download Finished")
                         activity?.runOnUiThread {
-                            binding.progressUpdate.isIndeterminate = true
                             installUpdate(updateService)
                         }
                     }
@@ -123,10 +131,12 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     }
 
     private fun installUpdate(updateService: DeviceUpdateService) {
+        binding.progressUpdate.isIndeterminate = true
         binding.textStatus.text = getString(R.string.installing_update)
         dialog?.setCancelable(false)
         binding.buttonCancel.isEnabled = false
 
+        Log.d(TAG, "Uploading binary to device")
         lifecycleScope.launch(Dispatchers.IO) {
             updateService.installUpdate().enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(

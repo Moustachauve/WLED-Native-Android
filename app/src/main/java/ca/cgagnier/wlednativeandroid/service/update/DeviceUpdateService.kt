@@ -56,6 +56,10 @@ class DeviceUpdateService(
         return asset
     }
 
+    fun isAssetFileCached(): Boolean {
+        return getPathForAsset().exists()
+    }
+
     suspend fun downloadBinary(): Flow<DownloadState> {
         if (!::asset.isInitialized) {
             throw Exception("Asset could not be determined for ${device.name}.")
