@@ -61,10 +61,7 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
             when (it.itemId) {
                 R.id.action_install -> {
                     dismiss()
-                    DeviceUpdateDisclaimerFragment.newInstance(
-                        deviceAddress,
-                        version.version.tagName
-                    ).show(parentFragmentManager, "dialog")
+                    startUpdateInstall()
                     return@setOnItemSelectedListener true
                 }
 
@@ -189,7 +186,13 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
             deviceRepository.update(updatedDevice)
             dismiss()
         }
+    }
 
+    private fun startUpdateInstall() {
+        DeviceUpdateDisclaimerFragment.newInstance(
+            deviceAddress,
+            version.version.tagName
+        ).show(parentFragmentManager, "dialog")
     }
 
     companion object {

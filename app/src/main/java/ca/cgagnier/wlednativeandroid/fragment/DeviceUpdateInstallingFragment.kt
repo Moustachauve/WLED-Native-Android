@@ -98,20 +98,20 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
             updateService.downloadBinary().collect { downloadState ->
                 when (downloadState) {
                     is DownloadState.Downloading -> {
-                        Log.d(TAG, "progress=${downloadState.progress}")
+                        Log.d(TAG, "File download Progress=${downloadState.progress}")
                         activity?.runOnUiThread {
                             binding.progressUpdate.isIndeterminate = false
                             binding.progressUpdate.progress = downloadState.progress
                         }
                     }
                     is DownloadState.Failed -> {
-                        Log.e(TAG, "Fail")
+                        Log.e(TAG, "File download Fail")
                         activity?.runOnUiThread {
                             displayFailure()
                         }
                     }
                     is DownloadState.Finished -> {
-                        Log.d(TAG, "Finished")
+                        Log.d(TAG, "File download Finished")
                         activity?.runOnUiThread {
                             binding.progressUpdate.isIndeterminate = true
                             installUpdate(updateService)
@@ -134,13 +134,22 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     response: Response<ResponseBody>
                 ) {
                     activity?.runOnUiThread {
-                        displaySuccess()
+                        if (response.code() in 201..299) {
+                            displaySuccess()
+                        } else {
+                            Log.d(TAG, "OTA Failed, code ${response.code()}")
+                            displayFailure()
+                            binding.textUpdatingWarning.text =
+                                getString(R.string.ota_install_failed_device_locked)
+                            binding.textUpdatingWarning.visibility = View.VISIBLE
+                        }
                         updateDeviceUpdated()
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     activity?.runOnUiThread {
+                        Log.d(TAG, "OTA Failed, call failed")
                         displayFailure()
                     }
                 }

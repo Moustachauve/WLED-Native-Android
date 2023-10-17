@@ -77,4 +77,5 @@
     <string name="device_update_disclaimer_part2">Si quelqu\'un a installé cet appareil pour vous, vous devriez confirmer avec eux qu\'il n\'y a pas de risque à installer cette nouvelle version.</string>
     <string name="device_update_disclaimer_part3">WLED et WLED Native ne sont pas responsable si quelque chose ne fonctionne plus dû à une mise à jour.</string>
     <string name="install_update">Installer la mise à jour</string>
+    <string name="ota_install_failed_device_locked">Votre appareil est peut-être protégé par un NIP ou un mot de passe.</string>
 </resources>
