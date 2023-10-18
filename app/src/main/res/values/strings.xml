@@ -70,7 +70,7 @@
     <string name="updating">Updating %1$s</string>
     <string name="please_do_not_close_the_app_or_turn_off_the_device">Please do not close the app or turn off the device.</string>
     <string name="starting_up">Starting Up</string>
-    <string name="downloading_binaries">Downloading Binaries</string>
+    <string name="downloading_version">Downloading Version</string>
     <string name="installing_update">Installing Update</string>
     <string name="update_failed">Update Failed</string>
     <string name="done">Done</string>
