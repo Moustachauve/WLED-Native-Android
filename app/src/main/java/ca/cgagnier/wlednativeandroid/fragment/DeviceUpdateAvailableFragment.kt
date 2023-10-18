@@ -1,21 +1,15 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.content.Context
-import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
@@ -34,19 +28,17 @@ private const val IS_LARGE_LAYOUT = "is_large_layout"
  * Use the [DeviceUpdateAvailableFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DeviceUpdateAvailableFragment : DialogFragment() {
+class DeviceUpdateAvailableFragment : WiderDialogFragment() {
     private lateinit var deviceAddress: String
     private lateinit var device: Device
     private lateinit var version: VersionWithAssets
     private var _binding: FragmentDeviceUpdateAvailableBinding? = null
     private val binding get() = _binding!!
-    private var isLargeLayout: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             deviceAddress = it.getString(DEVICE_ADDRESS)!!
-            isLargeLayout = it.getBoolean(IS_LARGE_LAYOUT)
             loadDeviceAndVersion()
         }
     }
@@ -79,19 +71,6 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
         }
 
         return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-        var width = WindowManager.LayoutParams.MATCH_PARENT
-        var layoutType = WindowManager.LayoutParams.MATCH_PARENT
-        if (isLargeLayout) {
-            width = (getScreenWidth() * 0.70).toInt()
-            layoutType = WindowManager.LayoutParams.WRAP_CONTENT
-        }
-        val window = dialog!!.window!!
-        window.setLayout(width, layoutType)
-        window.setGravity(Gravity.CENTER)
     }
 
     override fun onAttach(context: Context) {
@@ -140,33 +119,6 @@ class DeviceUpdateAvailableFragment : DialogFragment() {
 
         Markwon.create(requireContext())
             .setMarkdown(binding.versionNotes, version.version.description)
-    }
-
-    private fun getScreenWidth(): Int {
-        val windowManager =
-            requireActivity().getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val width: Int
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics = windowManager.currentWindowMetrics
-            val windowInsets: WindowInsets = windowMetrics.windowInsets
-
-            val insets = windowInsets.getInsetsIgnoringVisibility(
-                WindowInsets.Type.navigationBars() or WindowInsets.Type.displayCutout()
-            )
-            val insetsWidth = insets.right + insets.left
-
-            val b = windowMetrics.bounds
-            width = b.width() - insetsWidth
-        } else {
-            val size = Point()
-            // This branch is only to support old devices, so deprecation is fine.
-            @Suppress("DEPRECATION") val display = windowManager.defaultDisplay
-            @Suppress("DEPRECATION")
-            display?.getSize(size)
-            width = size.x
-        }
-
-        return width
     }
 
     private fun skipVersion() {

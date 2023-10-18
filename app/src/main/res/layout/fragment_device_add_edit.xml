@@ -15,8 +15,7 @@
         android:paddingBottom="?dialogPreferredPadding"
         android:paddingStart="?dialogPreferredPadding"
         android:paddingEnd="?dialogPreferredPadding"
-        tools:context=".fragment.DeviceAddManuallyFragment"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        tools:context=".fragment.DeviceAddManuallyFragment">
         <TextView
             android:id="@+id/dialog_title"
             android:layout_width="match_parent"
@@ -128,9 +127,9 @@
                 app:layout_constrainedWidth="true"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/icon_update"
-                app:layout_constraintEnd_toStartOf="@id/button_update"
-                app:layout_constraintTop_toTopOf="@id/button_update"
-                app:layout_constraintBottom_toBottomOf="@id/button_update">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/icon_update"
+                app:layout_constraintBottom_toBottomOf="@id/icon_update">
                 <TextView
                     android:id="@+id/update_available"
                     android:text="@string/update_available"
@@ -149,9 +148,9 @@
                 android:text="@string/see_update_details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/update_details"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

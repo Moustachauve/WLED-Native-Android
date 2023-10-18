@@ -400,7 +400,8 @@ class DeviceViewFragment : Fragment() {
 
     fun showEditDevice() {
         val deviceAddress = activeDevice?.address ?: return
-        val dialog = DeviceEditFragment.newInstance(deviceAddress)
+        val dialog =
+            DeviceEditFragment.newInstance(deviceAddress, resources.getBoolean(R.bool.large_layout))
         dialog.show(requireActivity().supportFragmentManager, "device_edit")
     }
 

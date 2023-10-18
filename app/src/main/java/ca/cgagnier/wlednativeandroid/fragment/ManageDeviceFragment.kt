@@ -27,7 +27,8 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
             (requireActivity().application as DevicesApplication).deviceRepository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+            (requireActivity().application as DevicesApplication).userPreferencesRepository
+        )
     }
     private val manageDevicesViewModel: ManageDevicesViewModel by activityViewModels {
         ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
@@ -90,7 +91,8 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
     }
 
     private fun editItem(item: Device) {
-        val dialog = DeviceEditFragment.newInstance(item.address)
+        val dialog =
+            DeviceEditFragment.newInstance(item.address, resources.getBoolean(R.bool.large_layout))
         dialog.showsDialog = true
         dialog.show(requireActivity().supportFragmentManager, "device_edit")
     }

@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
@@ -20,7 +19,7 @@ import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DeviceEditFragment : DialogFragment() {
+class DeviceEditFragment : WiderDialogFragment() {
     private var firstLoad = true
     private lateinit var deviceAddress: String
     private lateinit var device: Device
@@ -168,16 +167,14 @@ class DeviceEditFragment : DialogFragment() {
     companion object {
         private const val TAG = "DeviceEditFragment"
         private const val DEVICE_ADDRESS = "device_address"
+        private const val IS_LARGE_LAYOUT = "is_large_layout"
 
-        /**
-         * @param deviceAddress Address of device that can be updated
-         * @return A new instance of DeviceEditFragment.
-         */
         @JvmStatic
-        fun newInstance(deviceAddress: String) =
+        fun newInstance(deviceAddress: String, isLargeLayout: Boolean) =
             DeviceEditFragment().apply {
                 arguments = Bundle().apply {
                     putString(DEVICE_ADDRESS, deviceAddress)
+                    putBoolean(IS_LARGE_LAYOUT, isLargeLayout)
                 }
             }
     }
