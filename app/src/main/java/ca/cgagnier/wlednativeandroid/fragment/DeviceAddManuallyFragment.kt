@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,23 +12,21 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddEditBinding
+import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
+class DeviceAddManuallyFragment : DialogFragment() {
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
             (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
     }
-    private var _binding: FragmentDeviceAddEditBinding? = null
+    private var _binding: FragmentDeviceAddBinding? = null
     private val binding get() = _binding!!
 
     private var listeners = ArrayList<NoticeDialogListener>()
@@ -36,18 +35,22 @@ class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
         fun onDeviceManuallyAdded(dialog: DialogFragment, device: Device)
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        _binding = FragmentDeviceAddBinding.inflate(layoutInflater, null, false)
+
+        return MaterialAlertDialogBuilder(requireActivity())
+            .setView(binding.root)
+            .create()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDeviceAddEditBinding.inflate(inflater, container, false)
-
         binding.deviceAddressTextInputLayout.requestFocus()
         val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(binding.deviceAddressTextInputLayout, InputMethodManager.SHOW_IMPLICIT)
-
-        binding.buttonCheckForUpdate.visibility = View.GONE
 
         binding.buttonSave.setOnClickListener {
             submitClickListener()
@@ -60,10 +63,8 @@ class DeviceAddManuallyFragment : BottomSheetDialogFragment() {
     }
 
     override fun onResume() {
-        val alertDialog = dialog as BottomSheetDialog
-        alertDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        alertDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        alertDialog.behavior.skipCollapsed = true
+        val alertDialog = dialog
+        alertDialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         super.onResume()
     }
 

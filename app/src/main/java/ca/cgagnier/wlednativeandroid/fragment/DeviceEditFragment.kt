@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,12 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddEditBinding
+import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceEditBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,7 +26,7 @@ class DeviceEditFragment : WiderDialogFragment() {
     private lateinit var deviceAddress: String
     private lateinit var device: Device
 
-    private var _binding: FragmentDeviceAddEditBinding? = null
+    private var _binding: FragmentDeviceEditBinding? = null
     private val binding get() = _binding!!
 
     private val deviceRepository: DeviceRepository by lazy {
@@ -41,12 +43,19 @@ class DeviceEditFragment : WiderDialogFragment() {
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        _binding = FragmentDeviceEditBinding.inflate(layoutInflater, null, false)
+
+        return MaterialAlertDialogBuilder(requireActivity())
+            .setView(binding.root)
+            .create()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDeviceAddEditBinding.inflate(layoutInflater)
         loadDevice()
 
         binding.buttonSave.setOnClickListener {
@@ -116,8 +125,11 @@ class DeviceEditFragment : WiderDialogFragment() {
             binding.buttonCheckForUpdate.text = getString(R.string.check_for_update)
         }
 
-        binding.layoutUpdateAvailable.visibility =
+        binding.iconUpdate.visibility =
             if (device.hasUpdateAvailable()) View.VISIBLE else View.GONE
+        binding.updateDetails.visibility = binding.iconUpdate.visibility
+        binding.buttonUpdate.visibility = binding.iconUpdate.visibility
+
         if (device.hasUpdateAvailable()) {
             binding.versionFromTo.text = getString(
                 R.string.from_version_to_version,

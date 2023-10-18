@@ -83,6 +83,7 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
 
         binding.buttonAddManually.setOnClickListener {
             val newDialog = DeviceAddManuallyFragment()
+            newDialog.showsDialog = true
             newDialog.show(childFragmentManager, "device_add_manually")
             newDialog.registerDeviceAddedListener(this)
         }
