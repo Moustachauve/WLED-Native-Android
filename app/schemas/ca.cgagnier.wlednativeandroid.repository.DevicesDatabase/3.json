@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "e307c1f99504800e840096977e013c45",
+    "identityHash": "db0d46ae33b2fc5b11b5afdb3e82830c",
     "entities": [
       {
         "tableName": "Device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkBssid` TEXT NOT NULL DEFAULT '__unknown__', `networkRssi` INTEGER NOT NULL DEFAULT __unknown__, `networkSignal` INTEGER NOT NULL DEFAULT 0, `networkChannel` INTEGER NOT NULL DEFAULT 0, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', `productType` TEXT NOT NULL DEFAULT 'wled', `branch` TEXT NOT NULL DEFAULT 'stable', PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkBssid` TEXT NOT NULL DEFAULT '__unknown__', `networkRssi` INTEGER NOT NULL DEFAULT __unknown__, `networkSignal` INTEGER NOT NULL DEFAULT 0, `networkChannel` INTEGER NOT NULL DEFAULT 0, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', `branch` TEXT NOT NULL DEFAULT 'stable', `brand` TEXT NOT NULL DEFAULT '__unknown__', `productName` TEXT NOT NULL DEFAULT '__unknown__', PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -133,18 +133,25 @@
             "defaultValue": "''"
           },
           {
-            "fieldPath": "productType",
-            "columnName": "productType",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "'wled'"
-          },
-          {
             "fieldPath": "branch",
             "columnName": "branch",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'stable'"
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'__unknown__'"
+          },
+          {
+            "fieldPath": "productName",
+            "columnName": "productName",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'__unknown__'"
           }
         ],
         "primaryKey": {
@@ -271,7 +278,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e307c1f99504800e840096977e013c45')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db0d46ae33b2fc5b11b5afdb3e82830c')"
     ]
   }
 }

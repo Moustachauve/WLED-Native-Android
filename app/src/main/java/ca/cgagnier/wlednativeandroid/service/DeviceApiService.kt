@@ -148,7 +148,10 @@ object DeviceApiService {
                     isEthernet = false,
                     platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
                     version = deviceVersion,
-                    newUpdateVersionTagAvailable = updateVersionTagAvailable
+                    newUpdateVersionTagAvailable = updateVersionTagAvailable,
+                    // branch = "stable" TODO: To be added when WLED supports it in the future.
+                    brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
+                    productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
                 )
 
                 if (saveChanges && updatedDevice != device) {

@@ -39,10 +39,12 @@ data class Device(
     val newUpdateVersionTagAvailable: String = "",
     @ColumnInfo(defaultValue = "")
     val skipUpdateTag: String = "",
-    @ColumnInfo(defaultValue = "wled")
-    val productType: String = "wled",
     @ColumnInfo(defaultValue = "stable")
     val branch: String = "stable",
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val brand: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val productName: String = UNKNOWN_VALUE,
 ) {
     @Ignore
     var isSliding = false
