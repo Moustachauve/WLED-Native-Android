@@ -85,7 +85,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
 
     private fun startUpdate() {
         Log.d(TAG, "Starting update")
-        binding.textStatus.text = getString(R.string.downloading_binary)
+        binding.textStatus.text = getString(R.string.downloading_binaries)
         val updateService = DeviceUpdateService(requireContext(), device, version)
         binding.textVersionTag.text = updateService.getVersionWithPlatformName()
         if (!updateService.couldDetermineAsset()) {
