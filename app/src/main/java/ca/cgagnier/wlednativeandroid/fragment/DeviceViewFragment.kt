@@ -43,6 +43,7 @@ class DeviceViewFragment : Fragment() {
         )
     }
 
+    private var loadingCounter = 0
     private var activeDevice: Device? = null
     private var isLargeLayout: Boolean = false
     private lateinit var onBackPressedCallback: OnBackPressedCallback
@@ -77,6 +78,7 @@ class DeviceViewFragment : Fragment() {
                     navigateBack()
                 } else {
                     isEnabled = false
+                    loadingCounter = 0
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                     isEnabled = true
                 }
@@ -131,6 +133,7 @@ class DeviceViewFragment : Fragment() {
                         view: WebView?,
                         request: WebResourceRequest?
                     ): Boolean {
+                        _binding?.pageLoadingIndicator?.visibility = View.VISIBLE
                         if (!request?.isRedirect!! && view?.canGoBack() == true) {
                             val webBackForwardList = view.copyBackForwardList()
                             val currentIndex = webBackForwardList.currentIndex
@@ -143,28 +146,36 @@ class DeviceViewFragment : Fragment() {
                                 view.goBackOrForward(-currentIndex)
                             }
                         }
+
                         return false
                     }
 
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view, url, favicon)
                         updateNavigationState()
-                        Log.i(TAG_NAME, "page started $url")
+                        Log.i(TAG_NAME, "page started $url, counter: $loadingCounter")
                     }
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
                         updateNavigationState()
-                        Log.i(TAG_NAME, "page finished $url")
+                        loadingCounter--
+                        Log.i(TAG_NAME, "page finished $url, counter: $loadingCounter")
+                        if (loadingCounter <= 0) {
+                            _binding?.pageLoadingIndicator?.visibility = View.GONE
+                            loadingCounter = 0
+                        }
                         if (url == "about:blank") {
                             Log.i(TAG_NAME, "page finished - cleared history")
                             shouldResetHistory = true
                             if (shouldShowErrorPage) {
                                 shouldShowErrorPage = false
+                                showLoadingIndicator()
                                 view?.loadUrl("file:///android_asset/device_error.html")
                             } else {
                                 activeDevice?.let {
-                                    Log.i(TAG_NAME, "Requesting '${it.address}'")
+                                    Log.i(TAG_NAME, "onPageFinished Requesting '${it.address}'")
+                                    showLoadingIndicator()
                                     view?.loadUrl("http://${it.address}")
                                 }
                             }
@@ -195,7 +206,6 @@ class DeviceViewFragment : Fragment() {
                                 TAG_NAME,
                                 "Error received ${request.url} - ${error?.description}"
                             )
-
 
                             shouldShowErrorPage = true
                             view?.loadUrl("about:blank")
@@ -242,13 +252,15 @@ class DeviceViewFragment : Fragment() {
                 return@observe
             }
             if (!deviceListViewModel.expectDeviceChange) {
-                Log.i(TAG_NAME, "observed device, but did not expect changes")
+                Log.d(TAG_NAME, "observed device, but did not expect changes")
                 return@observe
             }
             Log.i(TAG_NAME, "observed device")
             deviceListViewModel.expectDeviceChange = false
+            loadingCounter = 0
 
             // Let the "page finished" event load the new url
+            showLoadingIndicator()
             _webview.loadUrl("about:blank")
             _webview.clearHistory()
             updateNavigationState()
@@ -357,13 +369,14 @@ class DeviceViewFragment : Fragment() {
     fun refresh() {
         updateTitle()
         activeDevice?.let {
-            Log.i(TAG_NAME, "Requesting '${it.address}'")
+            Log.i(TAG_NAME, "refresh Requesting '${it.address}'")
+            showLoadingIndicator()
             _webview.loadUrl("http://${it.address}")
         }
     }
 
     private fun updateTitle() {
-        Log.i(TAG_NAME, "Updating title")
+        Log.d(TAG_NAME, "Updating title")
         binding.deviceToolbar.title =
             activeDevice?.name ?: getString(R.string.select_a_device)
         binding.deviceToolbar.subtitle = activeDevice?.address
@@ -388,6 +401,11 @@ class DeviceViewFragment : Fragment() {
 
     fun updateNavigationState() {
         _binding?.deviceToolbar?.invalidateMenu()
+    }
+
+    fun showLoadingIndicator() {
+        _binding?.pageLoadingIndicator?.visibility = View.VISIBLE
+        loadingCounter++
     }
 
     fun showUpdateDialog() {
