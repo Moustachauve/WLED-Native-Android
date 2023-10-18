@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -125,6 +126,16 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
         binding.deviceName.text = device.name
         binding.deviceAddress.text = device.address
 
+        if (!device.isOnline) {
+            val installButton = binding.buttons.menu.findItem(R.id.action_install)
+            installButton.title = getString(R.string.device_offline)
+            installButton.icon = ContextCompat.getDrawable(
+                requireActivity(),
+                R.drawable.twotone_signal_wifi_connected_no_internet_0_24
+            )
+            installButton.isEnabled = false
+        }
+
         Markwon.create(requireContext())
             .setMarkdown(binding.versionNotes, version.version.description)
     }
@@ -157,6 +168,7 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
 
     companion object {
         private const val TAG = "DeviceUpdateAvailableFragment"
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
