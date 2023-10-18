@@ -66,7 +66,6 @@ class DeviceUpdateService(
         }
 
         val githubApi = GithubApi(context)
-        // TODO get from caching if already exists
         return githubApi.downloadReleaseBinary(asset, getPathForAsset())
     }
 
