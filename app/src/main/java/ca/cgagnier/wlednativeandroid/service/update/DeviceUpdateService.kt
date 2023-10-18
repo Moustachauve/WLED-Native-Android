@@ -31,14 +31,18 @@ class DeviceUpdateService(
         determineAsset()
     }
 
+    fun getVersionWithPlatformName(): String {
+        val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
+        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}${ethernetVariant}"
+    }
+
     private fun determineAsset() {
         if (!supportedPlatforms.contains(device.platformName)) {
             return
         }
 
-        val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
-        val version = versionWithAssets.version.tagName.drop(1)
-        val assetName = "WLED_${version}_${device.platformName.uppercase()}${ethernetVariant}.bin"
+        val versionWithPlatform = getVersionWithPlatformName().drop(1)
+        val assetName = "WLED_${versionWithPlatform}.bin"
         for (asset in versionWithAssets.assets) {
             if (asset.name == assetName) {
                 this.asset = asset

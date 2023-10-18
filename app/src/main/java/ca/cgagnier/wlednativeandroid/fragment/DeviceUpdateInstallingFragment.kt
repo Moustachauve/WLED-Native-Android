@@ -87,12 +87,11 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         Log.d(TAG, "Starting update")
         binding.textStatus.text = getString(R.string.downloading_binary)
         val updateService = DeviceUpdateService(requireContext(), device, version)
+        binding.textVersionTag.text = updateService.getVersionWithPlatformName()
         if (!updateService.couldDetermineAsset()) {
-            // TODO Handle no asset found
+            displayNoBinary()
             return
         }
-        val asset = updateService.getAsset()
-        binding.textVersionTag.text = asset.name
         binding.progressUpdate.isIndeterminate = false
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -109,6 +108,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     is DownloadState.Downloading -> {
                         Log.d(TAG, "File download Progress=${downloadState.progress}")
                         activity?.runOnUiThread {
+                            binding.textVersionTag.text = updateService.getAsset().name
                             binding.progressUpdate.isIndeterminate = false
                             binding.progressUpdate.progress = downloadState.progress
                         }
@@ -185,6 +185,13 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         binding.buttonCancel.text = getString(R.string.done)
         dialog?.setCancelable(true)
         binding.buttonCancel.isEnabled = true
+    }
+
+    private fun displayNoBinary() {
+        displayFailure()
+        binding.textStatus.text = getString(R.string.no_compatible_version_found)
+        binding.textUpdatingWarning.text = getString(R.string.no_compatible_version_found_details)
+        binding.textUpdatingWarning.visibility = View.VISIBLE
     }
 
     private fun updateDeviceUpdated() {

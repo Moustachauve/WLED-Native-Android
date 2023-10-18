@@ -81,4 +81,6 @@
     <string name="device_update_disclaimer_part3">WLED and WLED Native are not responsible if something goes wrong due to an update.</string>
     <string name="install_update">Install Update</string>
     <string name="ota_install_failed_device_locked">Your device might be PIN protected or locked with a passphrase.</string>
+    <string name="no_compatible_version_found">No Compatible Version Found</string>
+    <string name="no_compatible_version_found_details">No version that is compatible with your device could be found. You will need to manually update your device.</string>
 </resources>

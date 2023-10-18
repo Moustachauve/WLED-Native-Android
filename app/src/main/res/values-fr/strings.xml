@@ -78,4 +78,6 @@
     <string name="device_update_disclaimer_part3">WLED et WLED Native ne sont pas responsable si quelque chose ne fonctionne plus dû à une mise à jour.</string>
     <string name="install_update">Installer la mise à jour</string>
     <string name="ota_install_failed_device_locked">Votre appareil est peut-être protégé par un NIP ou un mot de passe.</string>
+    <string name="no_compatible_version_found">Aucune version compatible</string>
+    <string name="no_compatible_version_found_details">Aucune version compatible avec votre appareil n\'a pu être trouvé. Vous devrez faire une installation manuelle.</string>
 </resources>
