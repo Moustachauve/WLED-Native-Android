@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,7 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateAvailableBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.launch
 
@@ -43,12 +45,18 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        _binding = FragmentDeviceUpdateAvailableBinding.inflate(layoutInflater, null, false)
+
+        return MaterialAlertDialogBuilder(requireActivity())
+            .setView(binding.root)
+            .create()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDeviceUpdateAvailableBinding.inflate(inflater, container, false)
-
         binding.buttons.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.action_install -> {
