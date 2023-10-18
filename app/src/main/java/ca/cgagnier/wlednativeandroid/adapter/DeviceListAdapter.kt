@@ -15,7 +15,7 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 import com.google.android.material.materialswitch.MaterialSwitch
 
@@ -30,12 +30,13 @@ class DeviceListAdapter(
             itemBinding.nameTextView.text =
                 if (device.name == "") context.getString(R.string.default_device_name) else device.name
             itemBinding.ipAddressTextView.text = device.address
-            itemBinding.isOffline.visibility = if (device.isOnline) View.INVISIBLE else View.VISIBLE
+            itemBinding.isOffline.visibility = if (device.isOnline) View.GONE else View.VISIBLE
+            itemBinding.updateIndicator.visibility = if (device.hasUpdateAvailable()) View.VISIBLE else View.GONE
             itemBinding.brightnessSeekbar.progress = device.brightness
             itemBinding.powerStatusSwitch.isChecked = device.isPoweredOn
             itemBinding.networkStatus.setImageResource(device.getNetworkStrengthImage())
 
-            itemBinding.container.isSelected = isSelectable && selectedDevice?.address == device.address
+            itemBinding.container.isSelected = isSelectable && internalSelectedDevice?.address == device.address
 
             setSeekBarColor(itemBinding.brightnessSeekbar, device.color)
             setSwitchColor(itemBinding.powerStatusSwitch, device.color)
@@ -51,7 +52,7 @@ class DeviceListAdapter(
 
             itemBinding.powerStatusSwitch.setOnClickListener {
                 val deviceSetPost = JsonPost(isOn = itemBinding.powerStatusSwitch.isChecked)
-                DeviceApi.postJson(device, deviceSetPost)
+                DeviceApiService.postJson(device, deviceSetPost)
             }
 
             itemBinding.brightnessSeekbar.setOnSeekBarChangeListener(object :

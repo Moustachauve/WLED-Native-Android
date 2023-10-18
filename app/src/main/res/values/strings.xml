@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" translatable="false">WLED Native</string>
     <string name="app_logo">WLED Logo</string>
     <string name="add_a_device">Add or Discover a Device</string>
@@ -15,12 +15,14 @@
     <string name="default_device_name">(New Device)</string>
     <string name="default_ip" translatable="false">0.0.0.0</string>
     <string name="is_offline">Offline</string>
+    <string name="update_available">Update Available</string>
     <string name="network_status">Network Status</string>
     <string name="refresh_list">Refresh List</string>
-    <string name="refresh">Refresh List</string>
+    <string name="refresh_page">Refresh Page</string>
     <string name="manage_devices">Manage Devices</string>
     <string name="remove">Remove</string>
     <string name="edit_device">Edit Device</string>
+    <string name="edit_device_with_name">Edit Device - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
     <string name="remove_device">Remove Device</string>
     <string name="remove_device_confirm">Remove a device?</string>
     <string name="remove_device_confirm_text">Do you really want to remove %1$s [%2$s]?</string>
@@ -55,4 +57,31 @@
     <string name="device_ap_mode">WLED AP Mode</string>
     <string name="device_ap_mode_detected">WLED AP Mode Detected</string>
     <string name="device_ap_mode_detected_click">Click here to open Device</string>
+    <string name="install">Install</string>
+    <string name="later">Later</string>
+    <string name="skip_this_version">Skip this Version</string>
+    <string name="properties">Properties</string>
+    <string name="check_for_update">Check for Update</string>
+    <string name="from_version_to_version">
+        From <xliff:g example="v0.13.0" id="old_version">%1$s</xliff:g> To <xliff:g example="v0.14.0" id="new_version">%2$s</xliff:g>
+    </string>
+    <string name="see_update_details">See Update</string>
+    <string name="checking_progress_update">Checking…</string>
+    <string name="updating">Updating %1$s</string>
+    <string name="please_do_not_close_the_app_or_turn_off_the_device">Please do not close the app or turn off the device.</string>
+    <string name="starting_up">Starting Up</string>
+    <string name="downloading_version">Downloading Version</string>
+    <string name="installing_update">Installing Update</string>
+    <string name="update_failed">Update Failed</string>
+    <string name="done">Done</string>
+    <string name="update_completed">Update Completed!</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="device_update_disclamer_part1">You are about to install a new version of WLED on your device. If you had a custom version installed previously, you might lose some functionalities (for example, if you had some usermods enabled, they might not work anymore).</string>
+    <string name="device_update_disclaimer_part2">If someone installed this device for you, you should maybe ask them if it is alright to update the device to a new version.</string>
+    <string name="device_update_disclaimer_part3">WLED and WLED Native are not responsible if something goes wrong due to an update.</string>
+    <string name="install_update">Install Update</string>
+    <string name="ota_install_failed_device_locked">Your device might be PIN protected or locked with a passphrase.</string>
+    <string name="no_compatible_version_found">No Compatible Version Found</string>
+    <string name="no_compatible_version_found_details">No version that is compatible with your device could be found. You will need to manually update your device.</string>
+    <string name="device_offline">Device Offline</string>
 </resources>

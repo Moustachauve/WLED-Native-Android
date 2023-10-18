@@ -114,6 +114,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.3'
     implementation 'com.google.firebase:firebase-perf-ktx:20.4.1'
+
+    implementation 'com.vdurmont:semver4j:3.1.0'
+    implementation "io.noties.markwon:core:4.6.2"
 }
 
 protobuf {

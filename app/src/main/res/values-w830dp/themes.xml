@@ -44,4 +44,8 @@
     <style name="WLEDNativeAndroid.Success" parent="WLEDNativeAndroid">
         <item name="colorPrimary">@color/md_theme_light_success</item>
     </style>
+
+    <style name="WLEDNativeAndroid.Fail" parent="WLEDNativeAndroid">
+        <item name="colorPrimary">@color/md_theme_light_error</item>
+    </style>
 </resources>

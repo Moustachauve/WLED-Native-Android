@@ -8,14 +8,14 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="?dialogPreferredPadding"
         android:paddingBottom="?dialogPreferredPadding"
         android:paddingStart="?dialogPreferredPadding"
         android:paddingEnd="?dialogPreferredPadding"
-        tools:context=".fragment.DeviceAddManuallyFragment"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        tools:context=".fragment.DeviceAddManuallyFragment">
         <TextView
             android:id="@+id/dialog_title"
             android:layout_width="match_parent"
@@ -23,6 +23,8 @@
             android:text="@string/add_device_manually"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:paddingBottom="?dialogPreferredPadding"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +75,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/custom_name_text_input_layout" />
 
-        <Button
+
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -82,7 +86,7 @@
             app:layout_constraintEnd_toStartOf="@id/button_save"
             app:layout_constraintTop_toBottomOf="@id/hide_device_check_box"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

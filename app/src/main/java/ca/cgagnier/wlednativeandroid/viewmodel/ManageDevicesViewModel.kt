@@ -8,19 +8,12 @@ import kotlinx.coroutines.launch
 class ManageDevicesViewModel(private val repository: DeviceRepository): ViewModel() {
     val allDevices: LiveData<List<Device>> = repository.allDevices.asLiveData()
 
-    private var _activeDevice = MutableLiveData<Device>()
-    val activeDevice: LiveData<Device> get() = _activeDevice
-
     fun insert(device: Device) = viewModelScope.launch {
         repository.insert(device)
     }
 
     fun delete(device: Device) = viewModelScope.launch {
         repository.delete(device)
-    }
-
-    fun updateActiveDevice(device: Device) {
-        _activeDevice.value = device
     }
 }
 

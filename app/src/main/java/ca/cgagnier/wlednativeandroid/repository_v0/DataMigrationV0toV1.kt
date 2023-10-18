@@ -21,7 +21,7 @@ class DataMigrationV0toV1(val context: Context, val repositoryV1: DeviceReposito
                 name = deviceItem.name,
                 isCustomName = deviceItem.isCustomName,
                 isHidden = deviceItem.isHidden,
-                macAddress = "",
+                macAddress = Device.UNKNOWN_VALUE,
                 brightness  = deviceItem.brightness,
                 color  = deviceItem.color,
                 isPoweredOn  = deviceItem.isPoweredOn,
