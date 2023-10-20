@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 class DiscoverDeviceViewModel(private val repository: DeviceRepository): ViewModel() {
     private val _allDevicesAddresses = MutableLiveData<ArrayList<String>>()
 
-    val allDevices: LiveData<List<Device>> get() = Transformations.switchMap(_allDevicesAddresses) {
+    val allDevices: LiveData<List<Device>> get() = _allDevicesAddresses.switchMap {
             addresses -> repository.findDevicesWithAddresses(addresses).asLiveData()
     }
 

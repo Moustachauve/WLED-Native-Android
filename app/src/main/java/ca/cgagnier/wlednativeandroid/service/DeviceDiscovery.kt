@@ -177,7 +177,7 @@ class DeviceDiscovery(val context: Context) {
                 name = "WLED AP Mode",
                 isCustomName = true,
                 isHidden = true,
-                macAddress = ""
+                macAddress = Device.UNKNOWN_VALUE
             )
         }
     }

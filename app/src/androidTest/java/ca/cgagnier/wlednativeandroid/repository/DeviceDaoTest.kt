@@ -5,13 +5,12 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import ca.cgagnier.wlednativeandroid.model.Device
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
-
 import org.junit.Test
 import java.io.IOException
 
@@ -44,7 +43,8 @@ class DeviceDaoTest {
             address = "address",
             name = "name",
             isCustomName = true,
-            isHidden = true
+            isHidden = true,
+            macAddress = "123"
         )
         deviceDao.insert(device)
         val allDevices = deviceDao.getAlphabetizedDevices().first()
@@ -58,14 +58,16 @@ class DeviceDaoTest {
             address = "address1",
             name = "name",
             isCustomName = true,
-            isHidden = true
+            isHidden = true,
+            macAddress = "123"
         )
         deviceDao.insert(device)
         val device2 = Device(
             address = "address2",
             name = "name",
             isCustomName = true,
-            isHidden = true
+            isHidden = true,
+            macAddress = "456"
         )
         deviceDao.insert(device2)
         val deviceByAddress = deviceDao.findDeviceByAddress(device.address)
@@ -81,14 +83,16 @@ class DeviceDaoTest {
             "address1",
             "name1",
             isCustomName = true,
-            true
+            true,
+            macAddress = "123"
         )
         deviceDao.insert(device)
         val device2 = Device(
             "address2",
             "name2",
             isCustomName = true,
-            false
+            false,
+            macAddress = "456"
         )
         deviceDao.insert(device2)
         val allDevices = deviceDao.getAlphabetizedDevices().first()
@@ -103,14 +107,16 @@ class DeviceDaoTest {
             "address1",
             "name1",
             isCustomName = true,
-            true
+            true,
+            macAddress = "123"
         )
         deviceDao.insert(device)
         val device2 = Device(
             "address2",
             "name2",
             isCustomName = true,
-            false
+            false,
+            macAddress = "456"
         )
         deviceDao.insert(device2)
         val allDevices = deviceDao.getAlphabetizedVisibleDevices().first()
@@ -125,14 +131,16 @@ class DeviceDaoTest {
             address = "address10",
             name = "name10",
             isCustomName = true,
-            isHidden = true
+            isHidden = true,
+            macAddress = "123"
         )
         deviceDao.insert(device)
         val device2 = Device(
             address = "address12",
             name = "name12",
             isCustomName = true,
-            isHidden = true
+            isHidden = true,
+            macAddress = "456"
         )
         deviceDao.insert(device2)
         deviceDao.deleteAll()

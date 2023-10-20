@@ -1,12 +1,16 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/action_browse_update"
+        android:icon="@drawable/baseline_download_24"
+        android:title="@string/update_available"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_browse_back"
         android:icon="@drawable/ic_baseline_arrow_back_ios_24"
         android:title="@string/navigate_backward"
         app:showAsAction="always" />
-
     <item
         android:id="@+id/action_browse_forward"
         android:icon="@drawable/ic_baseline_arrow_forward_ios_24"
@@ -15,7 +19,12 @@
     <item
         android:id="@+id/action_browse_refresh"
         android:icon="@drawable/ic_baseline_refresh_24"
-        android:title="@string/refresh"
+        android:title="@string/refresh_page"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_manage_device"
+        android:icon="@drawable/ic_baseline_edit_24"
+        android:title="@string/properties"
+        app:showAsAction="ifRoom" />
 </menu>

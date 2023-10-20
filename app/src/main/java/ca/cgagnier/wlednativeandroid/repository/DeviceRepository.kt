@@ -10,43 +10,44 @@ class DeviceRepository(deviceDatabase: DevicesDatabase) {
     val allVisibleDevices: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevices()
     val allVisibleDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevicesOfflineLast()
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>> {
         return deviceDao.findDevicesWithAddresses(addresses)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findDeviceByAddress(address: String): Device? {
         return deviceDao.findDeviceByAddress(address)
     }
 
-    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    fun findLiveDeviceByAddress(address: String): Flow<Device?> {
+        return deviceDao.findLiveDeviceByAddress(address)
+    }
+
+    @WorkerThread
+    fun findFirstLiveDevice(): Flow<Device?> = deviceDao.getFirstVisibleDeviceOfflineLast()
+
     @WorkerThread
     suspend fun findDeviceByMacAddress(address: String): Device? {
         return deviceDao.findDeviceByMacAddress(address)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(device: Device) {
         deviceDao.insert(device)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insertMany(devices: List<Device>) {
         deviceDao.insertMany(devices)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun update(device: Device) {
         deviceDao.update(device)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun delete(device: Device) {
         deviceDao.delete(device)

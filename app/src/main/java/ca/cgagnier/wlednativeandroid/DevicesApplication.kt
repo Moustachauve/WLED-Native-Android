@@ -11,12 +11,12 @@ import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 private const val DATA_STORE_FILE_NAME = "user_prefs.pb"
 
 class DevicesApplication : Application() {
-
-    val database by lazy { DevicesDatabase.getDatabase(this) }
-    val repository by lazy { DeviceRepository(database) }
+    private val database by lazy { DevicesDatabase.getDatabase(this) }
+    val deviceRepository by lazy { DeviceRepository(database) }
     val deviceDiscovery by lazy { DeviceDiscovery(this) }
+    val versionWithAssetsRepository by lazy { VersionWithAssetsRepository(database) }
 
-    val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
+    private val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
         fileName = DATA_STORE_FILE_NAME,
         serializer = UserPreferencesSerializer(),
         produceMigrations = { _ ->
@@ -24,5 +24,5 @@ class DevicesApplication : Application() {
         }
     )
 
-    val userPreferencesRepository by lazy { UserPreferencesRepository(userPreferencesStore)  }
+    val userPreferencesRepository by lazy { UserPreferencesRepository(userPreferencesStore) }
 }

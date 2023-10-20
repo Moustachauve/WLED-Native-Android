@@ -44,6 +44,10 @@
         <item name="colorPrimary">@color/md_theme_dark_success</item>
     </style>
 
+    <style name="WLEDNativeAndroid.Fail" parent="WLEDNativeAndroid">
+        <item name="colorPrimary">@color/md_theme_dark_error</item>
+    </style>
+
     <style name="BottomSheetDialogStyle" parent="Theme.Material3.Dark.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>

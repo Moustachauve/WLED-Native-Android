@@ -1,12 +1,22 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.content.Intent
-import android.net.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -21,12 +31,14 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ca.cgagnier.wlednativeandroid.*
+import ca.cgagnier.wlednativeandroid.AutoDiscoveryActivity
+import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
@@ -39,8 +51,9 @@ class DeviceListFragment : Fragment(),
 
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).repository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+            (requireActivity().application as DevicesApplication).deviceRepository,
+            (requireActivity().application as DevicesApplication).userPreferencesRepository
+        )
     }
 
     private var _binding: FragmentDeviceListBinding? = null
@@ -58,7 +71,7 @@ class DeviceListFragment : Fragment(),
         checkIfConnectedInAPMode(true)
 
         Log.i(TAG, "Starting Refresh timer")
-        refreshTimer(loopHandler, 5000)
+        refreshTimer(loopHandler, 10000)
     }
 
     override fun onPause() {
@@ -144,11 +157,16 @@ class DeviceListFragment : Fragment(),
             if (it != null && it.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
                 duringSetup = false
             }
-            if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange) {
+            if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange && !slidingPaneLayout.isOpen) {
+                Log.d(TAG, "opening slidingPaneLayout")
                 slidingPaneLayout.openPane()
             }
             duringSetup = false
             if (it != null) {
+                val previousSelectedDevice = deviceListAdapter.getSelectedDevice()
+                if (previousSelectedDevice?.address == it.address) {
+                    return@Observer
+                }
                 binding.deviceListRecyclerView.scrollToPosition(
                     deviceListAdapter.setSelectedDevice(it)
                 )
@@ -176,7 +194,7 @@ class DeviceListFragment : Fragment(),
     private fun refreshTimer(handler: Handler, delay: Long) {
         Log.i(TAG, "Refreshing devices from timer")
         refreshListFromApi(true)
-        handler.postDelayed({refreshTimer(handler, delay)}, delay)
+        handler.postDelayed({ refreshTimer(handler, delay) }, delay)
     }
 
     override fun onDestroyView() {
@@ -188,7 +206,7 @@ class DeviceListFragment : Fragment(),
         toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.home, menu)
-                val actionBar = activity?.actionBar
+                val actionBar = requireActivity().actionBar
 
                 actionBar?.setDisplayHomeAsUpEnabled(true)
             }
@@ -217,23 +235,28 @@ class DeviceListFragment : Fragment(),
                 R.id.action_device_add -> {
                     openAddDeviceFragment()
                 }
+
                 R.id.action_refresh -> {
                     if (deviceListAdapter.itemCount > 0) {
                         swipeRefreshLayout.isRefreshing = true
                     }
                     onRefresh()
                 }
+
                 R.id.action_manage_device -> {
                     openManageDevicesFragment()
                 }
+
                 R.id.action_settings -> {
                     openSettings()
                 }
+
                 R.id.action_visit_website -> {
                     val browserIntent =
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://illumidel.com/"))
                     startActivity(browserIntent)
                 }
+
                 R.id.action_visit_help -> {
                     val browserIntent =
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://illumidel.com/videos/"))
@@ -282,7 +305,7 @@ class DeviceListFragment : Fragment(),
     private fun refreshListFromApi(silentUpdate: Boolean) {
         if (deviceListViewModel.allDevices.value != null) {
             for (device in deviceListViewModel.allDevices.value!!) {
-                DeviceApi.update(device, silentUpdate)
+                DeviceApiService.update(device, silentUpdate)
             }
         }
     }

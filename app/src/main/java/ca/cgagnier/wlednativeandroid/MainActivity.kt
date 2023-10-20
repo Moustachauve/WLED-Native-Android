@@ -9,16 +9,21 @@ import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -28,8 +33,9 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
     private val autoDiscoveryLoopHandler = Handler(Looper.getMainLooper())
     private val deviceListViewModel: DeviceListViewModel by viewModels {
         DeviceListViewModelFactory(
-            (application as DevicesApplication).repository,
-            (application as DevicesApplication).userPreferencesRepository)
+            (application as DevicesApplication).deviceRepository,
+            (application as DevicesApplication).userPreferencesRepository
+        )
     }
 
     private var isAutoDiscoveryEnabled = false
@@ -53,7 +59,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
 
         super.onCreate(savedInstanceState)
-        DeviceApi.setApplication(application as DevicesApplication)
+        DeviceApiService.setApplication(application as DevicesApplication)
         binding = ActivityMainBinding.inflate(layoutInflater)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -69,7 +75,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
 
         checkMigration()
-
+        updateDeviceVersionList()
         setContentView(binding.root)
     }
 
@@ -92,7 +98,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         (application as DevicesApplication).deviceDiscovery
             .registerDeviceDiscoveredListener(this)
         (application as DevicesApplication).deviceDiscovery.start()
-        autoDiscoveryLoopHandler.postDelayed({stopAutoDiscovery()}, 25000)
+        autoDiscoveryLoopHandler.postDelayed({ stopAutoDiscovery() }, 25000)
     }
 
     override fun stopAutoDiscovery() {
@@ -109,7 +115,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
             val userPreferences = devicesApp.userPreferencesRepository.fetchInitialPreferences()
             if (!userPreferences.hasMigratedSharedPref) {
                 Log.i(TAG, "Starting devices migration from V0 to V1")
-                DataMigrationV0toV1(applicationContext, devicesApp.repository).migrate()
+                DataMigrationV0toV1(applicationContext, devicesApp.deviceRepository).migrate()
                 devicesApp.userPreferencesRepository.updateHasMigratedSharedPref(true)
                 Log.i(TAG, "Migration done.")
             }
@@ -118,12 +124,14 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
 
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
         Log.i(TAG, "Device discovered!")
+        @Suppress("DEPRECATION")
         val deviceIp = serviceInfo.host.hostAddress!!
         val deviceName = serviceInfo.serviceName ?: ""
-        val device = Device(deviceIp, deviceName,
+        val device = Device(
+            deviceIp, deviceName,
             isCustomName = false,
             isHidden = false,
-            macAddress = ""
+            macAddress = Device.UNKNOWN_VALUE
         )
 
         if (deviceListViewModel.contains(device)) {
@@ -132,11 +140,14 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
         Log.i(TAG, "IP: ${deviceIp}\tName: ${deviceName}\t")
 
-        DeviceApi.update(device, true) {
+        DeviceApiService.update(device, silentUpdate = true, saveChanges = false) {
             lifecycleScope.launch {
                 val existingDevice = deviceListViewModel.findWithSameMacAddress(it)
-                if (existingDevice != null) {
-                    Log.i(TAG, "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}")
+                if (existingDevice != null && it.macAddress != Device.UNKNOWN_VALUE) {
+                    Log.i(
+                        TAG,
+                        "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
+                    )
                     deviceListViewModel.delete(existingDevice)
                 }
                 deviceListViewModel.insert(device)
@@ -144,13 +155,33 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
     }
 
-    private fun setThemeMode(theme: ThemeSettings){
-        val mode = when(theme){
+    private fun setThemeMode(theme: ThemeSettings) {
+        val mode = when (theme) {
             ThemeSettings.Light -> AppCompatDelegate.MODE_NIGHT_NO
             ThemeSettings.Dark -> AppCompatDelegate.MODE_NIGHT_YES
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
         AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    /**
+     * Checks for device updates once in a while
+     */
+    private fun updateDeviceVersionList() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val app = (application as DevicesApplication)
+            app.userPreferencesRepository.lastUpdateCheckDate.collect {
+                val now = System.currentTimeMillis()
+                if (now < it) {
+                    Log.i(TAG, "Not updating version list since it was done recently.")
+                    return@collect
+                }
+                val releaseService = ReleaseService(app.versionWithAssetsRepository)
+                releaseService.refreshVersions(applicationContext)
+                // Set the next date to check in minimum 24 hours from now.
+                app.userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
+            }
+        }
     }
 
     companion object {
