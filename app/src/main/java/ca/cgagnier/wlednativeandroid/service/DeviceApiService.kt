@@ -8,8 +8,6 @@ import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -53,7 +51,6 @@ object DeviceApiService {
             stateInfoCall = getJsonApi(device).getStateInfo()
         } catch (e: IllegalArgumentException) {
             Log.wtf(TAG, "Device has invalid address: " + device.address)
-            Firebase.crashlytics.recordException(e)
             scope.launch {
                 application!!.deviceRepository.delete(device)
             }
@@ -103,7 +100,6 @@ object DeviceApiService {
     ) {
         if (t != null) {
             Log.e(TAG, t.message!!)
-            Firebase.crashlytics.recordException(t)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
         if (callback != null) {
@@ -164,15 +160,6 @@ object DeviceApiService {
                     return@launch
                 }
             } else {
-                Firebase.crashlytics.log("Response success, but not valid")
-                Firebase.crashlytics.setCustomKey("response code", response.code())
-                Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
-                Firebase.crashlytics.setCustomKey(
-                    "response errorBody",
-                    response.errorBody().toString()
-                )
-                Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
-
                 onFailure(device, Exception("Response success, but not valid"), callback = callback)
             }
         }
