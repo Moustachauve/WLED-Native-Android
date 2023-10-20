@@ -377,9 +377,6 @@ class DeviceViewFragment : Fragment() {
 
     private fun updateTitle() {
         Log.d(TAG_NAME, "Updating title")
-        binding.deviceToolbar.title =
-            activeDevice?.name ?: getString(R.string.select_a_device)
-        binding.deviceToolbar.subtitle = activeDevice?.address
         updateNavigationState()
     }
 
