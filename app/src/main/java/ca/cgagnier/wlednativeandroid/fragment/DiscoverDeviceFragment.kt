@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListFoundAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDiscoverDeviceBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
-import ca.cgagnier.wlednativeandroid.service.DeviceApi
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.DiscoverDeviceViewModel
@@ -30,11 +30,11 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
 
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).repository,
+            (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
     }
     private val discoverDeviceViewModel: DiscoverDeviceViewModel by activityViewModels {
-        DiscoverDeviceViewModelFactory((requireActivity().application as DevicesApplication).repository)
+        DiscoverDeviceViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
     }
 
     private lateinit var deviceListAdapter: DeviceListFoundAdapter
@@ -83,6 +83,7 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
 
         binding.buttonAddManually.setOnClickListener {
             val newDialog = DeviceAddManuallyFragment()
+            newDialog.showsDialog = true
             newDialog.show(childFragmentManager, "device_add_manually")
             newDialog.registerDeviceAddedListener(this)
         }
@@ -130,14 +131,14 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
         val device = Device(serviceInfo.host.hostAddress!!, deviceName,
             isCustomName = false,
             isHidden = false,
-            macAddress = ""
+            macAddress = Device.UNKNOWN_VALUE
         )
         if (deviceListViewModel.contains(device)) {
             return
         }
 
         deviceListViewModel.insert(device)
-        DeviceApi.update(device, false)
+        DeviceApiService.update(device, false)
 
         activity?.runOnUiThread {
             discoverDeviceViewModel.insert(device)

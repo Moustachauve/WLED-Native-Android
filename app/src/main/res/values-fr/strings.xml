@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_logo">Logo WLED</string>
     <string name="add_a_device">Découvrir un appareil</string>
     <string name="looking_for_devices">Recherche d\'appareils</string>
@@ -14,12 +14,14 @@
     <string name="close">Fermer</string>
     <string name="default_device_name">(Nouvel appareil)</string>
     <string name="is_offline">Hors-ligne</string>
+    <string name="update_available">Mise à jour disponible</string>
     <string name="network_status">Statut du réseau</string>
     <string name="refresh_list">Rafraîchir</string>
-    <string name="refresh">Rafraîchir</string>
+    <string name="refresh_page">Rafraîchir</string>
     <string name="manage_devices">Gérer les appareils</string>
     <string name="remove">Retirer</string>
     <string name="edit_device">Modifier l\'appareil</string>
+    <string name="edit_device_with_name">Modifier l\'appareil - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
     <string name="remove_device">Retirer l\'appareil</string>
     <string name="remove_device_confirm">Retirer un appareil?</string>
     <string name="remove_device_confirm_text">Voulez-vous vraiment retirer %1$s [%2$s]?</string>
@@ -54,4 +56,29 @@
     <string name="device_ap_mode">WLED mode PA</string>
     <string name="device_ap_mode_detected">WLED mode PA détecté</string>
     <string name="device_ap_mode_detected_click">Appuyez ici pour ouvrir</string>
+    <string name="install">Installer</string>
+    <string name="later">Plus tard</string>
+    <string name="skip_this_version">Sauter cette version</string>
+    <string name="properties">Propriétés</string>
+    <string name="check_for_update">Chercher une mise à jour</string>
+    <string name="from_version_to_version">De %1$s à %2$s</string>
+    <string name="see_update_details">Installer</string>
+    <string name="checking_progress_update">Recherche en cours…</string>
+    <string name="updating">Mise à jour de %1$s</string>
+    <string name="please_do_not_close_the_app_or_turn_off_the_device">Ne fermez pas l\'application et n\'éteignez pas l\'appareil.</string>
+    <string name="starting_up">Démarrage</string>
+    <string name="downloading_version">Téléchargement</string>
+    <string name="installing_update">Installation en cours</string>
+    <string name="update_failed">Échec de l\'installation</string>
+    <string name="done">Terminer</string>
+    <string name="update_completed">Mise à jour complétée!</string>
+    <string name="are_you_sure">Êtes-vous sûr?</string>
+    <string name="device_update_disclamer_part1">Vous êtes sur le point d\'installer une nouvelle version de WLED sur votre appareil. Si vous aviez une version personnalisée auparavant, vous pouriez perdre des fonctionalités (par exemple, si vous aviez des « usermods », ils pourraient ne plus fonctionner).</string>
+    <string name="device_update_disclaimer_part2">Si quelqu\'un a installé cet appareil pour vous, vous devriez confirmer avec eux qu\'il n\'y a pas de risque à installer cette nouvelle version.</string>
+    <string name="device_update_disclaimer_part3">WLED et WLED Native ne sont pas responsable si quelque chose ne fonctionne plus dû à une mise à jour.</string>
+    <string name="install_update">Installer la mise à jour</string>
+    <string name="ota_install_failed_device_locked">Votre appareil est peut-être protégé par un NIP ou un mot de passe.</string>
+    <string name="no_compatible_version_found">Aucune version compatible</string>
+    <string name="no_compatible_version_found_details">Aucune version compatible avec votre appareil n\'a pu être trouvé. Vous devrez faire une installation manuelle.</string>
+    <string name="device_offline">Hors ligne</string>
 </resources>

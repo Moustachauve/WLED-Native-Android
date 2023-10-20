@@ -16,7 +16,7 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
     }
 
     var isSelectable: Boolean = false
-    protected var selectedDevice: Device? = null
+    protected var internalSelectedDevice: Device? = null
     protected lateinit var context: Context
 
     init {
@@ -47,10 +47,14 @@ abstract class AbstractDeviceListAdapter<VH : AbstractDeviceListAdapter.ViewHold
         return -1
     }
 
+    fun getSelectedDevice(): Device? {
+        return internalSelectedDevice
+    }
+
     // Returns the selectedIndex
     fun setSelectedDevice(device: Device): Int {
-        val oldSelectedIndex = selectedDevice?.let { getItemPosition(it) }
-        selectedDevice = device
+        val oldSelectedIndex = internalSelectedDevice?.let { getItemPosition(it) }
+        internalSelectedDevice = device
         val selectedIndex = getItemPosition(device)
         oldSelectedIndex?.let { notifyItemChanged(it) }
         notifyItemChanged(selectedIndex)

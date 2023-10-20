@@ -34,7 +34,7 @@ object ThrottleApiPostCall {
             delay(TIME_MS_BETWEEN_CALL)
             if (!alreadySent) {
                 Log.d(TAG, "Posting from coroutine [${nextJsonData}]")
-                DeviceApi.postJson(nextTargetDevice!!, nextJsonData!!)
+                DeviceApiService.postJson(nextTargetDevice!!, nextJsonData!!)
                 alreadySent = true
                 sendPending = false
             }

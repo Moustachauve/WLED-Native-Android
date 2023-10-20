@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
-            android:ellipsize="end"
+            android:ellipsize="middle"
             android:maxLines="1"
             android:text="@string/default_ip"
             android:textColor="@drawable/device_item_text_selector"
@@ -57,10 +57,10 @@
             android:layout_marginStart="6dp"
             android:contentDescription="@string/network_status"
             app:tint="@drawable/device_item_text_selector"
-            app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
-            app:layout_constraintEnd_toStartOf="@id/is_offline"
             app:layout_constraintStart_toEndOf="@id/ip_address_text_view"
+            app:layout_constraintEnd_toStartOf="@id/is_offline"
             app:layout_constraintTop_toTopOf="@id/ip_address_text_view"
+            app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
             app:srcCompat="@drawable/twotone_signal_wifi_connected_no_internet_0_24" />
 
         <TextView
@@ -72,8 +72,21 @@
             android:text="@string/is_offline"
             android:textColor="@drawable/device_item_text_selector"
             app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
+            app:layout_constraintStart_toEndOf="@id/network_status"
+            app:layout_constraintEnd_toStartOf="@id/update_indicator" />
+
+        <ImageView
+            android:id="@+id/update_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/network_status"
+            app:tint="@drawable/device_item_text_selector"
+            app:layout_constraintStart_toEndOf="@id/is_offline"
             app:layout_constraintEnd_toStartOf="@id/power_status_switch"
-            app:layout_constraintStart_toEndOf="@id/network_status" />
+            app:layout_constraintTop_toTopOf="@id/ip_address_text_view"
+            app:layout_constraintBottom_toBottomOf="@id/ip_address_text_view"
+            android:layout_marginTop="4dp"
+            app:srcCompat="@drawable/baseline_download_24" />
 
         <SeekBar
             android:id="@+id/brightness_seekbar"
