@@ -17,8 +17,8 @@ android {
         applicationId "ca.cgagnier.wlednativeandroid"
         minSdk 24
         targetSdk 34
-        versionCode 23
-        versionName "3.0.0"
+        versionCode 24
+        versionName "3.0.1"
         resourceConfigurations += ['en', 'fr']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -41,7 +41,6 @@ android {
     }
 
     buildTypes {
-        isConnectedToWledAP
         release {
             minifyEnabled true
             shrinkResources true
@@ -102,7 +101,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
 
     implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 
     // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:$room_version")
