@@ -30,6 +30,9 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="github_illumidel_key"
+            android:value="${GITHUB_ILLUMIDEL_KEY}" />
     </application>
 
 </manifest>
