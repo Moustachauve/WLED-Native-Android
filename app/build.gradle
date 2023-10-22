@@ -110,7 +110,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     // Firebase stuff
-    implementation platform('com.google.firebase:firebase-bom:32.3.1')
+    implementation platform('com.google.firebase:firebase-bom:32.4.0')
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.5.0'
     implementation 'com.google.firebase:firebase-perf-ktx:20.5.0'
 
