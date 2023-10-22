@@ -169,7 +169,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     response: Response<ResponseBody>
                 ) {
                     activity?.runOnUiThread {
-                        if (response.code() in 201..299) {
+                        if (response.code() in 200..299) {
                             displaySuccess()
                         } else {
                             Log.d(TAG, "OTA Failed, code ${response.code()}")
