@@ -23,4 +23,8 @@ class VersionWithAssetsRepository(deviceDatabase: DevicesDatabase) {
     suspend fun getVersionByTag(tagName: String): VersionWithAssets? {
         return versionDao.getVersionByTagName(tagName)
     }
+
+    fun removeAll() {
+        versionDao.removeAll()
+    }
 }
