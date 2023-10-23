@@ -18,12 +18,16 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 
 
-class GithubApi(val context: Context) {
+abstract class GithubApi(
+    val context: Context,
+    private val repoOwner: String,
+    private val repoName: String
+) {
     fun getAllReleases(): List<Release>? {
         Log.d(TAG, "retrieving latest release")
         try {
             val api = getApi()
-            val release = api.getAllReleases(REPO_OWNER, REPO_NAME)
+            val release = api.getAllReleases(repoOwner, repoName)
             val execute = release.execute()
             val body = execute.body()
             return body
@@ -38,7 +42,7 @@ class GithubApi(val context: Context) {
         targetFile: File
     ): Flow<DownloadState> {
         val api = getApi()
-        return api.downloadReleaseBinary(asset.downloadUrl).saveFile(targetFile)
+        return api.downloadReleaseBinary(repoOwner, repoName, asset.assetId).saveFile(targetFile)
     }
 
     private suspend fun ResponseBody.saveFile(destinationFile: File): Flow<DownloadState> {
@@ -68,24 +72,24 @@ class GithubApi(val context: Context) {
             .flowOn(Dispatchers.IO).distinctUntilChanged()
     }
 
-    private fun getApi(): GithubApiEndpoints {
-        val cache = Cache(context.cacheDir, 10 * 1024 * 1024) // 10MB cache
-        val httpOkClient = OkHttpClient.Builder()
-            .cache(cache)
-            .build()
-
+    protected open fun getApi(): GithubApiEndpoints {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
-            .client(httpOkClient)
+            .client(getHttpOkClient())
             .build()
             .create(GithubApiEndpoints::class.java)
+    }
+
+    protected open fun getHttpOkClient(): OkHttpClient {
+        val cache = Cache(context.cacheDir, 10 * 1024 * 1024) // 10MB cache
+        return OkHttpClient.Builder()
+            .cache(cache)
+            .build()
     }
 
     companion object {
         const val TAG = "github-release"
         const val BASE_URL = "https://api.github.com"
-        const val REPO_OWNER = "Aircoookie"
-        const val REPO_NAME = "WLED"
     }
 }

@@ -16,6 +16,7 @@ import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
 import ca.cgagnier.wlednativeandroid.service.update.DeviceUpdateService
+import ca.cgagnier.wlednativeandroid.service.update.IllumidelUpdateService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -86,7 +87,8 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     private fun startUpdate() {
         Log.d(TAG, "Starting update")
         binding.textStatus.text = getString(R.string.downloading_version)
-        val updateService = DeviceUpdateService(requireContext(), device, version)
+        val updateService = IllumidelUpdateService(requireContext(), device, version)
+        updateService.determineAsset()
         binding.textVersionTag.text = updateService.getVersionWithPlatformName()
         if (!updateService.couldDetermineAsset()) {
             displayNoBinary()
@@ -108,7 +110,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     is DownloadState.Downloading -> {
                         Log.d(TAG, "File download Progress=${downloadState.progress}")
                         activity?.runOnUiThread {
-                            binding.textVersionTag.text = updateService.getAsset().name
+                            binding.textVersionTag.text = updateService.getVersionAsset().name
                             binding.progressUpdate.isIndeterminate = false
                             binding.progressUpdate.progress = downloadState.progress
                         }

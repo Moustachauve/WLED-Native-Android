@@ -7,7 +7,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
-import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
+import ca.cgagnier.wlednativeandroid.service.api.github.IllumidelRepoApi
 import com.vdurmont.semver4j.Semver
 
 
@@ -21,7 +21,11 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         if (latestVersion.version.tagName == ignoreVersion) {
             return ""
         }
-        return if (Semver(latestVersion.version.tagName.drop(1)).isGreaterThan(versionName)) {
+        return if (Semver(
+                latestVersion.version.tagName.drop(1),
+                Semver.SemverType.LOOSE
+            ).isGreaterThan(versionName)
+        ) {
             latestVersion.version.tagName
         } else {
             ""
@@ -29,7 +33,7 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
     }
 
     suspend fun refreshVersions(context: Context) {
-        val allVersions = GithubApi(context).getAllReleases()
+        val allVersions = IllumidelRepoApi(context).getAllReleases()
 
         if (allVersions == null) {
             Log.w(TAG, "Did not find any version")
@@ -71,6 +75,7 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
                     asset.name,
                     asset.size,
                     asset.browserDownloadUrl,
+                    asset.id,
                 )
             )
         }
