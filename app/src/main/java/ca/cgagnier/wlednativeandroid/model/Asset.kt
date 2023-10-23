@@ -20,4 +20,6 @@ data class Asset(
     val name: String,
     val size: Long,
     val downloadUrl: String,
+    @ColumnInfo(defaultValue = "0")
+    val assetId: Int,
 )

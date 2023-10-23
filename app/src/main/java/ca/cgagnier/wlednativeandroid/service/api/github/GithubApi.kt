@@ -38,7 +38,8 @@ class GithubApi(val context: Context) {
         targetFile: File
     ): Flow<DownloadState> {
         val api = getApi()
-        return api.downloadReleaseBinary(asset.downloadUrl).saveFile(targetFile)
+        return api.downloadReleaseBinary(REPO_OWNER, REPO_NAME, asset.assetId)
+            .saveFile(targetFile)
     }
 
     private suspend fun ResponseBody.saveFile(destinationFile: File): Flow<DownloadState> {

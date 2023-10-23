@@ -21,7 +21,11 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         if (latestVersion.version.tagName == ignoreVersion) {
             return ""
         }
-        return if (Semver(latestVersion.version.tagName.drop(1)).isGreaterThan(versionName)) {
+        return if (Semver(
+                latestVersion.version.tagName.drop(1),
+                Semver.SemverType.LOOSE
+            ).isGreaterThan(versionName)
+        ) {
             latestVersion.version.tagName
         } else {
             ""
@@ -35,6 +39,8 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             Log.w(TAG, "Did not find any version")
             return
         }
+
+        versionWithAssetsRepository.removeAll()
 
         val versionModels = mutableListOf<Version>()
         val assetsModels = mutableListOf<Asset>()
@@ -71,6 +77,7 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
                     asset.name,
                     asset.size,
                     asset.browserDownloadUrl,
+                    asset.id,
                 )
             )
         }

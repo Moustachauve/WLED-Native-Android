@@ -39,4 +39,8 @@ interface VersionDao {
     @Transaction
     @Query("SELECT * FROM version")
     fun getVersionsWithAsset(): Flow<List<VersionWithAssets>>
+
+    @Transaction
+    @Query("DELETE FROM version")
+    fun removeAll()
 }
