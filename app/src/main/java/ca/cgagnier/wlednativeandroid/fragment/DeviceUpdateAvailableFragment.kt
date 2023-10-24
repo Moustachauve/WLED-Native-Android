@@ -160,7 +160,7 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
     }
 
     private fun startUpdateInstall() {
-        DeviceUpdateDisclaimerFragment.newInstance(
+        DeviceUpdateInstallingFragment.newInstance(
             deviceAddress,
             version.version.tagName
         ).show(parentFragmentManager, "dialog")
