@@ -40,6 +40,8 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             return
         }
 
+        versionWithAssetsRepository.removeAll()
+
         val versionModels = mutableListOf<Version>()
         val assetsModels = mutableListOf<Asset>()
         for (version in allVersions) {

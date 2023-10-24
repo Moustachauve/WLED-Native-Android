@@ -15,8 +15,8 @@ android {
         applicationId "ca.cgagnier.illumidel"
         minSdk 24
         targetSdk 34
-        versionCode 24
-        versionName "3.0.1"
+        versionCode 26
+        versionName "3.0.3"
         resourceConfigurations += ['en', 'fr']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -109,6 +109,7 @@ dependencies {
 
     implementation 'com.vdurmont:semver4j:3.1.0'
     implementation "io.noties.markwon:core:4.6.2"
+    implementation 'org.jsoup:jsoup:1.16.2'
 }
 
 protobuf {

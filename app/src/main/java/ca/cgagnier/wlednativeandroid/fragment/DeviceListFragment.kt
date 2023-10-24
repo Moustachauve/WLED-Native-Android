@@ -159,7 +159,9 @@ class DeviceListFragment : Fragment(),
             }
             if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange && !slidingPaneLayout.isOpen) {
                 Log.d(TAG, "opening slidingPaneLayout")
-                slidingPaneLayout.openPane()
+                activity?.runOnUiThread {
+                    slidingPaneLayout.openPane()
+                }
             }
             duringSetup = false
             if (it != null) {
@@ -167,9 +169,11 @@ class DeviceListFragment : Fragment(),
                 if (previousSelectedDevice?.address == it.address) {
                     return@Observer
                 }
-                binding.deviceListRecyclerView.scrollToPosition(
-                    deviceListAdapter.setSelectedDevice(it)
-                )
+                activity?.runOnUiThread {
+                    binding.deviceListRecyclerView.scrollToPosition(
+                        deviceListAdapter.setSelectedDevice(it)
+                    )
+                }
             }
         }
         deviceListViewModel.activeDevice.observe(viewLifecycleOwner, activeDeviceObserver)

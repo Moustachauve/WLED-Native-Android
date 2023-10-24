@@ -81,6 +81,8 @@
     <string name="no_compatible_version_found">Aucune version compatible</string>
     <string name="no_compatible_version_found_details">Aucune version compatible avec votre appareil n\'a pu être trouvé. Vous devrez faire une installation manuelle.</string>
     <string name="device_offline">Hors ligne</string>
+    <string name="show_error">Afficher l\'erreur</string>
+    <string name="hide_error">Cacher l\'erreur</string>
     <string name="visit_website">Visiter Illumidel.com</string>
     <string name="help">Aide</string>
 </resources>

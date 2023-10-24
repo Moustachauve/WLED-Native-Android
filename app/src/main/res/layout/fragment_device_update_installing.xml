@@ -84,15 +84,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="v1.1.1" />
-        <TextView
+        <TextSwitcher
             android:id="@+id/text_updating_warning"
-            android:text="@string/please_do_not_close_the_app_or_turn_off_the_device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@id/text_version_tag"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:inAnimation="@anim/nav_default_pop_enter_anim"
+            android:outAnimation="@anim/nav_default_pop_exit_anim">
+            <TextView
+                android:text="@string/please_do_not_close_the_app_or_turn_off_the_device"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center" />
+        </TextSwitcher>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancel"
@@ -101,6 +111,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_updating_warning" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_error_details"
+            android:text="@string/show_error"
+            style="@style/Widget.Material3.Button.TextButton.Dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/button_cancel"
             app:layout_constraintTop_toBottomOf="@id/text_updating_warning" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

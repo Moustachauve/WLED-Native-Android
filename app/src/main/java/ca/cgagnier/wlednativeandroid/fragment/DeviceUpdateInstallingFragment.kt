@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
@@ -21,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
+import org.jsoup.Jsoup
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +37,9 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     private lateinit var device: Device
     private lateinit var versionTag: String
     private lateinit var version: VersionWithAssets
+
+    private var errorString = ""
+    private var beforeErrorString = ""
 
     private var _binding: FragmentDeviceUpdateInstallingBinding? = null
     private val binding get() = _binding!!
@@ -62,6 +67,23 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     ): View {
         binding.buttonCancel.setOnClickListener {
             dismiss()
+        }
+        binding.buttonErrorDetails.setOnClickListener {
+            if (errorString.isEmpty()) {
+                binding.buttonErrorDetails.visibility = View.GONE
+                return@setOnClickListener
+            }
+
+            val currentText = (binding.textUpdatingWarning.currentView as TextView).text
+            if (currentText == errorString) {
+                changeDetailText(beforeErrorString)
+                binding.buttonErrorDetails.text = getString(R.string.show_error)
+                return@setOnClickListener
+            }
+
+            beforeErrorString = currentText.toString()
+            changeDetailText(errorString)
+            binding.buttonErrorDetails.text = getString(R.string.hide_error)
         }
         return binding.root
     }
@@ -115,12 +137,15 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                             binding.progressUpdate.progress = downloadState.progress
                         }
                     }
+
                     is DownloadState.Failed -> {
-                        Log.e(TAG, "File download Fail")
+                        Log.e(TAG, "File download Fail: ${downloadState.error}")
                         activity?.runOnUiThread {
+                            errorString = downloadState.error.toString()
                             displayFailure()
                         }
                     }
+
                     is DownloadState.Finished -> {
                         Log.d(TAG, "File download Finished")
                         activity?.runOnUiThread {
@@ -146,14 +171,13 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                     response: Response<ResponseBody>
                 ) {
                     activity?.runOnUiThread {
-                        if (response.code() in 201..299) {
+                        if (response.code() in 200..299) {
                             displaySuccess()
                         } else {
                             Log.d(TAG, "OTA Failed, code ${response.code()}")
-                            displayFailure()
-                            binding.textUpdatingWarning.text =
-                                getString(R.string.ota_install_failed_device_locked)
-                            binding.textUpdatingWarning.visibility = View.VISIBLE
+                            errorString = "${response.code()}: ${getHtmlErrorMessage(response)}"
+                            Log.d(TAG, "OTA Failed onResponse, error $errorString")
+                            displayFailure(getString(R.string.ota_install_failed_device_locked))
                         }
                         updateDeviceUpdated()
                     }
@@ -162,11 +186,24 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     activity?.runOnUiThread {
                         Log.d(TAG, "OTA Failed, call failed")
+                        Log.e(TAG, t.toString())
+                        errorString = t.toString()
                         displayFailure()
+                        Log.d(TAG, "OTA Failed onFailure, error $errorString")
                     }
                 }
             })
         }
+    }
+
+    private fun getHtmlErrorMessage(response: Response<ResponseBody>): String {
+        val bodyHtml = Jsoup.parseBodyFragment(
+            response.body()?.string() ?: response.errorBody()?.string() ?: ""
+        )
+        bodyHtml.select("title").remove()
+        bodyHtml.select("button").remove()
+        bodyHtml.select("h1").remove()
+        return bodyHtml.text()
     }
 
     private fun displaySuccess() {
@@ -179,21 +216,23 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         binding.buttonCancel.isEnabled = true
     }
 
-    private fun displayFailure() {
+    private fun displayFailure(errorMessage: String = "") {
         binding.progressUpdate.visibility = View.INVISIBLE
-        binding.textUpdatingWarning.visibility = View.GONE
+        binding.textUpdatingWarning.setText(errorMessage)
         binding.imageUpdateFailed.visibility = View.VISIBLE
         binding.textStatus.text = getString(R.string.update_failed)
         binding.buttonCancel.text = getString(R.string.done)
         dialog?.setCancelable(true)
         binding.buttonCancel.isEnabled = true
+
+        binding.buttonErrorDetails.visibility =
+            if (errorString.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun displayNoBinary() {
         displayFailure()
         binding.textStatus.text = getString(R.string.no_compatible_version_found)
-        binding.textUpdatingWarning.text = getString(R.string.no_compatible_version_found_details)
-        binding.textUpdatingWarning.visibility = View.VISIBLE
+        changeDetailText(getString(R.string.no_compatible_version_found_details))
     }
 
     private fun updateDeviceUpdated() {
@@ -211,8 +250,13 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         }
     }
 
+    private fun changeDetailText(text: String) {
+        binding.textUpdatingWarning.setText(text)
+    }
+
     companion object {
         const val TAG = "DeviceUpdateInstallingFragment"
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
