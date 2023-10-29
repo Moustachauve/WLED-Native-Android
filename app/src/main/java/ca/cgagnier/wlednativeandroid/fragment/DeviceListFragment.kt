@@ -65,6 +65,8 @@ class DeviceListFragment : Fragment(),
     private lateinit var deviceListAdapter: DeviceListAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
+    private var hasDoneFirstRefresh = false
+
     override fun onResume() {
         super.onResume()
         refreshListFromApi(false)
@@ -148,6 +150,11 @@ class DeviceListFragment : Fragment(),
             binding.emptyDataParent.layout.visibility = if (isEmpty) View.VISIBLE else View.GONE
             binding.deviceListRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
             binding.swipeRefresh.isEnabled = !isEmpty
+
+            if (!hasDoneFirstRefresh) {
+                hasDoneFirstRefresh = true
+                refreshListFromApi(true)
+            }
         }
 
         deviceListAdapter.isSelectable = false
@@ -294,6 +301,7 @@ class DeviceListFragment : Fragment(),
             for (device in deviceListViewModel.allDevices.value!!) {
                 DeviceApiService.update(device, silentUpdate)
             }
+            hasDoneFirstRefresh = true
         }
     }
 
