@@ -10,13 +10,27 @@ enum ThemeSettings{
 }
 
 message UserPreferences {
+
   string selected_device_address = 1;
+
   bool has_migrated_shared_pref = 2;
+
   ThemeSettings theme = 3;
+
   bool automatic_discovery = 4;
+
   int32 version = 5;
+
   bool show_offline_last = 6;
+
   bool send_crash_data = 7;
+
   bool send_performance_data = 8;
+
   int64 last_update_check_date = 9;
+
+  // `date_last_written` is used mostly as a "hack" to make sure updates to "UserPreferences"
+  // propagates even if the value is the same as the old value. this hack is mostly for
+  // `selected_device_address` that needs to be resent when the same device is re-selected.
+  int64 date_last_written = 10;
 }

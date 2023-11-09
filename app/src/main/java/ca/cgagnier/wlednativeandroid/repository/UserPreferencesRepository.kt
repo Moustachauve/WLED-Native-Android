@@ -37,6 +37,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         dataStore.updateData { preferences ->
             preferences.toBuilder()
                 .setSelectedDeviceAddress(device.address)
+                .setDateLastWritten(System.currentTimeMillis())
                 .build()
         }
     }
@@ -46,6 +47,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         dataStore.updateData { preferences ->
             preferences.toBuilder()
                 .setHasMigratedSharedPref(hasMigrated)
+                .setDateLastWritten(System.currentTimeMillis())
                 .build()
         }
     }
@@ -53,42 +55,60 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     suspend fun updateThemeMode(themeSettings: ThemeSettings) {
         Log.d(TAG, "updateThemeMode")
         dataStore.updateData {
-            it.toBuilder().setTheme(themeSettings).build()
+            it.toBuilder()
+                .setTheme(themeSettings)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
         }
     }
 
     suspend fun updateAutoDiscovery(autoDiscover: Boolean) {
         Log.d(TAG, "updateAutoDiscovery")
         dataStore.updateData {
-            it.toBuilder().setAutomaticDiscovery(autoDiscover).build()
+            it.toBuilder()
+                .setAutomaticDiscovery(autoDiscover)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
         }
     }
 
     suspend fun updateShowOfflineDeviceLast(showOfflineDeviceLast: Boolean) {
         Log.d(TAG, "updateShowOfflineDeviceLast")
         dataStore.updateData {
-            it.toBuilder().setShowOfflineLast(showOfflineDeviceLast).build()
+            it.toBuilder()
+                .setShowOfflineLast(showOfflineDeviceLast)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
         }
     }
 
     suspend fun updateSendCrashData(sendCrashData: Boolean) {
         Log.d(TAG, "updateSendCrashData")
         dataStore.updateData {
-            it.toBuilder().setSendCrashData(sendCrashData).build()
+            it.toBuilder()
+                .setSendCrashData(sendCrashData)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
         }
     }
 
     suspend fun updateSendPerformanceData(sendPerformanceData: Boolean) {
         Log.d(TAG, "updateSendPerformanceData")
         dataStore.updateData {
-            it.toBuilder().setSendPerformanceData(sendPerformanceData).build()
+            it.toBuilder()
+                .setSendPerformanceData(sendPerformanceData)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
         }
     }
 
     suspend fun updateLastUpdateCheckDate(lastUpdateCheckDate: Long) {
         Log.d(TAG, "updateLastUpdateCheckDate")
         dataStore.updateData {
-            it.toBuilder().setLastUpdateCheckDate(lastUpdateCheckDate).build()
+            it.toBuilder()
+                .setLastUpdateCheckDate(lastUpdateCheckDate)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
         }
     }
 
