@@ -44,6 +44,10 @@ class DeviceViewFragment : Fragment() {
         )
     }
 
+    private var currentUrl: String = ""
+    private val backQueue = ArrayDeque<String>(5)
+    private var isGoingBack = false
+
     private var loadingCounter = 0
     private var activeDevice: Device? = null
     private var isLargeLayout: Boolean = false
@@ -53,9 +57,6 @@ class DeviceViewFragment : Fragment() {
 
     private var _binding: FragmentDeviceViewBinding? = null
     private val binding get() = _binding!!
-
-    private var shouldResetHistory = false
-    private var shouldShowErrorPage = false
 
     var uploadMessage: ValueCallback<Array<Uri>>? = null
 
@@ -75,8 +76,8 @@ class DeviceViewFragment : Fragment() {
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (_webview.canGoBack()) {
-                    navigateBack()
+                if (webCanGoBack()) {
+                    webGoBack()
                 } else {
                     isEnabled = false
                     loadingCounter = 0
@@ -131,26 +132,6 @@ class DeviceViewFragment : Fragment() {
 
                 // Prevent urls from opening in external browser
                 webView.webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView?,
-                        request: WebResourceRequest?
-                    ): Boolean {
-                        _binding?.pageLoadingIndicator?.visibility = View.VISIBLE
-                        if (!request?.isRedirect!! && view?.canGoBack() == true) {
-                            val webBackForwardList = view.copyBackForwardList()
-                            val currentIndex = webBackForwardList.currentIndex
-                            if (webBackForwardList.getItemAtIndex(currentIndex - 1).url == request.url.toString()) {
-                                Log.i(TAG_NAME, "Overriding url, going back")
-                                view.goBack()
-                                return true
-                            } else if (request.url?.path == "/") {
-                                Log.i(TAG_NAME, "Overriding url, going back -${currentIndex}")
-                                view.goBackOrForward(-currentIndex)
-                            }
-                        }
-
-                        return false
-                    }
 
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view, url, favicon)
@@ -167,26 +148,6 @@ class DeviceViewFragment : Fragment() {
                             _binding?.pageLoadingIndicator?.visibility = View.GONE
                             loadingCounter = 0
                         }
-                        if (url == "about:blank") {
-                            Log.i(TAG_NAME, "page finished - cleared history")
-                            shouldResetHistory = true
-                            if (shouldShowErrorPage) {
-                                shouldShowErrorPage = false
-                                showLoadingIndicator()
-                                view?.loadUrl("file:///android_asset/device_error.html")
-                            } else {
-                                activeDevice?.let {
-                                    Log.i(TAG_NAME, "onPageFinished Requesting '${it.address}'")
-                                    showLoadingIndicator()
-                                    view?.loadUrl("http://${it.address}")
-                                }
-                            }
-                        } else if (shouldResetHistory) {
-                            Log.i(TAG_NAME, "Clearing history")
-                            shouldResetHistory = false
-                            view?.clearHistory()
-                            updateNavigationState()
-                        }
                     }
 
                     override fun doUpdateVisitedHistory(
@@ -195,6 +156,18 @@ class DeviceViewFragment : Fragment() {
                         isReload: Boolean
                     ) {
                         super.doUpdateVisitedHistory(view, url, isReload)
+                        Log.i(TAG_NAME, "doUpdateVisitedHistory $url, isReload: $isReload")
+
+                        if (url != null && !isReload) {
+                            if (isGoingBack) {
+                                isGoingBack = false
+                            } else if (currentUrl.isNotEmpty()) {
+                                backQueue.addLast(currentUrl)
+                            }
+                            filterBackQueue(url)
+
+                            currentUrl = url
+                        }
                         updateNavigationState()
                     }
 
@@ -209,9 +182,8 @@ class DeviceViewFragment : Fragment() {
                                 "Error received ${request.url} - ${error?.description}"
                             )
 
-                            shouldShowErrorPage = true
-                            view?.loadUrl("about:blank")
-                            view?.clearHistory()
+                            showLoadingIndicator()
+                            view?.loadUrl("file:///android_asset/device_error.html")
                         }
                         super.onReceivedError(view, request, error)
                     }
@@ -260,12 +232,15 @@ class DeviceViewFragment : Fragment() {
             Log.i(TAG_NAME, "observed device")
             deviceListViewModel.expectDeviceChange = false
             loadingCounter = 0
+            backQueue.clear()
+            currentUrl = ""
 
-            // Let the "page finished" event load the new url
             showLoadingIndicator()
-            _webview.loadUrl("about:blank")
-            _webview.clearHistory()
             updateNavigationState()
+            activeDevice?.let { device ->
+                Log.i(TAG_NAME, "onPageFinished Requesting '${device.address}'")
+                _webview.loadUrl("http://${device.address}")
+            }
         }
     }
 
@@ -322,16 +297,6 @@ class DeviceViewFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.action_browse_back -> {
-                        navigateBack()
-                        true
-                    }
-
-                    R.id.action_browse_forward -> {
-                        navigateForward()
-                        true
-                    }
-
                     R.id.action_browse_refresh -> {
                         Log.i(TAG_NAME, "Manual refresh requested")
                         refresh()
@@ -356,8 +321,6 @@ class DeviceViewFragment : Fragment() {
 
             fun updateMenuState(menu: Menu) {
                 // Handle for example visibility of menu items
-                menu.findItem(R.id.action_browse_back).isEnabled = _webview.canGoBack()
-                menu.findItem(R.id.action_browse_forward).isEnabled = _webview.canGoForward()
                 menu.findItem(R.id.action_browse_update).isVisible =
                     activeDevice?.hasUpdateAvailable() ?: false
 
@@ -385,22 +348,6 @@ class DeviceViewFragment : Fragment() {
         updateNavigationState()
     }
 
-    fun navigateBack(): Boolean {
-        if (_webview.canGoBack()) {
-            _webview.goBack()
-            return true
-        }
-        return false
-    }
-
-    fun navigateForward(): Boolean {
-        if (_webview.canGoForward()) {
-            _webview.goForward()
-            return true
-        }
-        return false
-    }
-
     fun updateNavigationState() {
         _binding?.deviceToolbar?.invalidateMenu()
     }
@@ -423,6 +370,36 @@ class DeviceViewFragment : Fragment() {
         val dialog =
             DeviceEditFragment.newInstance(deviceAddress, resources.getBoolean(R.bool.large_layout))
         dialog.show(requireActivity().supportFragmentManager, "device_edit")
+    }
+
+    fun webCanGoBack(): Boolean {
+        return backQueue.isNotEmpty()
+    }
+
+    fun webGoBack(): Boolean {
+        if (webCanGoBack()) {
+            val backUrl = backQueue.removeLast()
+            _webview.loadUrl(backUrl)
+            isGoingBack = true
+            return true
+        }
+        return false
+    }
+
+    private fun filterBackQueue(currentUrl: String) {
+        Log.i(TAG_NAME, "== Starting filter ========")
+        Log.i(TAG_NAME, "Current Url: $currentUrl")
+        Log.i(TAG_NAME, backQueue.toString())
+        var i = backQueue.size
+        for (url in backQueue.asReversed()) {
+            i--
+            if (url == currentUrl) {
+                backQueue.subList(i, backQueue.size).clear()
+                Log.i(TAG_NAME, "Removing up to $i")
+                Log.i(TAG_NAME, backQueue.toString())
+                return
+            }
+        }
     }
 
     companion object {
