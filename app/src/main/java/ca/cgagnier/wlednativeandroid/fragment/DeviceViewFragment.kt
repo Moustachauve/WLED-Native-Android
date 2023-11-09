@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import ca.cgagnier.wlednativeandroid.BuildConfig
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
@@ -92,6 +93,7 @@ class DeviceViewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         Log.i(TAG_NAME, "Device view creating")
         _binding = FragmentDeviceViewBinding.inflate(layoutInflater, container, false)
         isLargeLayout = resources.getBoolean(R.bool.large_layout)
