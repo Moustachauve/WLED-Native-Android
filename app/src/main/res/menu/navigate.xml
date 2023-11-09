@@ -7,16 +7,6 @@
         android:title="@string/update_available"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_browse_back"
-        android:icon="@drawable/ic_baseline_arrow_back_ios_24"
-        android:title="@string/navigate_backward"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/action_browse_forward"
-        android:icon="@drawable/ic_baseline_arrow_forward_ios_24"
-        android:title="@string/navigate_forward"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_browse_refresh"
         android:icon="@drawable/ic_baseline_refresh_24"
         android:title="@string/refresh_page"

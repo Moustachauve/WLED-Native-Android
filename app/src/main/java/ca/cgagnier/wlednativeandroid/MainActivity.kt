@@ -42,19 +42,10 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val devicesApp = (application as DevicesApplication)
+        checkMigration()
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.themeMode.collect {
                 setThemeMode(it)
-            }
-        }
-        lifecycleScope.launch {
-            devicesApp.userPreferencesRepository.autoDiscovery.collect {
-                isAutoDiscoveryEnabled = it
-                if (isAutoDiscoveryEnabled) {
-                    startAutoDiscovery()
-                } else {
-                    stopAutoDiscovery()
-                }
             }
         }
         lifecycleScope.launch {
@@ -84,7 +75,16 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
             windowInsets
         }
 
-        checkMigration()
+        lifecycleScope.launch {
+            devicesApp.userPreferencesRepository.autoDiscovery.collect {
+                isAutoDiscoveryEnabled = it
+                if (isAutoDiscoveryEnabled) {
+                    startAutoDiscovery()
+                } else {
+                    stopAutoDiscovery()
+                }
+            }
+        }
         updateDeviceVersionList()
         setContentView(binding.root)
     }

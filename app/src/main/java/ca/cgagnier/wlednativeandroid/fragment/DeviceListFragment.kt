@@ -63,6 +63,8 @@ class DeviceListFragment : Fragment(),
     private lateinit var deviceListAdapter: DeviceListAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
+    private var hasDoneFirstRefresh = false
+
     override fun onResume() {
         super.onResume()
         refreshListFromApi(false)
@@ -146,30 +148,36 @@ class DeviceListFragment : Fragment(),
             binding.emptyDataParent.layout.visibility = if (isEmpty) View.VISIBLE else View.GONE
             binding.deviceListRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
             binding.swipeRefresh.isEnabled = !isEmpty
+
+            if (!hasDoneFirstRefresh) {
+                hasDoneFirstRefresh = true
+                refreshListFromApi(true)
+            }
         }
 
         deviceListAdapter.isSelectable = false
 
         var duringSetup = true
-        val activeDeviceObserver = Observer<Device?> {
-            if (it != null && it.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
+        val activeDeviceObserver = Observer<Device?> { device ->
+            if (device != null && device.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
                 duringSetup = false
             }
-            if (!duringSetup && it != null && deviceListViewModel.expectDeviceChange && !slidingPaneLayout.isOpen) {
+            val expectedChange = deviceListViewModel.expectDeviceChange
+            if (!duringSetup && device != null && expectedChange && !slidingPaneLayout.isOpen) {
                 Log.d(TAG, "opening slidingPaneLayout")
                 activity?.runOnUiThread {
                     slidingPaneLayout.openPane()
                 }
             }
             duringSetup = false
-            if (it != null) {
+            if (device != null) {
                 val previousSelectedDevice = deviceListAdapter.getSelectedDevice()
-                if (previousSelectedDevice?.address == it.address) {
+                if (previousSelectedDevice?.address == device.address) {
                     return@Observer
                 }
                 activity?.runOnUiThread {
                     binding.deviceListRecyclerView.scrollToPosition(
-                        deviceListAdapter.setSelectedDevice(it)
+                        deviceListAdapter.setSelectedDevice(device)
                     )
                 }
             }
@@ -292,6 +300,7 @@ class DeviceListFragment : Fragment(),
             for (device in deviceListViewModel.allDevices.value!!) {
                 DeviceApiService.update(device, silentUpdate)
             }
+            hasDoneFirstRefresh = true
         }
     }
 
