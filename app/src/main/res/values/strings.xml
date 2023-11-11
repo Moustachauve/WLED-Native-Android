@@ -86,4 +86,7 @@
     <string name="device_offline">Device Offline</string>
     <string name="show_error">Show Error</string>
     <string name="hide_error">Hide Error</string>
+    <string name="update_channel">Update Channel</string>
+    <string name="stable">Stable</string>
+    <string name="beta">Beta</string>
 </resources>

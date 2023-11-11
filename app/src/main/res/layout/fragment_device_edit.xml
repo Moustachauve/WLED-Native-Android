@@ -20,7 +20,7 @@
             android:id="@+id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_device_manually"
+            android:text="@string/edit_device_with_name"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:paddingBottom="?dialogPreferredPadding"
             android:maxLines="1"
@@ -64,7 +64,7 @@
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/hide_device_check_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,14 +75,55 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/custom_name_text_input_layout" />
 
+        <TextView
+            android:id="@+id/branch_toggle_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/update_channel"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/branch_toggle_button_group"
+            app:layout_constraintTop_toTopOf="@+id/branch_toggle_button_group"
+            app:layout_constraintBottom_toBottomOf="@+id/branch_toggle_button_group"/>
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/branch_toggle_button_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hide_device_check_box"
+            tools:checkedButton="@id/branch_stable_button">
+
+            <Button
+                style="?attr/materialButtonOutlinedStyle"
+                android:id="@+id/branch_stable_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stable"
+                />
+            <Button
+                style="?attr/materialButtonOutlinedStyle"
+                android:id="@+id/branch_beta_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/beta"
+                />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_check_for_update"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/check_for_update"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hide_device_check_box" />
+            app:layout_constraintTop_toBottomOf="@+id/branch_toggle_button_group" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress_check_for_update"
@@ -137,6 +178,7 @@
         </LinearLayout>
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_update"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:text="@string/see_update_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

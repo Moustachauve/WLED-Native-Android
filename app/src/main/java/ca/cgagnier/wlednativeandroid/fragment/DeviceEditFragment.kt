@@ -12,6 +12,7 @@ import androidx.transition.TransitionManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceEditBinding
+import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
@@ -72,17 +73,24 @@ class DeviceEditFragment : WiderDialogFragment() {
         binding.buttonUpdate.setOnClickListener {
             showUpdateDialog()
         }
+
         return binding.root
     }
 
     private fun submitClickListener() {
         val deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
+        val branch = when(binding.branchToggleButtonGroup.checkedButtonId) {
+            R.id.branch_stable_button -> Branch.STABLE
+            R.id.branch_beta_button -> Branch.BETA
+            else -> Branch.STABLE
+        }
 
         val updatedDevice = device.copy(
             name = deviceName,
             isCustomName = deviceName != "",
-            isHidden = isHidden
+            isHidden = isHidden,
+            branch = branch
         )
 
         lifecycleScope.launch {
@@ -111,6 +119,10 @@ class DeviceEditFragment : WiderDialogFragment() {
         binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
         binding.customNameTextInputLayout.requestFocus()
         binding.hideDeviceCheckBox.isChecked = device.isHidden
+        binding.branchToggleButtonGroup.check(when (device.branch) {
+            Branch.BETA -> R.id.branch_beta_button
+            else -> R.id.branch_stable_button
+        })
 
         if (!firstLoad) {
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
