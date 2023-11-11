@@ -33,6 +33,11 @@ class DeviceListViewModel(private val repository: DeviceRepository,
         repository.insert(device)
     }
 
+    fun update(device: Device) = viewModelScope.launch {
+        Log.d(TAG, "Updating device")
+        repository.update(device)
+    }
+
     fun delete(device: Device) = viewModelScope.launch {
         Log.d(TAG, "Deleting device")
         repository.delete(device)

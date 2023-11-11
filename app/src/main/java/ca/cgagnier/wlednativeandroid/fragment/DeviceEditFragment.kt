@@ -78,17 +78,23 @@ class DeviceEditFragment : WiderDialogFragment() {
     }
 
     private fun submitClickListener() {
-        val deviceName = binding.customNameTextInputLayout.editText?.text.toString()
+        var deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
         val branch = when(binding.branchToggleButtonGroup.checkedButtonId) {
             R.id.branch_stable_button -> Branch.STABLE
             R.id.branch_beta_button -> Branch.BETA
             else -> Branch.STABLE
         }
+        val isCustomName = deviceName != ""
+        // Set the deviceName to the previous one if it's not a custom name and it wasn't a custom
+        // name before the edit, otherwise the name will be lost until the next update.
+        if (!isCustomName && !device.isCustomName) {
+            deviceName = device.name
+        }
 
         val updatedDevice = device.copy(
             name = deviceName,
-            isCustomName = deviceName != "",
+            isCustomName = isCustomName,
             isHidden = isHidden,
             branch = branch
         )
