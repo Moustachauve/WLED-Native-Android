@@ -3,6 +3,7 @@ package ca.cgagnier.wlednativeandroid.service
 import android.graphics.Color
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
@@ -149,7 +150,7 @@ object DeviceApiService {
                     platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
                     version = deviceVersion,
                     newUpdateVersionTagAvailable = updateVersionTagAvailable,
-                    // branch = "stable" TODO: To be added when WLED supports it in the future.
+                    branch = Branch.STABLE, // TODO: Add branch detection based on version name.
                     brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
                     productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
                 )
