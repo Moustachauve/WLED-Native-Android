@@ -123,6 +123,7 @@ class DeviceEditFragment : WiderDialogFragment() {
             Branch.BETA -> R.id.branch_beta_button
             else -> R.id.branch_stable_button
         })
+        binding.labelCurrentVersion.text = getString(R.string.version_v_num, device.version)
 
         if (!firstLoad) {
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
@@ -130,7 +131,9 @@ class DeviceEditFragment : WiderDialogFragment() {
 
         binding.buttonCheckForUpdate.visibility =
             if (device.hasUpdateAvailable()) View.GONE else View.VISIBLE
-        binding.progressCheckForUpdate.visibility = View.GONE
+        binding.labelIsUpToDate.visibility = binding.buttonCheckForUpdate.visibility
+        binding.labelCurrentVersion.visibility = binding.buttonCheckForUpdate.visibility
+            binding.progressCheckForUpdate.visibility = View.GONE
         binding.buttonCheckForUpdate.isEnabled = true
         // Don't update the text if the view is not visible otherwise the transition looks very weird
         if (binding.buttonCheckForUpdate.visibility == View.VISIBLE) {

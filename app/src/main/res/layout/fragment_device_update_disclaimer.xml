@@ -29,7 +29,7 @@
             style="@style/MaterialAlertDialog.Material3.Body.Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/device_update_disclamer_part1"
+            android:text="@string/device_update_disclaimer_part1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_are_you_sure" />
