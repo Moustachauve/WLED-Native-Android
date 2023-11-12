@@ -79,7 +79,7 @@
             android:id="@+id/branch_toggle_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/update_channel"
+            android:text="@string/device_language"
             android:textColor="?android:textColorPrimaryDisableOnly"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:layout_constrainedWidth="true"
@@ -88,6 +88,18 @@
             app:layout_constraintEnd_toStartOf="@id/branch_toggle_button_group"
             app:layout_constraintTop_toTopOf="@+id/branch_toggle_button_group"
             app:layout_constraintBottom_toBottomOf="@+id/branch_toggle_button_group"/>
+        <TextView
+            android:id="@+id/branch_toggle_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:text="@string/device_language_change_details"
+            android:paddingStart="16dp"
+            android:paddingEnd="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/branch_toggle_button_group" />
+
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/branch_toggle_button_group"
@@ -105,14 +117,14 @@
                 android:id="@+id/branch_stable_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/stable"
+                android:text="@string/french"
                 />
             <Button
                 style="?attr/materialButtonOutlinedStyle"
                 android:id="@+id/branch_beta_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/beta"
+                android:text="@string/english"
                 />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -124,7 +136,7 @@
             style="?attr/materialCardViewFilledStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/branch_toggle_button_group">
+            app:layout_constraintTop_toBottomOf="@id/branch_toggle_details">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

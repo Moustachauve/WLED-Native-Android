@@ -94,4 +94,8 @@
     <string name="your_device_is_up_to_date">Your device is up to date</string>
     <string name="version_v_num">Version <xliff:g example="v0.14.0" id="version_name">%1$s</xliff:g></string>
     <string name="select_a_device_from_the_list">Select a device from the list</string>
+    <string name="french">Français</string>
+    <string name="english">English</string>
+    <string name="device_language">Device Language</string>
+    <string name="device_language_change_details">You will need to install an update on the device after changing the language here</string>
 </resources>
