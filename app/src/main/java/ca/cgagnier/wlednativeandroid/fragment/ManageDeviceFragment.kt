@@ -1,10 +1,12 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
@@ -12,8 +14,6 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListManageAdapter
 import ca.cgagnier.wlednativeandroid.databinding.FragmentManageDevicesBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
-import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.ManageDevicesViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -24,12 +24,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ManageDeviceFragment : BottomSheetDialogFragment() {
 
-    private val deviceListViewModel: DeviceListViewModel by activityViewModels {
-        DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).deviceRepository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository
-        )
-    }
     private val manageDevicesViewModel: ManageDevicesViewModel by activityViewModels {
         ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
     }
@@ -46,7 +40,11 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
 
         deviceListAdapter = DeviceListManageAdapter(
             onItemClicked = { device: Device ->
-                deviceListViewModel.updateActiveDevice(device)
+                Log.i(TAG, "Requesting to open the device view")
+                setFragmentResult(
+                    DeviceListFragment.REQUEST_OPEN_DEVICE_KEY,
+                    DeviceListFragment.createOpenDeviceBundle(device.address)
+                )
                 dismiss()
             },
             onItemEditClicked = { device: Device ->
@@ -110,5 +108,9 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    companion object {
+        private const val TAG = "ManageDeviceFragment"
     }
 }
