@@ -148,9 +148,25 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
                         TAG,
                         "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
                     )
+                    val updatedDevice = existingDevice.copy(
+                        address = device.address,
+                        isOnline = device.isOnline,
+                        name = device.name,
+                        brightness = device.brightness,
+                        isPoweredOn = device.isPoweredOn,
+                        color = device.color,
+                        networkRssi = device.networkRssi,
+                        isEthernet = device.isEthernet,
+                        platformName = device.platformName,
+                        version = device.version,
+                        brand = device.brand,
+                        productName = device.productName,
+                    )
                     deviceListViewModel.delete(existingDevice)
+                    deviceListViewModel.insert(updatedDevice)
+                } else {
+                    deviceListViewModel.insert(device)
                 }
-                deviceListViewModel.insert(device)
             }
         }
     }

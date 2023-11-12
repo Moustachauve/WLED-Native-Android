@@ -12,6 +12,7 @@ import androidx.transition.TransitionManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceEditBinding
+import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
@@ -72,17 +73,30 @@ class DeviceEditFragment : WiderDialogFragment() {
         binding.buttonUpdate.setOnClickListener {
             showUpdateDialog()
         }
+
         return binding.root
     }
 
     private fun submitClickListener() {
-        val deviceName = binding.customNameTextInputLayout.editText?.text.toString()
+        var deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
+        val branch = when(binding.branchToggleButtonGroup.checkedButtonId) {
+            R.id.branch_stable_button -> Branch.STABLE
+            R.id.branch_beta_button -> Branch.BETA
+            else -> Branch.STABLE
+        }
+        val isCustomName = deviceName != ""
+        // Set the deviceName to the previous one if it's not a custom name and it wasn't a custom
+        // name before the edit, otherwise the name will be lost until the next update.
+        if (!isCustomName && !device.isCustomName) {
+            deviceName = device.name
+        }
 
         val updatedDevice = device.copy(
             name = deviceName,
-            isCustomName = deviceName != "",
-            isHidden = isHidden
+            isCustomName = isCustomName,
+            isHidden = isHidden,
+            branch = branch
         )
 
         lifecycleScope.launch {
@@ -111,6 +125,11 @@ class DeviceEditFragment : WiderDialogFragment() {
         binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
         binding.customNameTextInputLayout.requestFocus()
         binding.hideDeviceCheckBox.isChecked = device.isHidden
+        binding.branchToggleButtonGroup.check(when (device.branch) {
+            Branch.BETA -> R.id.branch_beta_button
+            else -> R.id.branch_stable_button
+        })
+        binding.labelCurrentVersion.text = getString(R.string.version_v_num, device.version)
 
         if (!firstLoad) {
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
@@ -118,7 +137,9 @@ class DeviceEditFragment : WiderDialogFragment() {
 
         binding.buttonCheckForUpdate.visibility =
             if (device.hasUpdateAvailable()) View.GONE else View.VISIBLE
-        binding.progressCheckForUpdate.visibility = View.GONE
+        binding.labelIsUpToDate.visibility = binding.buttonCheckForUpdate.visibility
+        binding.labelCurrentVersion.visibility = binding.buttonCheckForUpdate.visibility
+            binding.progressCheckForUpdate.visibility = View.GONE
         binding.buttonCheckForUpdate.isEnabled = true
         // Don't update the text if the view is not visible otherwise the transition looks very weird
         if (binding.buttonCheckForUpdate.visibility == View.VISIBLE) {

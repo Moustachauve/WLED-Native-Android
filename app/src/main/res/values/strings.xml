@@ -54,8 +54,8 @@
     <string name="privacy">Privacy</string>
     <string name="send_crash_data_to_developer">Send Crash Data To Developer</string>
     <string name="send_performance_data_to_developer">Send Performance Data to Developer</string>
-    <string name="device_ap_mode">WLED AP Mode</string>
-    <string name="device_ap_mode_detected">WLED AP Mode Detected</string>
+    <string name="device_ap_mode">Device AP Mode</string>
+    <string name="device_ap_mode_detected">Device AP Mode Detected</string>
     <string name="device_ap_mode_detected_click">Click here to open Device</string>
     <string name="install">Install</string>
     <string name="later">Later</string>
@@ -76,7 +76,7 @@
     <string name="done">Done</string>
     <string name="update_completed">Update Completed!</string>
     <string name="are_you_sure">Are you sure?</string>
-    <string name="device_update_disclamer_part1">You are about to install a new version of WLED on your device. If you had a custom version installed previously, you might lose some functionalities (for example, if you had some usermods enabled, they might not work anymore).</string>
+    <string name="device_update_disclaimer_part1">You are about to install a new version of WLED on your device. If you had a custom version installed previously, you might lose some functionalities (for example, if you had some usermods enabled, they might not work anymore).</string>
     <string name="device_update_disclaimer_part2">If someone installed this device for you, you should maybe ask them if it is alright to update the device to a new version.</string>
     <string name="device_update_disclaimer_part3">WLED and WLED Native are not responsible if something goes wrong due to an update.</string>
     <string name="install_update">Install Update</string>
@@ -88,4 +88,10 @@
     <string name="hide_error">Hide Error</string>
     <string name="visit_website">Visit Illumidel.com</string>
     <string name="help">Help</string>
+    <string name="update_channel">Update Channel</string>
+    <string name="stable">Stable</string>
+    <string name="beta">Beta</string>
+    <string name="your_device_is_up_to_date">Your device is up to date</string>
+    <string name="version_v_num">Version <xliff:g example="v0.14.0" id="version_name">%1$s</xliff:g></string>
+    <string name="select_a_device_from_the_list">Select a device from the list</string>
 </resources>

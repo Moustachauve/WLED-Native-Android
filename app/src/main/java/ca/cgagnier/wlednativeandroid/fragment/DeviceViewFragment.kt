@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -29,6 +30,7 @@ import ca.cgagnier.wlednativeandroid.FileUploadContractResult
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceViewBinding
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.WebViewViewModel
@@ -37,23 +39,29 @@ import com.google.android.material.appbar.MaterialToolbar
 
 class DeviceViewFragment : Fragment() {
 
+    private val deviceRepository: DeviceRepository by lazy {
+        (requireActivity().application as DevicesApplication).deviceRepository
+    }
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).deviceRepository,
+            deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository
         )
     }
 
+    private lateinit var webViewViewModel: WebViewViewModel
+    private lateinit var _webview: WebView
     private var currentUrl: String = ""
     private val backQueue = ArrayDeque<String>(5)
     private var isGoingBack = false
-
     private var loadingCounter = 0
-    private var activeDevice: Device? = null
+
+    private var initialLoad = true
+    private lateinit var deviceAddress: String
+    private lateinit var device: Device
+
     private var isLargeLayout: Boolean = false
     private lateinit var onBackPressedCallback: OnBackPressedCallback
-    private lateinit var webViewViewModel: WebViewViewModel
-    private lateinit var _webview: WebView
 
     private var _binding: FragmentDeviceViewBinding? = null
     private val binding get() = _binding!!
@@ -70,6 +78,13 @@ class DeviceViewFragment : Fragment() {
             )
             uploadMessage = null
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            deviceAddress = it.getString(DEVICE_ADDRESS)!!
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -105,8 +120,6 @@ class DeviceViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG_NAME, "Device view created")
-        setMenu(binding.deviceToolbar)
-        updateTitle()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.deviceToolbarContainer) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -121,6 +134,7 @@ class DeviceViewFragment : Fragment() {
         webViewViewModel = ViewModelProvider(this, webViewFactory)[WebViewViewModel::class.java]
         webViewViewModel.webView().observe(viewLifecycleOwner) { webView: WebView ->
             _webview = webView
+            loadDevice()
 
             if (!webViewViewModel.firstLoad) {
                 Log.i(TAG_NAME, "Webview restored")
@@ -217,31 +231,6 @@ class DeviceViewFragment : Fragment() {
 
             binding.deviceWebViewContainer.addView(webView)
         }
-
-        deviceListViewModel.activeDevice.observe(viewLifecycleOwner) {
-            activeDevice = it
-            updateTitle()
-            if (fromRestore) {
-                fromRestore = false
-                return@observe
-            }
-            if (!deviceListViewModel.expectDeviceChange) {
-                Log.d(TAG_NAME, "observed device, but did not expect changes")
-                return@observe
-            }
-            Log.i(TAG_NAME, "observed device")
-            deviceListViewModel.expectDeviceChange = false
-            loadingCounter = 0
-            backQueue.clear()
-            currentUrl = ""
-
-            showLoadingIndicator()
-            updateNavigationState()
-            activeDevice?.let { device ->
-                Log.i(TAG_NAME, "onPageFinished Requesting '${device.address}'")
-                _webview.loadUrl("http://${device.address}")
-            }
-        }
     }
 
     override fun onDestroyView() {
@@ -254,6 +243,34 @@ class DeviceViewFragment : Fragment() {
         outState.putBundle(BUNDLE_WEBVIEW_STATE, webViewViewModel.bundle)
     }
 
+    private fun loadDevice() {
+        deviceRepository.findLiveDeviceByAddress(deviceAddress).asLiveData()
+            .observe(viewLifecycleOwner) {
+                it?.let { newDevice ->
+                    device = newDevice
+                    if (initialLoad) {
+                        initialLoad = false
+                        initialLoad()
+                    } else {
+                        updateTitle()
+                    }
+                }
+            }
+    }
+
+    private fun initialLoad() {
+        setMenu(binding.deviceToolbar)
+        Log.i(TAG_NAME, "setDevice")
+        loadingCounter = 0
+        backQueue.clear()
+        currentUrl = ""
+
+        updateTitle()
+        showLoadingIndicator()
+        Log.i(TAG_NAME, "onPageFinished Requesting '${device.address}'")
+        _webview.loadUrl("http://${device.address}")
+    }
+
     private fun setMenu(toolbar: MaterialToolbar) {
         toolbar.setupWithNavController(
             findNavController(),
@@ -262,7 +279,6 @@ class DeviceViewFragment : Fragment() {
         toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
         toolbar.setNavigationOnClickListener {
             Log.d(DeviceListFragment.TAG, "closing slidingPaneLayout")
-            deviceListViewModel.expectDeviceChange = false
             onBackPressedCallback.isEnabled = false
             requireActivity().onBackPressedDispatcher.onBackPressed()
             onBackPressedCallback.isEnabled = true
@@ -270,14 +286,6 @@ class DeviceViewFragment : Fragment() {
 
         deviceListViewModel.isTwoPane.observe(viewLifecycleOwner) {
             updateNavigationState()
-        }
-
-        deviceListViewModel.doRefreshWeb.observe(viewLifecycleOwner) {
-            if (!it) {
-                return@observe
-            }
-            deviceListViewModel.doRefreshWeb.value = false
-            refresh()
         }
 
         toolbar.addMenuProvider(object : MenuProvider {
@@ -321,9 +329,7 @@ class DeviceViewFragment : Fragment() {
 
             fun updateMenuState(menu: Menu) {
                 // Handle for example visibility of menu items
-                menu.findItem(R.id.action_browse_update).isVisible =
-                    activeDevice?.hasUpdateAvailable() ?: false
-
+                menu.findItem(R.id.action_browse_update).isVisible = device.hasUpdateAvailable()
                 if (deviceListViewModel.isTwoPane.value == true) {
                     toolbar.navigationIcon = null
                 }
@@ -333,11 +339,9 @@ class DeviceViewFragment : Fragment() {
 
     fun refresh() {
         updateTitle()
-        activeDevice?.let {
-            Log.i(TAG_NAME, "refresh Requesting '${it.address}'")
-            showLoadingIndicator()
-            _webview.loadUrl("http://${it.address}")
-        }
+        Log.i(TAG_NAME, "refresh Requesting '${device.address}'")
+        showLoadingIndicator()
+        _webview.loadUrl("http://${device.address}")
     }
 
     private fun updateTitle() {
@@ -356,14 +360,14 @@ class DeviceViewFragment : Fragment() {
 
     fun showUpdateDialog() {
         val fragmentManager = requireActivity().supportFragmentManager
-        val deviceAddress = activeDevice?.address ?: return
+        val deviceAddress = device.address
         val newFragment =
             DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
         newFragment.show(fragmentManager, "dialog")
     }
 
     fun showEditDevice() {
-        val deviceAddress = activeDevice?.address ?: return
+        val deviceAddress = device.address
         val dialog =
             DeviceEditFragment.newInstance(deviceAddress, resources.getBoolean(R.bool.large_layout))
         dialog.show(requireActivity().supportFragmentManager, "device_edit")
@@ -402,5 +406,15 @@ class DeviceViewFragment : Fragment() {
     companion object {
         const val TAG_NAME = "deviceWebview"
         const val BUNDLE_WEBVIEW_STATE = "bundleWebviewStateKey"
+
+        private const val DEVICE_ADDRESS = "device_address"
+
+        @JvmStatic
+        fun newInstance(deviceAddress: String) =
+            DeviceViewFragment().apply {
+                arguments = Bundle().apply {
+                    putString(DEVICE_ADDRESS, deviceAddress)
+                }
+            }
     }
 }

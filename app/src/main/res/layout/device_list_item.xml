@@ -15,8 +15,8 @@
         android:background="@drawable/device_item_background_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="0dp"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="6dp"
         android:layout_marginHorizontal="10dp"
         tools:ignore="RtlSymmetry">
 

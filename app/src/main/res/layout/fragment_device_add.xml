@@ -64,7 +64,7 @@
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/hide_device_check_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

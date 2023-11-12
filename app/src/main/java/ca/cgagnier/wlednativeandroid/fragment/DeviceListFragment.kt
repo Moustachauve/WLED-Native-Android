@@ -25,9 +25,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -38,17 +41,22 @@ import ca.cgagnier.wlednativeandroid.adapter.DeviceListAdapter
 import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
 
 
 class DeviceListFragment : Fragment(),
     SwipeRefreshLayout.OnRefreshListener {
 
+    private val deviceRepository: DeviceRepository by lazy {
+        (requireActivity().application as DevicesApplication).deviceRepository
+    }
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
             (requireActivity().application as DevicesApplication).deviceRepository,
@@ -88,6 +96,11 @@ class DeviceListFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDeviceListBinding.inflate(inflater, container, false)
+
+        setFragmentResultListener(REQUEST_OPEN_DEVICE_KEY) { _, bundle ->
+            onFragmentRequestOpenDevice(bundle)
+        }
+
         return binding.root
     }
 
@@ -159,40 +172,12 @@ class DeviceListFragment : Fragment(),
 
         deviceListAdapter.isSelectable = false
 
-        var duringSetup = true
-        val activeDeviceObserver = Observer<Device?> { device ->
-            if (device != null && device.address == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
-                duringSetup = false
-            }
-            val expectedChange = deviceListViewModel.expectDeviceChange
-            if (!duringSetup && device != null && expectedChange && !slidingPaneLayout.isOpen) {
-                Log.d(TAG, "opening slidingPaneLayout")
-                activity?.runOnUiThread {
-                    slidingPaneLayout.openPane()
-                }
-            }
-            duringSetup = false
-            if (device != null) {
-                val previousSelectedDevice = deviceListAdapter.getSelectedDevice()
-                if (previousSelectedDevice?.address == device.address) {
-                    return@Observer
-                }
-                activity?.runOnUiThread {
-                    binding.deviceListRecyclerView.scrollToPosition(
-                        deviceListAdapter.setSelectedDevice(device)
-                    )
-                }
-            }
-        }
-        deviceListViewModel.activeDevice.observe(viewLifecycleOwner, activeDeviceObserver)
-
         binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
             openAddDeviceFragment()
         }
 
         binding.apModeContainer.setOnClickListener {
-            val device = DeviceDiscovery.getDefaultAPDevice()
-            openDevice(device)
+            openDevice(DeviceDiscovery.getDefaultAPDevice())
         }
 
         layoutChangedListener = ViewTreeObserver.OnGlobalLayoutListener {
@@ -284,12 +269,18 @@ class DeviceListFragment : Fragment(),
         val dialog = DiscoverDeviceFragment()
         dialog.showsDialog = true
         dialog.show(childFragmentManager, "device_discovery")
+        dialog.setFragmentResultListener(REQUEST_OPEN_DEVICE_KEY) { _, bundle ->
+            onFragmentRequestOpenDevice(bundle)
+        }
     }
 
     private fun openManageDevicesFragment() {
         val dialog = ManageDeviceFragment()
         dialog.showsDialog = true
         dialog.show(childFragmentManager, "device_manage")
+        dialog.setFragmentResultListener(REQUEST_OPEN_DEVICE_KEY) { _, bundle ->
+            onFragmentRequestOpenDevice(bundle)
+        }
     }
 
     private fun openSettings() {
@@ -300,12 +291,32 @@ class DeviceListFragment : Fragment(),
 
     private fun openDevice(device: Device) {
         Log.i(TAG, "Opening device ${device.address}")
-        deviceListViewModel.updateActiveDevice(device)
 
         deviceListAdapter.isSelectable = !binding.slidingPaneLayout.isSlideable
         deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
+
+        childFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(R.id.device_web_view_fragment,
+                DeviceViewFragment.newInstance(device.address))
+            // If it's already open and the detail pane is visible, crossfade
+            // between the fragments.
+            if (binding.slidingPaneLayout.isOpen) {
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            }
+        }
+
+        binding.deviceListRecyclerView.scrollToPosition(
+            deviceListAdapter.setSelectedDevice(device)
+        )
         binding.slidingPaneLayout.openPane()
-        deviceListViewModel.doRefreshWeb.value = true
+    }
+
+    private fun openDevice(deviceAddress: String) {
+        lifecycleScope.launch {
+            val device = deviceRepository.findDeviceByAddress(deviceAddress)
+            device?.let { openDevice(it) }
+        }
     }
 
     override fun onRefresh() {
@@ -351,14 +362,21 @@ class DeviceListFragment : Fragment(),
                         try {
                             connectionManager.bindProcessToNetwork(network)
                             if (openDevice) {
-                                val device = DeviceDiscovery.getDefaultAPDevice()
-                                deviceListViewModel.updateActiveDevice(device)
+                                openDevice(DeviceDiscovery.getDefaultAPDevice())
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
                 })
+        }
+    }
+
+    private fun onFragmentRequestOpenDevice(bundle: Bundle) {
+        Log.i(TAG, "Open device request received")
+        val deviceAddress = bundle.getString(DEVICE_ADDRESS)
+        deviceAddress?.let {
+            openDevice(deviceAddress)
         }
     }
 
@@ -403,5 +421,15 @@ class DeviceListFragment : Fragment(),
 
     companion object {
         const val TAG = "DeviceListFragment"
+
+        const val REQUEST_OPEN_DEVICE_KEY = "openDevice"
+        const val DEVICE_ADDRESS = "device_address"
+
+        @JvmStatic
+        fun createOpenDeviceBundle(deviceAddress: String): Bundle {
+            return Bundle().apply {
+                putString(DEVICE_ADDRESS, deviceAddress)
+            }
+        }
     }
 }

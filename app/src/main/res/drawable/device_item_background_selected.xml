@@ -5,7 +5,7 @@
         android:left="10dp"
         android:right="10dp"
         android:top="10dp" />
-    <corners android:radius="25dp" />
+    <corners android:radius="22dp" />
 
-    <solid android:color="?colorPrimary" />
+    <solid android:color="?colorPrimaryInverse" />
 </shape>

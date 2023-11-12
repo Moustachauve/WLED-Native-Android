@@ -152,11 +152,11 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/device_web_view_fragment"
-            android:name="ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment"
+            android:name="ca.cgagnier.wlednativeandroid.fragment.DeviceNoSelectionFragment"
             android:layout_width="420dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:layout="@layout/fragment_device_view" />
+            tools:layout="@layout/fragment_device_no_selection" />
     </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 
 
