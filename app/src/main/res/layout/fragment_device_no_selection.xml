@@ -15,6 +15,6 @@
         android:text="@string/select_a_device_from_the_list"
         android:layout_gravity="center_horizontal"
         android:drawablePadding="10dp"
-        app:drawableTopCompat="@drawable/wled_logo_akemi"/>
+        app:drawableTopCompat="@drawable/illumidel_logo"/>
 
 </LinearLayout>
