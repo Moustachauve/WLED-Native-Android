@@ -18,6 +18,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -34,6 +35,8 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceViewViewModel
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceViewViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.WebViewViewModel
 import com.google.android.material.appbar.MaterialToolbar
 
@@ -42,6 +45,9 @@ class DeviceViewFragment : Fragment() {
 
     private val deviceRepository: DeviceRepository by lazy {
         (requireActivity().application as DevicesApplication).deviceRepository
+    }
+    private val deviceViewViewModel: DeviceViewViewModel by viewModels {
+        DeviceViewViewModelFactory()
     }
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
@@ -52,10 +58,6 @@ class DeviceViewFragment : Fragment() {
 
     private lateinit var webViewViewModel: WebViewViewModel
     private lateinit var _webview: WebView
-    private var currentUrl: String = ""
-    private val backQueue = ArrayDeque<String>(5)
-    private var isGoingBack = false
-    private var loadingCounter = 0
 
     private var initialLoad = true
     private lateinit var deviceAddress: String
@@ -96,7 +98,7 @@ class DeviceViewFragment : Fragment() {
                     webGoBack()
                 } else {
                     isEnabled = false
-                    loadingCounter = 0
+                    deviceViewViewModel.loadingCounter = 0
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                     isEnabled = true
                 }
@@ -151,17 +153,23 @@ class DeviceViewFragment : Fragment() {
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view, url, favicon)
                         updateNavigationState()
-                        Log.i(TAG_NAME, "page started $url, counter: $loadingCounter")
+                        Log.i(
+                            TAG_NAME,
+                            "page started $url, counter: ${deviceViewViewModel.loadingCounter}"
+                        )
                     }
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
                         updateNavigationState()
-                        loadingCounter--
-                        Log.i(TAG_NAME, "page finished $url, counter: $loadingCounter")
-                        if (loadingCounter <= 0) {
+                        deviceViewViewModel.loadingCounter--
+                        Log.i(
+                            TAG_NAME,
+                            "page finished $url, counter: ${deviceViewViewModel.loadingCounter}"
+                        )
+                        if (deviceViewViewModel.loadingCounter <= 0) {
                             _binding?.pageLoadingIndicator?.visibility = View.GONE
-                            loadingCounter = 0
+                            deviceViewViewModel.loadingCounter = 0
                         }
                     }
 
@@ -174,14 +182,14 @@ class DeviceViewFragment : Fragment() {
                         Log.i(TAG_NAME, "doUpdateVisitedHistory $url, isReload: $isReload")
 
                         if (url != null && !isReload) {
-                            if (isGoingBack) {
-                                isGoingBack = false
-                            } else if (currentUrl.isNotEmpty()) {
-                                backQueue.addLast(currentUrl)
+                            if (deviceViewViewModel.isGoingBack) {
+                                deviceViewViewModel.isGoingBack = false
+                            } else if (deviceViewViewModel.currentUrl.isNotEmpty()) {
+                                deviceViewViewModel.backQueue.addLast(deviceViewViewModel.currentUrl)
                             }
                             filterBackQueue(url)
 
-                            currentUrl = url
+                            deviceViewViewModel.currentUrl = url
                         }
                         updateNavigationState()
                     }
@@ -260,16 +268,16 @@ class DeviceViewFragment : Fragment() {
     }
 
     private fun initialLoad() {
+        Log.i(TAG_NAME, "initialLoad")
         setMenu(binding.deviceToolbar)
-        Log.i(TAG_NAME, "setDevice")
-        loadingCounter = 0
-        backQueue.clear()
-        currentUrl = ""
-
         updateTitle()
-        showLoadingIndicator()
-        Log.i(TAG_NAME, "onPageFinished Requesting '${device.address}'")
-        _webview.loadUrl("http://${device.address}")
+
+        if (!deviceViewViewModel.webAlreadyLoaded) {
+            deviceViewViewModel.webAlreadyLoaded = true
+            showLoadingIndicator()
+            Log.i(TAG_NAME, "initialLoad Requesting '${device.address}'")
+            _webview.loadUrl("http://${device.address}")
+        }
     }
 
     private fun setMenu(toolbar: MaterialToolbar) {
@@ -370,7 +378,7 @@ class DeviceViewFragment : Fragment() {
 
     fun showLoadingIndicator() {
         _binding?.pageLoadingIndicator?.visibility = View.VISIBLE
-        loadingCounter++
+        deviceViewViewModel.loadingCounter++
     }
 
     fun showUpdateDialog() {
@@ -389,14 +397,14 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun webCanGoBack(): Boolean {
-        return backQueue.isNotEmpty()
+        return deviceViewViewModel.backQueue.isNotEmpty()
     }
 
     fun webGoBack(): Boolean {
         if (webCanGoBack()) {
-            val backUrl = backQueue.removeLast()
+            val backUrl = deviceViewViewModel.backQueue.removeLast()
             _webview.loadUrl(backUrl)
-            isGoingBack = true
+            deviceViewViewModel.isGoingBack = true
             return true
         }
         return false
@@ -405,14 +413,14 @@ class DeviceViewFragment : Fragment() {
     private fun filterBackQueue(currentUrl: String) {
         Log.i(TAG_NAME, "== Starting filter ========")
         Log.i(TAG_NAME, "Current Url: $currentUrl")
-        Log.i(TAG_NAME, backQueue.toString())
-        var i = backQueue.size
-        for (url in backQueue.asReversed()) {
+        Log.i(TAG_NAME, deviceViewViewModel.backQueue.toString())
+        var i = deviceViewViewModel.backQueue.size
+        for (url in deviceViewViewModel.backQueue.asReversed()) {
             i--
             if (url == currentUrl) {
-                backQueue.subList(i, backQueue.size).clear()
+                deviceViewViewModel.backQueue.subList(i, deviceViewViewModel.backQueue.size).clear()
                 Log.i(TAG_NAME, "Removing up to $i")
-                Log.i(TAG_NAME, backQueue.toString())
+                Log.i(TAG_NAME, deviceViewViewModel.backQueue.toString())
                 return
             }
         }

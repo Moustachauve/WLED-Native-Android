@@ -42,8 +42,10 @@
             android:layout_height="8dp"
             android:indeterminate="true"
             android:layout_marginTop="8dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/device_toolbar_container"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
