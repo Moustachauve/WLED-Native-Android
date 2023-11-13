@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -278,13 +279,21 @@ class DeviceViewFragment : Fragment() {
         )
         toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
         toolbar.setNavigationOnClickListener {
-            Log.d(DeviceListFragment.TAG, "closing slidingPaneLayout")
-            onBackPressedCallback.isEnabled = false
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-            onBackPressedCallback.isEnabled = true
+            if (deviceListViewModel.isTwoPane.value == true) {
+                Log.d(TAG_NAME, "Requesting list to be hidden")
+                setFragmentResult(DeviceListFragment.REQUEST_LIST_VISIBLITY_TOGGLE, Bundle())
+            } else {
+                Log.d(DeviceListFragment.TAG, "closing slidingPaneLayout")
+                onBackPressedCallback.isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+                onBackPressedCallback.isEnabled = true
+            }
         }
 
         deviceListViewModel.isTwoPane.observe(viewLifecycleOwner) {
+            updateNavigationState()
+        }
+        deviceListViewModel.isListHidden.observe(viewLifecycleOwner) {
             updateNavigationState()
         }
 
@@ -331,7 +340,11 @@ class DeviceViewFragment : Fragment() {
                 // Handle for example visibility of menu items
                 menu.findItem(R.id.action_browse_update).isVisible = device.hasUpdateAvailable()
                 if (deviceListViewModel.isTwoPane.value == true) {
-                    toolbar.navigationIcon = null
+                    if (deviceListViewModel.isListHidden.value == true) {
+                        toolbar.setNavigationIcon(R.drawable.dock_to_right_24)
+                    } else {
+                        toolbar.setNavigationIcon(R.drawable.baseline_menu_open_24)
+                    }
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -406,6 +419,7 @@ class DeviceViewFragment : Fragment() {
     }
 
     companion object {
+        // TODO: Rename TAG_NAME to just TAG for consistency
         const val TAG_NAME = "deviceWebview"
         const val BUNDLE_WEBVIEW_STATE = "bundleWebviewStateKey"
 
