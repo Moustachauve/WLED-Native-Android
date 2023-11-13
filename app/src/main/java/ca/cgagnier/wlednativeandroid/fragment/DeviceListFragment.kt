@@ -165,6 +165,9 @@ class DeviceListFragment : Fragment(),
         binding.deviceListRecyclerView.layoutManager = layoutManager
         binding.deviceListRecyclerView.setHasFixedSize(true)
         binding.deviceListRecyclerView.itemAnimator = RecyclerViewAnimator()
+        deviceListViewModel.selectedDevice?.let { selectedDevice ->
+            deviceListAdapter.setSelectedDevice(selectedDevice)
+        }
 
         deviceListViewModel.allDevices.observe(viewLifecycleOwner) { devices ->
             devices?.let {
@@ -304,6 +307,7 @@ class DeviceListFragment : Fragment(),
 
         deviceListAdapter.isSelectable = !binding.slidingPaneLayout.isSlideable
         deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
+        deviceListViewModel.selectedDevice = device
 
         parentFragmentManager.commit {
             setReorderingAllowed(true)
