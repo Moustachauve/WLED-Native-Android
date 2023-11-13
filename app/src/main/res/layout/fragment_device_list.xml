@@ -150,7 +150,6 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/device_web_view_fragment"
-            android:name="ca.cgagnier.wlednativeandroid.fragment.DeviceNoSelectionFragment"
             android:layout_width="400dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

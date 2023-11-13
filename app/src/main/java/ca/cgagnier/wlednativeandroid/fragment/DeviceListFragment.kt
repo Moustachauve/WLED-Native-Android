@@ -167,6 +167,8 @@ class DeviceListFragment : Fragment(),
         binding.deviceListRecyclerView.itemAnimator = RecyclerViewAnimator()
         deviceListViewModel.selectedDevice?.let { selectedDevice ->
             deviceListAdapter.setSelectedDevice(selectedDevice)
+        } ?: run {
+            showSelectDeviceFragment()
         }
 
         deviceListViewModel.allDevices.observe(viewLifecycleOwner) { devices ->
@@ -324,6 +326,21 @@ class DeviceListFragment : Fragment(),
             deviceListAdapter.setSelectedDevice(device)
         )
         binding.slidingPaneLayout.openPane()
+    }
+
+    private fun showSelectDeviceFragment() {
+        parentFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(
+                R.id.device_web_view_fragment,
+                DeviceNoSelectionFragment()
+            )
+            // If it's already open and the detail pane is visible, crossfade
+            // between the fragments.
+            if (binding.slidingPaneLayout.isOpen) {
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            }
+        }
     }
 
     private fun openDevice(deviceAddress: String) {
