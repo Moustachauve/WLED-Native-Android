@@ -73,18 +73,34 @@ class DeviceEditFragment : WiderDialogFragment() {
         binding.buttonUpdate.setOnClickListener {
             showUpdateDialog()
         }
+        binding.branchToggleButtonGroup.addOnButtonCheckedListener { _, _, isChecked ->
+            if (!isChecked) {
+                return@addOnButtonCheckedListener
+            }
+            binding.cardUpdateDetails.visibility =
+                if (device.branch == getBranchFromButton()) View.VISIBLE else View.GONE
+            binding.labelSaveForUpdates.visibility =
+                if (device.branch == getBranchFromButton()) View.GONE else View.VISIBLE
+        }
 
         return binding.root
+    }
+
+    private fun getBranchFromButton(): Branch {
+        return when(binding.branchToggleButtonGroup.checkedButtonId) {
+            R.id.branch_beta_button -> Branch.BETA
+            else -> Branch.STABLE
+        }
     }
 
     private fun submitClickListener() {
         var deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
-        val branch = when(binding.branchToggleButtonGroup.checkedButtonId) {
-            R.id.branch_beta_button -> Branch.BETA
-            else -> Branch.STABLE
-        }
+        val branch = getBranchFromButton()
+        val branchChanged = device.branch != branch
         val isCustomName = deviceName != ""
+        // If the branch changed, reset the next update available so it can be checked again
+        val nextUpdateTag = if (branchChanged) "" else device.newUpdateVersionTagAvailable
         // Set the deviceName to the previous one if it's not a custom name and it wasn't a custom
         // name before the edit, otherwise the name will be lost until the next update.
         if (!isCustomName && !device.isCustomName) {
@@ -95,7 +111,8 @@ class DeviceEditFragment : WiderDialogFragment() {
             name = deviceName,
             isCustomName = isCustomName,
             isHidden = isHidden,
-            branch = branch
+            branch = branch,
+            newUpdateVersionTagAvailable = nextUpdateTag
         )
 
         lifecycleScope.launch {
@@ -117,19 +134,23 @@ class DeviceEditFragment : WiderDialogFragment() {
     }
 
     private fun updateFields() {
-        binding.dialogTitle.text = getString(R.string.edit_device_with_name, device.name)
+        if (firstLoad) {
+            binding.dialogTitle.text = getString(R.string.edit_device_with_name, device.name)
 
-        binding.deviceAddressTextInputLayout.isEnabled = false
-        binding.deviceAddressTextInputLayout.editText?.setText(device.address)
-        binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
-        binding.customNameTextInputLayout.requestFocus()
-        binding.hideDeviceCheckBox.isChecked = device.isHidden
-        binding.branchToggleButtonGroup.check(when (device.branch) {
-            Branch.BETA -> R.id.branch_beta_button
-            else -> R.id.branch_stable_button
-        })
+            binding.deviceAddressTextInputLayout.isEnabled = false
+            binding.deviceAddressTextInputLayout.editText?.setText(device.address)
+            binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
+            binding.customNameTextInputLayout.requestFocus()
+            binding.hideDeviceCheckBox.isChecked = device.isHidden
+            binding.branchToggleButtonGroup.check(
+                when (device.branch) {
+                    Branch.BETA -> R.id.branch_beta_button
+                    else -> R.id.branch_stable_button
+                }
+            )
+        }
+
         binding.labelCurrentVersion.text = getString(R.string.version_v_num, device.version)
-
         if (!firstLoad) {
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
         }
@@ -181,6 +202,7 @@ class DeviceEditFragment : WiderDialogFragment() {
     }
 
     private fun refreshUpdates() {
+        Log.e(TAG, "refreshing updates for device")
         val releaseService = ReleaseService(versionWithAssetsRepository)
         lifecycleScope.launch(Dispatchers.IO) {
             releaseService.refreshVersions(requireContext())
