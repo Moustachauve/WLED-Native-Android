@@ -39,8 +39,8 @@ data class Device(
     val newUpdateVersionTagAvailable: String = "",
     @ColumnInfo(defaultValue = "")
     val skipUpdateTag: String = "",
-    @ColumnInfo(defaultValue = "STABLE")
-    val branch: Branch = Branch.STABLE,
+    @ColumnInfo(defaultValue = "UNKNOWN")
+    val branch: Branch = Branch.UNKNOWN,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)

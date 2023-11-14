@@ -81,7 +81,6 @@ class DeviceEditFragment : WiderDialogFragment() {
         var deviceName = binding.customNameTextInputLayout.editText?.text.toString()
         val isHidden = binding.hideDeviceCheckBox.isChecked
         val branch = when(binding.branchToggleButtonGroup.checkedButtonId) {
-            R.id.branch_stable_button -> Branch.STABLE
             R.id.branch_beta_button -> Branch.BETA
             else -> Branch.STABLE
         }

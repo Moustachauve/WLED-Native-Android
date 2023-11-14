@@ -133,6 +133,11 @@ object DeviceApiService {
                 val updateVersionTagAvailable =
                     releaseService.getUpdateVersionTagAvailable(deviceVersion, device.skipUpdateTag)
 
+                var branch = device.branch
+                if (branch == Branch.UNKNOWN) {
+                    branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
+                }
+
                 val updatedDevice = device.copy(
                     macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
                     isOnline = true,
@@ -150,7 +155,7 @@ object DeviceApiService {
                     platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
                     version = deviceVersion,
                     newUpdateVersionTagAvailable = updateVersionTagAvailable,
-                    branch = Branch.STABLE, // TODO: Add branch detection based on version name.
+                    branch = branch,
                     brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
                     productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
                 )
