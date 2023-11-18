@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import ca.cgagnier.wlednativeandroid.DeviceEditActivity
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListManageAdapter
@@ -88,11 +90,11 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
         super.onResume()
     }
 
-    private fun editItem(item: Device) {
-        val dialog =
-            DeviceEditFragment.newInstance(item.address, resources.getBoolean(R.bool.large_layout))
-        dialog.showsDialog = true
-        dialog.show(requireActivity().supportFragmentManager, "device_edit")
+    private fun editItem(device: Device) {
+        val isLargeDisplay = resources.getBoolean(R.bool.large_layout)
+        val intent = Intent(requireActivity(), DeviceEditActivity::class.java)
+        intent.putExtra(DeviceEditActivity.EXTRA_DEVICE_ADDRESS, device.address)
+        startActivity(intent)
     }
 
     private fun deleteItem(item: Device) {

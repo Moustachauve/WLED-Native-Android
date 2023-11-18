@@ -14,15 +14,19 @@
         android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher_rgb"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_rgb_round"
         android:supportsRtl="true"
         android:theme="@style/WLEDNativeAndroid"
         android:usesCleartextTraffic="true"
-        android:localeConfig="@xml/locales_config"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".DeviceEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +40,6 @@
         <meta-data
             android:name="firebase_performance_collection_enabled"
             android:value="false" />
-
     </application>
 
 </manifest>

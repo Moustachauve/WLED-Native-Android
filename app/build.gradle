@@ -60,6 +60,7 @@ android {
 
 dependencies {
 
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     def moshiVersion = '1.15.0'
     def retrofit2_version = "2.9.0"
     def okhttp3_version = '5.0.0-alpha.10'

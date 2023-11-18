@@ -1,11 +1,16 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
-import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
@@ -18,11 +23,12 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DeviceEditFragment : WiderDialogFragment() {
+
+class DeviceEditFragment : Fragment() {
     private var firstLoad = true
     private lateinit var deviceAddress: String
     private lateinit var device: Device
@@ -44,32 +50,17 @@ class DeviceEditFragment : WiderDialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        _binding = FragmentDeviceEditBinding.inflate(layoutInflater, null, false)
-
-        return MaterialAlertDialogBuilder(requireActivity())
-            .setView(binding.root)
-            .create()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        loadDevice()
+        _binding = FragmentDeviceEditBinding.inflate(layoutInflater, null, false)
 
-        binding.buttonSave.setOnClickListener {
-            submitClickListener()
-        }
-        binding.buttonCancel.setOnClickListener {
-            dismiss()
-        }
-
+        setMenu(binding.deviceToolbar)
         binding.buttonCheckForUpdate.setOnClickListener {
             checkForUpdate()
         }
-
         binding.buttonUpdate.setOnClickListener {
             showUpdateDialog()
         }
@@ -86,8 +77,36 @@ class DeviceEditFragment : WiderDialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadDevice()
+    }
+
+    private fun setMenu(toolbar: MaterialToolbar) {
+        binding.deviceToolbar.setNavigationOnClickListener {
+            requireActivity().finish()
+        }
+
+        toolbar.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.device_edit_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_device_save -> {
+                        submitClickListener()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     private fun getBranchFromButton(): Branch {
-        return when(binding.branchToggleButtonGroup.checkedButtonId) {
+        return when (binding.branchToggleButtonGroup.checkedButtonId) {
             R.id.branch_beta_button -> Branch.BETA
             else -> Branch.STABLE
         }
@@ -119,7 +138,7 @@ class DeviceEditFragment : WiderDialogFragment() {
             Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
             DeviceApiService.update(updatedDevice, false)
-            dismiss()
+            requireActivity().finish()
         }
     }
 
@@ -135,7 +154,7 @@ class DeviceEditFragment : WiderDialogFragment() {
 
     private fun updateFields() {
         if (firstLoad) {
-            binding.dialogTitle.text = getString(R.string.edit_device_with_name, device.name)
+            binding.deviceToolbar.title = getString(R.string.edit_device_with_name, device.name)
 
             binding.deviceAddressTextInputLayout.isEnabled = false
             binding.deviceAddressTextInputLayout.editText?.setText(device.address)
@@ -159,7 +178,7 @@ class DeviceEditFragment : WiderDialogFragment() {
             if (device.hasUpdateAvailable()) View.GONE else View.VISIBLE
         binding.labelIsUpToDate.visibility = binding.buttonCheckForUpdate.visibility
         binding.labelCurrentVersion.visibility = binding.buttonCheckForUpdate.visibility
-            binding.progressCheckForUpdate.visibility = View.GONE
+        binding.progressCheckForUpdate.visibility = View.GONE
         binding.buttonCheckForUpdate.isEnabled = true
         // Don't update the text if the view is not visible otherwise the transition looks very weird
         if (binding.buttonCheckForUpdate.visibility == View.VISIBLE) {
@@ -221,14 +240,12 @@ class DeviceEditFragment : WiderDialogFragment() {
     companion object {
         private const val TAG = "DeviceEditFragment"
         private const val DEVICE_ADDRESS = "device_address"
-        private const val IS_LARGE_LAYOUT = "is_large_layout"
 
         @JvmStatic
-        fun newInstance(deviceAddress: String, isLargeLayout: Boolean) =
+        fun newInstance(deviceAddress: String) =
             DeviceEditFragment().apply {
                 arguments = Bundle().apply {
                     putString(DEVICE_ADDRESS, deviceAddress)
-                    putBoolean(IS_LARGE_LAYOUT, isLargeLayout)
                 }
             }
     }

@@ -2,6 +2,7 @@ package ca.cgagnier.wlednativeandroid.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -26,6 +27,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import ca.cgagnier.wlednativeandroid.BuildConfig
+import ca.cgagnier.wlednativeandroid.DeviceEditActivity
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
@@ -390,10 +392,10 @@ class DeviceViewFragment : Fragment() {
     }
 
     fun showEditDevice() {
-        val deviceAddress = device.address
-        val dialog =
-            DeviceEditFragment.newInstance(deviceAddress, resources.getBoolean(R.bool.large_layout))
-        dialog.show(requireActivity().supportFragmentManager, "device_edit")
+        val isLargeDisplay = resources.getBoolean(R.bool.large_layout)
+        val intent = Intent(requireActivity(), DeviceEditActivity::class.java)
+        intent.putExtra(DeviceEditActivity.EXTRA_DEVICE_ADDRESS, device.address)
+        startActivity(intent)
     }
 
     fun webCanGoBack(): Boolean {
