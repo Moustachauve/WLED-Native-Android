@@ -68,10 +68,7 @@ class DeviceEditFragment : Fragment() {
             if (!isChecked) {
                 return@addOnButtonCheckedListener
             }
-            binding.cardUpdateDetails.visibility =
-                if (device.branch == getBranchFromButton()) View.VISIBLE else View.GONE
-            binding.labelSaveForUpdates.visibility =
-                if (device.branch == getBranchFromButton()) View.GONE else View.VISIBLE
+            updateUpdateCardVisibility()
         }
 
         return binding.root
@@ -168,6 +165,7 @@ class DeviceEditFragment : Fragment() {
                 }
             )
         }
+        updateUpdateCardVisibility()
 
         binding.labelCurrentVersion.text = getString(R.string.version_v_num, device.version)
         if (!firstLoad) {
@@ -177,7 +175,7 @@ class DeviceEditFragment : Fragment() {
         binding.buttonCheckForUpdate.visibility =
             if (device.hasUpdateAvailable()) View.GONE else View.VISIBLE
         binding.labelIsUpToDate.visibility = binding.buttonCheckForUpdate.visibility
-        binding.labelCurrentVersion.visibility = binding.buttonCheckForUpdate.visibility
+        binding.labelCurrentVersion.visibility = if (device.version != Device.UNKNOWN_VALUE) binding.buttonCheckForUpdate.visibility else View.GONE
         binding.progressCheckForUpdate.visibility = View.GONE
         binding.buttonCheckForUpdate.isEnabled = true
         // Don't update the text if the view is not visible otherwise the transition looks very weird
@@ -199,6 +197,13 @@ class DeviceEditFragment : Fragment() {
         }
 
         firstLoad = false
+    }
+
+    private fun updateUpdateCardVisibility() {
+        binding.cardUpdateDetails.visibility =
+            if (device.branch == getBranchFromButton() || device.branch == Branch.UNKNOWN) View.VISIBLE else View.GONE
+        binding.labelSaveForUpdates.visibility =
+            if (device.branch == getBranchFromButton()) View.GONE else View.VISIBLE
     }
 
     private fun checkForUpdate() {
