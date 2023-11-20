@@ -8,7 +8,7 @@
     </data>
 
     <LinearLayout
-        android:id="@+id/main_layout"
+        android:id="@+id/main_layout_device_edit_tablet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

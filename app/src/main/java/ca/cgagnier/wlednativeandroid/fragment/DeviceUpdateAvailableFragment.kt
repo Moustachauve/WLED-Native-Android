@@ -99,7 +99,7 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainLayout) { insetView, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainLayoutDeviceUpdate) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
             insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.top
