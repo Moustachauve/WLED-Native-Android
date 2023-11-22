@@ -71,9 +71,10 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentContainerView) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insetsIme = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
             insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 leftMargin = insets.left
-                bottomMargin = insets.bottom
+                bottomMargin = insets.bottom + insetsIme.bottom
                 rightMargin = insets.right
             }
 
