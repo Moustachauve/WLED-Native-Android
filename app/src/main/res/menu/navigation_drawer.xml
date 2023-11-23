@@ -23,5 +23,9 @@
             android:id="@+id/action_visit_help"
             android:icon="@drawable/baseline_help_24"
             android:title="@string/help" />
+        <item
+            android:id="@+id/action_visit_sponsor"
+            android:icon="@drawable/baseline_coffee_24"
+            android:title="@string/support_me" />
     </group>
 </menu>

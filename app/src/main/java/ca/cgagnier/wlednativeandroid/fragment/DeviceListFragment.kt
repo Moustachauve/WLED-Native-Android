@@ -261,9 +261,18 @@ class DeviceListFragment : Fragment(),
                 R.id.action_settings -> {
                     openSettings()
                 }
+
                 R.id.action_visit_help -> {
                     val browserIntent =
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://kno.wled.ge/"))
+                    startActivity(browserIntent)
+                }
+
+                R.id.action_visit_sponsor -> {
+                    val browserIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/sponsors/Moustachauve/")
+                    )
                     startActivity(browserIntent)
                 }
             }
