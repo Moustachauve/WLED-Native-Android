@@ -91,7 +91,6 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
     }
 
     private fun editItem(device: Device) {
-        val isLargeDisplay = resources.getBoolean(R.bool.large_layout)
         val intent = Intent(requireActivity(), DeviceEditActivity::class.java)
         intent.putExtra(DeviceEditActivity.EXTRA_DEVICE_ADDRESS, device.address)
         startActivity(intent)
