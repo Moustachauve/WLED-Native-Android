@@ -94,4 +94,5 @@
     <string name="select_a_device_from_the_list">Select a device from the list</string>
     <string name="save_after_branch_change">Save the device after changing the channel to check for updates</string>
     <string name="downloading_file">Downloading File</string>
+    <string name="help">WLED Help</string>
 </resources>

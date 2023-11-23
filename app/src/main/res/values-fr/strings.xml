@@ -91,4 +91,5 @@
     <string name="select_a_device_from_the_list">Veuillez choisir un appareil</string>
     <string name="save_after_branch_change">Veuillez sauvegarder après avoir changer la variante de MàJ pour vérifier les MàJ</string>
     <string name="downloading_file">Téléchargement en cours</string>
+    <string name="help">WLED Aide</string>
 </resources>

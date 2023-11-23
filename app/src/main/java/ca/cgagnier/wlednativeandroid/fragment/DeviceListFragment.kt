@@ -1,9 +1,11 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -258,6 +260,11 @@ class DeviceListFragment : Fragment(),
 
                 R.id.action_settings -> {
                     openSettings()
+                }
+                R.id.action_visit_help -> {
+                    val browserIntent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://kno.wled.ge/"))
+                    startActivity(browserIntent)
                 }
             }
             drawerLayout.close()
