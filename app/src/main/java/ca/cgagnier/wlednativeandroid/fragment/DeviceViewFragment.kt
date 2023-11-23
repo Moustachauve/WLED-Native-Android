@@ -1,15 +1,18 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.*
 import android.webkit.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.MenuProvider
@@ -41,6 +44,9 @@ import ca.cgagnier.wlednativeandroid.viewmodel.DeviceViewViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceViewViewModelFactory
 import ca.cgagnier.wlednativeandroid.viewmodel.WebViewViewModel
 import com.google.android.material.appbar.MaterialToolbar
+import java.net.URLEncoder
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class DeviceViewFragment : Fragment() {
@@ -226,6 +232,35 @@ class DeviceViewFragment : Fragment() {
                         return true
                     }
                 }
+
+                webView.setDownloadListener { url, _, contentDisposition, mimetype, _ ->
+                    val request = DownloadManager.Request(
+                        Uri.parse(url)
+                    )
+                    request.setNotificationVisibility(
+                        DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+                    )
+
+                    @SuppressLint("SimpleDateFormat")
+                    val formatter = SimpleDateFormat("yyyyMMdd")
+                    val currentDate = formatter.format(Date())
+                    val deviceName = URLEncoder.encode(device.name, "UTF-8")
+                    val fileName = URLUtil.guessFileName(url, contentDisposition, mimetype)
+                    val fullFilename = "${deviceName}_${currentDate}_${fileName}"
+                    request.setDestinationInExternalPublicDir(
+                        Environment.DIRECTORY_DOWNLOADS,
+                        fullFilename
+                    )
+                    val dm =
+                        requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+                    dm!!.enqueue(request)
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.downloading_file),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
 
                 webView.settings.javaScriptEnabled = true
                 webView.settings.domStorageEnabled = true
