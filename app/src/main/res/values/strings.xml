@@ -98,4 +98,8 @@
     <string name="english">English</string>
     <string name="device_language">Device Language</string>
     <string name="device_language_change_details">You will need to install an update on the device after changing the language here</string>
+    <string name="save_after_branch_change">Save the device after changing the channel to check for updates</string>
+    <string name="downloading_file">Downloading File</string>
+    <string name="help">WLED Help</string>
+    <string name="support_me">Support Moustachauve</string>
 </resources>

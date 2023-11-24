@@ -21,7 +21,9 @@ class DeviceListViewModel(private val repository: DeviceRepository,
         }
     }.asLiveData()
 
+    var selectedDevice: Device? = null
     var isTwoPane = MutableLiveData(false)
+    var isListHidden = MutableLiveData(false)
 
     fun insert(device: Device) = viewModelScope.launch {
         Log.d(TAG, "Inserting device")

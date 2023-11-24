@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateAvailableBinding
+import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -98,7 +99,7 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainLayout) { insetView, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainLayoutDeviceUpdate) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
             insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.top
@@ -117,7 +118,11 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
             (requireActivity().application as DevicesApplication).versionWithAssetsRepository
         lifecycleScope.launch {
             device = deviceRepository.findDeviceByAddress(deviceAddress)!!
-            version = versionRepository.getLatestVersionWithAssets()!!
+            version = if (device.branch == Branch.BETA) {
+                versionRepository.getLatestBetaVersionWithAssets()!!
+            } else {
+                versionRepository.getLatestStableVersionWithAssets()!!
+            }
             updateFields()
         }
     }

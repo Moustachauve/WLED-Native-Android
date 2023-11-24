@@ -56,9 +56,10 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentContainerView) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insetsIme = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
             insetView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 leftMargin = insets.left
-                bottomMargin = insets.bottom
+                bottomMargin = insets.bottom + insetsIme.bottom
                 rightMargin = insets.right
             }
 
@@ -140,32 +141,32 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
         Log.i(TAG, "IP: ${deviceIp}\tName: ${deviceName}\t")
 
-        DeviceApiService.update(device, silentUpdate = true, saveChanges = false) {
+        DeviceApiService.update(device, silentUpdate = true, saveChanges = false) { refreshedDevice ->
             lifecycleScope.launch {
-                val existingDevice = deviceListViewModel.findWithSameMacAddress(it)
-                if (existingDevice != null && it.macAddress != Device.UNKNOWN_VALUE) {
+                val existingDevice = deviceListViewModel.findWithSameMacAddress(refreshedDevice)
+                if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
                     Log.i(
                         TAG,
                         "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
                     )
-                    val updatedDevice = existingDevice.copy(
-                        address = device.address,
-                        isOnline = device.isOnline,
-                        name = device.name,
-                        brightness = device.brightness,
-                        isPoweredOn = device.isPoweredOn,
-                        color = device.color,
-                        networkRssi = device.networkRssi,
-                        isEthernet = device.isEthernet,
-                        platformName = device.platformName,
-                        version = device.version,
-                        brand = device.brand,
-                        productName = device.productName,
+                    val refreshedExistingDevice = existingDevice.copy(
+                        address = refreshedDevice.address,
+                        isOnline = refreshedDevice.isOnline,
+                        name = refreshedDevice.name,
+                        brightness = refreshedDevice.brightness,
+                        isPoweredOn = refreshedDevice.isPoweredOn,
+                        color = refreshedDevice.color,
+                        networkRssi = refreshedDevice.networkRssi,
+                        isEthernet = refreshedDevice.isEthernet,
+                        platformName = refreshedDevice.platformName,
+                        version = refreshedDevice.version,
+                        brand = refreshedDevice.brand,
+                        productName = refreshedDevice.productName,
                     )
                     deviceListViewModel.delete(existingDevice)
-                    deviceListViewModel.insert(updatedDevice)
+                    deviceListViewModel.insert(refreshedExistingDevice)
                 } else {
-                    deviceListViewModel.insert(device)
+                    deviceListViewModel.insert(refreshedDevice)
                 }
             }
         }

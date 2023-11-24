@@ -17,6 +17,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -75,6 +77,8 @@ class DeviceListFragment : Fragment(),
 
     private var hasDoneFirstRefresh = false
 
+    private var pastDeviceListWidth: Int? = null
+
     override fun onResume() {
         super.onResume()
         refreshListFromApi(false)
@@ -99,6 +103,14 @@ class DeviceListFragment : Fragment(),
 
         setFragmentResultListener(REQUEST_OPEN_DEVICE_KEY) { _, bundle ->
             onFragmentRequestOpenDevice(bundle)
+        }
+        setFragmentResultListener(REQUEST_LIST_VISIBLITY_TOGGLE) { _, _ ->
+            Log.i(TAG, "Toggle list visibility request received")
+            if (deviceListViewModel.isListHidden.value == true) {
+                openDeviceList()
+            } else {
+                closeDeviceList()
+            }
         }
 
         return binding.root
@@ -153,6 +165,11 @@ class DeviceListFragment : Fragment(),
         binding.deviceListRecyclerView.layoutManager = layoutManager
         binding.deviceListRecyclerView.setHasFixedSize(true)
         binding.deviceListRecyclerView.itemAnimator = RecyclerViewAnimator()
+        deviceListViewModel.selectedDevice?.let { selectedDevice ->
+            deviceListAdapter.setSelectedDevice(selectedDevice)
+        } ?: run {
+            showSelectDeviceFragment()
+        }
 
         deviceListViewModel.allDevices.observe(viewLifecycleOwner) { devices ->
             devices?.let {
@@ -268,19 +285,34 @@ class DeviceListFragment : Fragment(),
     private fun openAddDeviceFragment() {
         val dialog = DiscoverDeviceFragment()
         dialog.showsDialog = true
-        dialog.show(childFragmentManager, "device_discovery")
-        dialog.setFragmentResultListener(REQUEST_OPEN_DEVICE_KEY) { _, bundle ->
-            onFragmentRequestOpenDevice(bundle)
-        }
+        dialog.show(parentFragmentManager, "device_discovery")
+    }
+
+    private fun openDeviceList() {
+        deviceListViewModel.isListHidden.value = false
+        val anim = ResizeWidthAnimation(binding.drawerLayout, pastDeviceListWidth ?: 600)
+        anim.duration = 150
+        binding.drawerLayout.startAnimation(anim)
+        //val params = binding.drawerLayout.layoutParams as SlidingPaneLayout.LayoutParams
+        //params.width = 0
+        //binding.drawerLayout.layoutParams = params
+    }
+
+    private fun closeDeviceList() {
+        deviceListViewModel.isListHidden.value = true
+        pastDeviceListWidth = binding.drawerLayout.width
+        val anim = ResizeWidthAnimation(binding.drawerLayout, 0)
+        anim.duration = 150
+        binding.drawerLayout.startAnimation(anim)
+        //val params = binding.drawerLayout.layoutParams as SlidingPaneLayout.LayoutParams
+        //params.width = 0
+        //binding.drawerLayout.layoutParams = params
     }
 
     private fun openManageDevicesFragment() {
         val dialog = ManageDeviceFragment()
         dialog.showsDialog = true
-        dialog.show(childFragmentManager, "device_manage")
-        dialog.setFragmentResultListener(REQUEST_OPEN_DEVICE_KEY) { _, bundle ->
-            onFragmentRequestOpenDevice(bundle)
-        }
+        dialog.show(parentFragmentManager, "device_manage")
     }
 
     private fun openSettings() {
@@ -294,8 +326,9 @@ class DeviceListFragment : Fragment(),
 
         deviceListAdapter.isSelectable = !binding.slidingPaneLayout.isSlideable
         deviceListViewModel.isTwoPane.value = deviceListAdapter.isSelectable
+        deviceListViewModel.selectedDevice = device
 
-        childFragmentManager.commit {
+        parentFragmentManager.commit {
             setReorderingAllowed(true)
             replace(R.id.device_web_view_fragment,
                 DeviceViewFragment.newInstance(device.address))
@@ -310,6 +343,21 @@ class DeviceListFragment : Fragment(),
             deviceListAdapter.setSelectedDevice(device)
         )
         binding.slidingPaneLayout.openPane()
+    }
+
+    private fun showSelectDeviceFragment() {
+        parentFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(
+                R.id.device_web_view_fragment,
+                DeviceNoSelectionFragment()
+            )
+            // If it's already open and the detail pane is visible, crossfade
+            // between the fragments.
+            if (binding.slidingPaneLayout.isOpen) {
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            }
+        }
     }
 
     private fun openDevice(deviceAddress: String) {
@@ -419,9 +467,23 @@ class DeviceListFragment : Fragment(),
         }
     }
 
+    class ResizeWidthAnimation(private val mView: View, private val mWidth: Int) : Animation() {
+        private val mStartWidth: Int = mView.width
+
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+            mView.layoutParams.width = mStartWidth + ((mWidth - mStartWidth) * interpolatedTime).toInt()
+            mView.requestLayout()
+        }
+
+        override fun willChangeBounds(): Boolean {
+            return true
+        }
+    }
+
     companion object {
         const val TAG = "DeviceListFragment"
 
+        const val REQUEST_LIST_VISIBLITY_TOGGLE = "toggleListVisibility"
         const val REQUEST_OPEN_DEVICE_KEY = "openDevice"
         const val DEVICE_ADDRESS = "device_address"
 

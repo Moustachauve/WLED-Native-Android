@@ -17,9 +17,13 @@ class VersionWithAssetsRepository(deviceDatabase: DevicesDatabase) {
         assetDao.insertMany(assets)
     }
 
-    suspend fun getLatestVersionWithAssets(): VersionWithAssets? {
-        return versionDao.getLatestVersionWithAssets()
+    suspend fun getLatestStableVersionWithAssets(): VersionWithAssets? {
+        return versionDao.getLatestStableVersionWithAssets()
     }
+    suspend fun getLatestBetaVersionWithAssets(): VersionWithAssets? {
+        return versionDao.getLatestBetaVersionWithAssets()
+    }
+
     suspend fun getVersionByTag(tagName: String): VersionWithAssets? {
         return versionDao.getVersionByTagName(tagName)
     }

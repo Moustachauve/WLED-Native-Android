@@ -95,4 +95,8 @@
     <string name="english">Anglais</string>
     <string name="device_language">Langue</string>
     <string name="device_language_change_details">Vous devrez installer une mise à jour sur l\'appareil après avoir changer la langue ici</string>
+    <string name="save_after_branch_change">Veuillez sauvegarder après avoir changer la variante de MàJ pour vérifier les MàJ</string>
+    <string name="downloading_file">Téléchargement en cours</string>
+    <string name="help">WLED Aide</string>
+    <string name="support_me">Supporter Moustachauve</string>
 </resources>

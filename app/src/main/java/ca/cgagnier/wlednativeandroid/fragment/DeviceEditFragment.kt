@@ -1,11 +1,17 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
-import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
@@ -18,24 +24,29 @@ import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceEditViewModel
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceEditViewModelFactory
+import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DeviceEditFragment : WiderDialogFragment() {
-    private var firstLoad = true
-    private lateinit var deviceAddress: String
-    private lateinit var device: Device
 
-    private var _binding: FragmentDeviceEditBinding? = null
-    private val binding get() = _binding!!
-
+class DeviceEditFragment : Fragment() {
+    private val deviceEditViewModel: DeviceEditViewModel by activityViewModels {
+        DeviceEditViewModelFactory()
+    }
     private val deviceRepository: DeviceRepository by lazy {
         (requireActivity().application as DevicesApplication).deviceRepository
     }
     private val versionWithAssetsRepository: VersionWithAssetsRepository by lazy {
         (requireActivity().application as DevicesApplication).versionWithAssetsRepository
     }
+
+    private var firstLoad = true
+    private lateinit var deviceAddress: String
+
+    private var _binding: FragmentDeviceEditBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,66 +55,92 @@ class DeviceEditFragment : WiderDialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentDeviceEditBinding.inflate(layoutInflater, null, false)
 
-        return MaterialAlertDialogBuilder(requireActivity())
-            .setView(binding.root)
-            .create()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        loadDevice()
-
-        binding.buttonSave.setOnClickListener {
-            submitClickListener()
-        }
-        binding.buttonCancel.setOnClickListener {
-            dismiss()
-        }
-
+        setMenu(binding.deviceToolbar)
         binding.buttonCheckForUpdate.setOnClickListener {
             checkForUpdate()
         }
-
         binding.buttonUpdate.setOnClickListener {
             showUpdateDialog()
+        }
+        binding.branchToggleButtonGroup.addOnButtonCheckedListener { _, _, isChecked ->
+            if (!isChecked) {
+                return@addOnButtonCheckedListener
+            }
+            updateUpdateCardVisibility()
+        }
+
+        if (deviceEditViewModel.isDeviceSet()) {
+            updateFields()
+        } else {
+            loadDevice()
         }
 
         return binding.root
     }
 
-    private fun submitClickListener() {
-        var deviceName = binding.customNameTextInputLayout.editText?.text.toString()
-        val isHidden = binding.hideDeviceCheckBox.isChecked
-        val branch = when(binding.branchToggleButtonGroup.checkedButtonId) {
-            R.id.branch_stable_button -> Branch.STABLE
-            R.id.branch_beta_button -> Branch.BETA
-            else -> Branch.STABLE
-        }
-        val isCustomName = deviceName != ""
-        // Set the deviceName to the previous one if it's not a custom name and it wasn't a custom
-        // name before the edit, otherwise the name will be lost until the next update.
-        if (!isCustomName && !device.isCustomName) {
-            deviceName = device.name
+    override fun onSaveInstanceState(outState: Bundle) {
+        updateViewModel()
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun setMenu(toolbar: MaterialToolbar) {
+        binding.deviceToolbar.setNavigationOnClickListener {
+            requireActivity().finish()
         }
 
-        val updatedDevice = device.copy(
-            name = deviceName,
+        toolbar.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.device_edit_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_device_save -> {
+                        submitClickListener()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun updateViewModel() {
+        deviceEditViewModel.customName = binding.customNameTextInputLayout.editText?.text.toString()
+        deviceEditViewModel.hideDevice = binding.hideDeviceCheckBox.isChecked
+        deviceEditViewModel.updateBranch =
+            deviceEditViewModel.getBranchFromViewId(binding.branchToggleButtonGroup.checkedButtonId)
+    }
+
+    private fun submitClickListener() {
+        updateViewModel()
+        val isCustomName = deviceEditViewModel.isCustomName()
+
+        // Set the deviceName to the previous one if it's not a custom name and it wasn't a custom
+        // name before the edit, otherwise the name will be lost until the next update.
+        var customNameToSave = deviceEditViewModel.customName
+        if (!isCustomName && !deviceEditViewModel.device.isCustomName) {
+            customNameToSave = deviceEditViewModel.device.name
+        }
+
+        val updatedDevice = deviceEditViewModel.device.copy(
+            name = customNameToSave,
             isCustomName = isCustomName,
-            isHidden = isHidden,
-            branch = branch
+            isHidden = deviceEditViewModel.hideDevice,
+            branch = deviceEditViewModel.updateBranch,
         )
 
         lifecycleScope.launch {
             Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
             DeviceApiService.update(updatedDevice, false)
-            dismiss()
+            requireActivity().finish()
         }
     }
 
@@ -111,35 +148,38 @@ class DeviceEditFragment : WiderDialogFragment() {
         deviceRepository.findLiveDeviceByAddress(deviceAddress).asLiveData()
             .observe(viewLifecycleOwner) {
                 if (it != null) {
-                    device = it
+                    deviceEditViewModel.setDeviceVariables(it)
                     updateFields()
                 }
             }
     }
 
     private fun updateFields() {
-        binding.dialogTitle.text = getString(R.string.edit_device_with_name, device.name)
+        if (firstLoad) {
+            binding.deviceToolbar.title =
+                getString(R.string.edit_device_with_name, deviceEditViewModel.device.name)
 
-        binding.deviceAddressTextInputLayout.isEnabled = false
-        binding.deviceAddressTextInputLayout.editText?.setText(device.address)
-        binding.customNameTextInputLayout.editText?.setText(if (device.isCustomName) device.name else "")
-        binding.customNameTextInputLayout.requestFocus()
-        binding.hideDeviceCheckBox.isChecked = device.isHidden
-        binding.branchToggleButtonGroup.check(when (device.branch) {
-            Branch.BETA -> R.id.branch_beta_button
-            else -> R.id.branch_stable_button
-        })
-        binding.labelCurrentVersion.text = getString(R.string.version_v_num, device.version)
+            binding.deviceAddressTextInputLayout.isEnabled = false
+            binding.deviceAddressTextInputLayout.editText?.setText(deviceEditViewModel.device.address)
+            binding.customNameTextInputLayout.editText?.setText(deviceEditViewModel.customName)
+            binding.customNameTextInputLayout.requestFocus()
+            binding.hideDeviceCheckBox.isChecked = deviceEditViewModel.hideDevice
+            binding.branchToggleButtonGroup.check(deviceEditViewModel.getViewIdForCurrentBranch())
+        }
+        updateUpdateCardVisibility()
 
+        binding.labelCurrentVersion.text =
+            getString(R.string.version_v_num, deviceEditViewModel.device.version)
         if (!firstLoad) {
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
         }
 
         binding.buttonCheckForUpdate.visibility =
-            if (device.hasUpdateAvailable()) View.GONE else View.VISIBLE
+            if (deviceEditViewModel.device.hasUpdateAvailable()) View.GONE else View.VISIBLE
         binding.labelIsUpToDate.visibility = binding.buttonCheckForUpdate.visibility
-        binding.labelCurrentVersion.visibility = binding.buttonCheckForUpdate.visibility
-            binding.progressCheckForUpdate.visibility = View.GONE
+        binding.labelCurrentVersion.visibility =
+            if (deviceEditViewModel.device.version != Device.UNKNOWN_VALUE) binding.buttonCheckForUpdate.visibility else View.GONE
+        binding.progressCheckForUpdate.visibility = View.GONE
         binding.buttonCheckForUpdate.isEnabled = true
         // Don't update the text if the view is not visible otherwise the transition looks very weird
         if (binding.buttonCheckForUpdate.visibility == View.VISIBLE) {
@@ -147,19 +187,26 @@ class DeviceEditFragment : WiderDialogFragment() {
         }
 
         binding.iconUpdate.visibility =
-            if (device.hasUpdateAvailable()) View.VISIBLE else View.GONE
+            if (deviceEditViewModel.device.hasUpdateAvailable()) View.VISIBLE else View.GONE
         binding.updateDetails.visibility = binding.iconUpdate.visibility
         binding.buttonUpdate.visibility = binding.iconUpdate.visibility
 
-        if (device.hasUpdateAvailable()) {
+        if (deviceEditViewModel.device.hasUpdateAvailable()) {
             binding.versionFromTo.text = getString(
                 R.string.from_version_to_version,
-                "v${device.version}",
-                device.newUpdateVersionTagAvailable
+                "v${deviceEditViewModel.device.version}",
+                deviceEditViewModel.device.newUpdateVersionTagAvailable
             )
         }
 
         firstLoad = false
+    }
+
+    private fun updateUpdateCardVisibility() {
+        binding.cardUpdateDetails.visibility =
+            if (deviceEditViewModel.branchHasChanged() && deviceEditViewModel.device.branch != Branch.UNKNOWN) View.GONE else View.VISIBLE
+        binding.labelSaveForUpdates.visibility =
+            if (deviceEditViewModel.branchHasChanged()) View.VISIBLE else View.GONE
     }
 
     private fun checkForUpdate() {
@@ -172,43 +219,40 @@ class DeviceEditFragment : WiderDialogFragment() {
     }
 
     private fun removeSkipVersionTag() {
-        device = device.copy(
+        deviceEditViewModel.device = deviceEditViewModel.device.copy(
             skipUpdateTag = ""
         )
         lifecycleScope.launch {
             Log.d(TAG, "Saving skipUpdateTag")
-            deviceRepository.update(device)
+            deviceRepository.update(deviceEditViewModel.device)
         }
     }
 
     private fun refreshUpdates() {
+        Log.e(TAG, "refreshing updates for device")
         val releaseService = ReleaseService(versionWithAssetsRepository)
         lifecycleScope.launch(Dispatchers.IO) {
             releaseService.refreshVersions(requireContext())
-            DeviceApiService.update(device, false)
+            DeviceApiService.update(deviceEditViewModel.device, false)
         }
     }
 
     private fun showUpdateDialog() {
         val fragmentManager = requireActivity().supportFragmentManager
         val isLargeLayout = resources.getBoolean(R.bool.large_layout)
-        val newFragment =
-            DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
+        val newFragment = DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
         newFragment.show(fragmentManager, "dialog")
     }
 
     companion object {
         private const val TAG = "DeviceEditFragment"
         private const val DEVICE_ADDRESS = "device_address"
-        private const val IS_LARGE_LAYOUT = "is_large_layout"
 
         @JvmStatic
-        fun newInstance(deviceAddress: String, isLargeLayout: Boolean) =
-            DeviceEditFragment().apply {
-                arguments = Bundle().apply {
-                    putString(DEVICE_ADDRESS, deviceAddress)
-                    putBoolean(IS_LARGE_LAYOUT, isLargeLayout)
-                }
+        fun newInstance(deviceAddress: String) = DeviceEditFragment().apply {
+            arguments = Bundle().apply {
+                putString(DEVICE_ADDRESS, deviceAddress)
             }
+        }
     }
 }
