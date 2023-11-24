@@ -121,7 +121,7 @@ class DeviceViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
-        Log.i(TAG_NAME, "Device view creating")
+        Log.i(TAG, "Device view creating")
         _binding = FragmentDeviceViewBinding.inflate(layoutInflater, container, false)
         isLargeLayout = resources.getBoolean(R.bool.large_layout)
         return binding.root
@@ -130,7 +130,7 @@ class DeviceViewFragment : Fragment() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG_NAME, "Device view created")
+        Log.i(TAG, "Device view created")
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.deviceToolbarContainer) { insetView, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -147,7 +147,7 @@ class DeviceViewFragment : Fragment() {
             loadDevice()
 
             if (webViewViewModel.firstLoad) {
-                Log.i(TAG_NAME, "Webview first load")
+                Log.i(TAG, "Webview first load")
                 webViewViewModel.firstLoad = false
                 webView.setBackgroundColor(Color.TRANSPARENT)
 
@@ -158,7 +158,7 @@ class DeviceViewFragment : Fragment() {
                         super.onPageStarted(view, url, favicon)
                         updateNavigationState()
                         Log.i(
-                            TAG_NAME,
+                            TAG,
                             "page started $url, counter: ${deviceViewViewModel.loadingCounter}"
                         )
                     }
@@ -168,7 +168,7 @@ class DeviceViewFragment : Fragment() {
                         updateNavigationState()
                         deviceViewViewModel.loadingCounter--
                         Log.i(
-                            TAG_NAME,
+                            TAG,
                             "page finished $url, counter: ${deviceViewViewModel.loadingCounter}"
                         )
                         if (deviceViewViewModel.loadingCounter <= 0) {
@@ -183,7 +183,7 @@ class DeviceViewFragment : Fragment() {
                         isReload: Boolean
                     ) {
                         super.doUpdateVisitedHistory(view, url, isReload)
-                        Log.i(TAG_NAME, "doUpdateVisitedHistory $url, isReload: $isReload")
+                        Log.i(TAG, "doUpdateVisitedHistory $url, isReload: $isReload")
 
                         if (url != null && !isReload) {
                             if (deviceViewViewModel.isGoingBack) {
@@ -205,7 +205,7 @@ class DeviceViewFragment : Fragment() {
                     ) {
                         if (request?.isForMainFrame == true) {
                             Log.i(
-                                TAG_NAME,
+                                TAG,
                                 "Error received ${request.url} - ${error?.description}"
                             )
 
@@ -261,7 +261,7 @@ class DeviceViewFragment : Fragment() {
                 webView.settings.javaScriptEnabled = true
                 webView.settings.domStorageEnabled = true
             } else {
-                Log.i(TAG_NAME, "Webview restored")
+                Log.i(TAG, "Webview restored")
             }
 
             binding.deviceWebViewContainer.addView(webView)
@@ -293,14 +293,14 @@ class DeviceViewFragment : Fragment() {
     }
 
     private fun initialLoad() {
-        Log.i(TAG_NAME, "initialLoad")
+        Log.i(TAG, "initialLoad")
         setMenu(binding.deviceToolbar)
         updateTitle()
 
         if (!deviceViewViewModel.webAlreadyLoaded) {
             deviceViewViewModel.webAlreadyLoaded = true
             showLoadingIndicator()
-            Log.i(TAG_NAME, "initialLoad Requesting '${device.address}'")
+            Log.i(TAG, "initialLoad Requesting '${device.address}'")
             _webview.loadUrl("http://${device.address}")
         }
     }
@@ -313,7 +313,7 @@ class DeviceViewFragment : Fragment() {
         toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
         toolbar.setNavigationOnClickListener {
             if (deviceListViewModel.isTwoPane.value == true) {
-                Log.d(TAG_NAME, "Requesting list to be hidden")
+                Log.d(TAG, "Requesting list to be hidden")
                 setFragmentResult(DeviceListFragment.REQUEST_LIST_VISIBLITY_TOGGLE, Bundle())
             } else {
                 Log.d(DeviceListFragment.TAG, "closing slidingPaneLayout")
@@ -348,7 +348,7 @@ class DeviceViewFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_browse_refresh -> {
-                        Log.i(TAG_NAME, "Manual refresh requested")
+                        Log.i(TAG, "Manual refresh requested")
                         refresh()
                         true
                     }
@@ -385,13 +385,13 @@ class DeviceViewFragment : Fragment() {
 
     fun refresh() {
         updateTitle()
-        Log.i(TAG_NAME, "refresh Requesting '${device.address}'")
+        Log.i(TAG, "refresh Requesting '${device.address}'")
         showLoadingIndicator()
         _webview.loadUrl("http://${device.address}")
     }
 
     private fun updateTitle() {
-        Log.d(TAG_NAME, "Updating title")
+        Log.d(TAG, "Updating title")
         binding.deviceToolbar.title = device.name
         binding.deviceToolbar.subtitle = device.address
         updateNavigationState()
@@ -435,24 +435,23 @@ class DeviceViewFragment : Fragment() {
     }
 
     private fun filterBackQueue(currentUrl: String) {
-        Log.i(TAG_NAME, "== Starting filter ========")
-        Log.i(TAG_NAME, "Current Url: $currentUrl")
-        Log.i(TAG_NAME, deviceViewViewModel.backQueue.toString())
+        Log.i(TAG, "== Starting filter ========")
+        Log.i(TAG, "Current Url: $currentUrl")
+        Log.i(TAG, deviceViewViewModel.backQueue.toString())
         var i = deviceViewViewModel.backQueue.size
         for (url in deviceViewViewModel.backQueue.asReversed()) {
             i--
             if (url == currentUrl) {
                 deviceViewViewModel.backQueue.subList(i, deviceViewViewModel.backQueue.size).clear()
-                Log.i(TAG_NAME, "Removing up to $i")
-                Log.i(TAG_NAME, deviceViewViewModel.backQueue.toString())
+                Log.i(TAG, "Removing up to $i")
+                Log.i(TAG, deviceViewViewModel.backQueue.toString())
                 return
             }
         }
     }
 
     companion object {
-        // TODO: Rename TAG_NAME to just TAG for consistency
-        const val TAG_NAME = "deviceWebview"
+        const val TAG = "deviceWebview"
 
         private const val DEVICE_ADDRESS = "device_address"
 
