@@ -25,12 +25,11 @@ class GithubApi(val context: Context) {
             val api = getApi()
             val release = api.getAllReleases(REPO_OWNER, REPO_NAME)
             val execute = release.execute()
-            val body = execute.body()
-            return body
+            return execute.body()
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
-            throw Exception("Could not get all releases: ${e.toString()}")
         }
+        return null
     }
 
     suspend fun downloadReleaseBinary(

@@ -73,7 +73,7 @@
     <string name="done">Terminer</string>
     <string name="update_completed">Mise à jour complétée!</string>
     <string name="are_you_sure">Êtes-vous sûr?</string>
-    <string name="device_update_disclamer_part1">Vous êtes sur le point d\'installer une nouvelle version de WLED sur votre appareil. Si vous aviez une version personnalisée auparavant, vous pouriez perdre des fonctionalités (par exemple, si vous aviez des « usermods », ils pourraient ne plus fonctionner).</string>
+    <string name="device_update_disclaimer_part1">Vous êtes sur le point d\'installer une nouvelle version de WLED sur votre appareil. Si vous aviez une version personnalisée auparavant, vous pouriez perdre des fonctionalités (par exemple, si vous aviez des « usermods », ils pourraient ne plus fonctionner).</string>
     <string name="device_update_disclaimer_part2">Si quelqu\'un a installé cet appareil pour vous, vous devriez confirmer avec eux qu\'il n\'y a pas de risque à installer cette nouvelle version.</string>
     <string name="device_update_disclaimer_part3">WLED et WLED Native ne sont pas responsable si quelque chose ne fonctionne plus dû à une mise à jour.</string>
     <string name="install_update">Installer la mise à jour</string>
@@ -83,4 +83,14 @@
     <string name="device_offline">Hors ligne</string>
     <string name="show_error">Afficher l\'erreur</string>
     <string name="hide_error">Cacher l\'erreur</string>
+    <string name="update_channel">Variante de MàJ</string>
+    <string name="stable">Stable</string>
+    <string name="beta">Bêta</string>
+    <string name="version_v_num">Version <xliff:g example="v0.14.0" id="version_name">%1$s</xliff:g></string>
+    <string name="your_device_is_up_to_date">Votre appareil est à jour</string>
+    <string name="select_a_device_from_the_list">Veuillez choisir un appareil</string>
+    <string name="save_after_branch_change">Veuillez sauvegarder après avoir changer la variante de MàJ pour vérifier les MàJ</string>
+    <string name="downloading_file">Téléchargement en cours</string>
+    <string name="help">WLED Aide</string>
+    <string name="support_me">Supporter Moustachauve</string>
 </resources>

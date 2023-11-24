@@ -8,7 +8,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main_layout"
+        android:id="@+id/main_layout_device_update"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?deviceListBackgroundColor"

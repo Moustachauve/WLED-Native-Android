@@ -3,6 +3,7 @@ package ca.cgagnier.wlednativeandroid.service
 import android.graphics.Color
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
@@ -123,10 +124,15 @@ object DeviceApiService {
                 val deviceStateInfo = response.body()!!
                 val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
 
+                var branch = device.branch
+                if (branch == Branch.UNKNOWN) {
+                    branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
+                }
+
                 val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
                 val releaseService = ReleaseService(application!!.versionWithAssetsRepository)
                 val updateVersionTagAvailable =
-                    releaseService.getUpdateVersionTagAvailable(deviceVersion, device.skipUpdateTag)
+                    releaseService.getNewerReleaseTag(deviceVersion, branch, device.skipUpdateTag)
 
                 val updatedDevice = device.copy(
                     macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
@@ -145,7 +151,7 @@ object DeviceApiService {
                     platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
                     version = deviceVersion,
                     newUpdateVersionTagAvailable = updateVersionTagAvailable,
-                    // branch = "stable" TODO: To be added when WLED supports it in the future.
+                    branch = branch,
                     brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
                     productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
                 )

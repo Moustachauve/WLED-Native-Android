@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
-import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,15 +21,18 @@ class DeviceListViewModel(private val repository: DeviceRepository,
         }
     }.asLiveData()
 
-    val activeDevice: LiveData<Device?> = getActiveDevice().asLiveData()
-
+    var selectedDevice: Device? = null
     var isTwoPane = MutableLiveData(false)
-    var doRefreshWeb = MutableLiveData(false)
-    var expectDeviceChange = true
+    var isListHidden = MutableLiveData(false)
 
     fun insert(device: Device) = viewModelScope.launch {
         Log.d(TAG, "Inserting device")
         repository.insert(device)
+    }
+
+    fun update(device: Device) = viewModelScope.launch {
+        Log.d(TAG, "Updating device")
+        repository.update(device)
     }
 
     fun delete(device: Device) = viewModelScope.launch {
@@ -44,29 +46,6 @@ class DeviceListViewModel(private val repository: DeviceRepository,
 
     suspend fun findWithSameMacAddress(device: Device): Device? {
         return repository.findDeviceByMacAddress(device.macAddress)
-    }
-
-    fun updateActiveDevice(device: Device) = viewModelScope.launch {
-        Log.d(TAG, "Update active device")
-        expectDeviceChange = true
-        userPreferencesRepository.updateSelectedDevice(device)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun getActiveDevice(): Flow<Device?> {
-        return userPreferencesRepository.selectedDeviceAddress.flatMapLatest {
-            Log.d(TAG, "selectedDeviceAddress changed")
-            var device: Flow<Device?> = flow { emit(null) }
-            if (it == DeviceDiscovery.DEFAULT_WLED_AP_IP) {
-                device = flow { emit(DeviceDiscovery.getDefaultAPDevice()) }
-            } else if (it != "") {
-                device = repository.findLiveDeviceByAddress(it)
-            }
-            if (device.first() == null && allDevices.value?.isNotEmpty() == true) {
-                device = repository.findFirstLiveDevice()
-            }
-            device
-        }
     }
 
     companion object {

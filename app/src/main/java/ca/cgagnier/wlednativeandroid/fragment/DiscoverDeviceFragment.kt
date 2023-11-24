@@ -3,11 +3,13 @@ package ca.cgagnier.wlednativeandroid.fragment
 import android.content.Context
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.adapter.DeviceListFoundAdapter
@@ -66,8 +68,12 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
         // Clear the previously discovered devices, otherwise they will still show up the 2nd time
         discoverDeviceViewModel.clear()
 
-        deviceListAdapter = DeviceListFoundAdapter { deviceItem: Device, _: Int ->
-            deviceListViewModel.updateActiveDevice(deviceItem)
+        deviceListAdapter = DeviceListFoundAdapter { device: Device, _: Int ->
+            Log.i(TAG, "Requesting to open the device view")
+            setFragmentResult(
+                DeviceListFragment.REQUEST_OPEN_DEVICE_KEY,
+                DeviceListFragment.createOpenDeviceBundle(device.address)
+            )
             dismiss()
         }
 
@@ -128,6 +134,7 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
 
     override fun onDeviceDiscovered(serviceInfo: NsdServiceInfo) {
         val deviceName = serviceInfo.serviceName ?: ""
+        @Suppress("DEPRECATION")
         val device = Device(serviceInfo.host.hostAddress!!, deviceName,
             isCustomName = false,
             isHidden = false,
@@ -147,5 +154,9 @@ class DiscoverDeviceFragment : BottomSheetDialogFragment(),
                     it.count())
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "DiscoverDeviceFragment"
     }
 }

@@ -29,15 +29,15 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
-        <item name="deviceListBackgroundColor">?colorSurfaceVariant</item>
-        <item name="deviceListOnBackgroundColor">?colorOnSurfaceVariant</item>
+        <item name="deviceListBackgroundColor">#141719</item>
+        <item name="deviceListOnBackgroundColor">#141719</item>
 
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogStyle</item>
     </style>
 
     <style name="WLEDNativeAndroid.MainToolbar" parent="WLEDNativeAndroid">
-        <item name="colorSurface">@color/md_theme_dark_surfaceVariant</item>
-        <item name="colorOnSurface">?colorOnSurface</item>
+        <item name="colorSurface">?deviceListBackgroundColor</item>
+        <item name="colorOnSurface">?deviceListOnBackgroundColor</item>
     </style>
 
     <style name="WLEDNativeAndroid.Success" parent="WLEDNativeAndroid">

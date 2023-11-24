@@ -7,17 +7,17 @@
 
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/main_layout_device_edit"
+    <LinearLayout
+        android:id="@+id/main_layout_device_edit_tablet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/device_toolbar_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Theme.Material3.Dark"
             android:fitsSystemWindows="true">
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/device_toolbar"
@@ -34,18 +34,24 @@
             android:id="@+id/form_layout_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="?dialogPreferredPadding"
-            android:paddingEnd="?dialogPreferredPadding"
+            android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingStart="?dialogPreferredPadding"
+                android:paddingEnd="?dialogPreferredPadding"
+                android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/device_address_text_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +61,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/ip_address_or_url"
-                        android:singleLine="true" />
+                        android:enabled="false"
+                        android:singleLine="true"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -87,6 +94,14 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/custom_name_text_input_layout" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="?dialogPreferredPadding"
+                android:paddingEnd="?dialogPreferredPadding">
+
                 <TextView
                     android:id="@+id/branch_toggle_label"
                     android:layout_width="wrap_content"
@@ -101,42 +116,14 @@
                     app:layout_constraintTop_toTopOf="@+id/branch_toggle_button_group"
                     app:layout_constraintBottom_toBottomOf="@+id/branch_toggle_button_group"/>
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/branch_toggle_button_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:singleSelection="true"
-                    app:selectionRequired="true"
-                    app:layout_constrainedWidth="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/hide_device_check_box"
-                    tools:checkedButton="@id/branch_stable_button">
-
-                    <Button
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:id="@+id/branch_stable_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/stable"
-                        />
-                    <Button
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:id="@+id/branch_beta_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/beta"
-                        />
-                </com.google.android.material.button.MaterialButtonToggleGroup>
-
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_update_details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
                     style="?attr/materialCardViewFilledStyle"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/branch_toggle_button_group">
+                    app:layout_constraintEnd_toEndOf="parent">
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -238,22 +225,52 @@
                 </com.google.android.material.card.MaterialCardView>
 
 
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/branch_toggle_button_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/card_update_details"
+                    tools:checkedButton="@id/branch_stable_button">
+
+                    <Button
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:id="@+id/branch_stable_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stable"
+                        />
+                    <Button
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:id="@+id/branch_beta_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/beta"
+                        />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
                 <TextView
                     android:id="@+id/label_save_for_updates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/save_after_branch_change"
                     android:visibility="gone"
+                    android:layout_marginTop="6dp"
                     style="@style/TextAppearance.Material3.TitleMedium"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/card_update_details"
+                    app:layout_constraintTop_toBottomOf="@id/branch_toggle_button_group"
                     tools:visibility="visible"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
 </layout>

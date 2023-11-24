@@ -32,9 +32,11 @@
         <FrameLayout
             android:id="@+id/device_web_view_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:background="?android:colorBackground"
             app:layout_constraintTop_toBottomOf="@id/device_toolbar_container"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constrainedHeight="true"/>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/page_loading_indicator"
@@ -42,8 +44,10 @@
             android:layout_height="8dp"
             android:indeterminate="true"
             android:layout_marginTop="8dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/device_toolbar_container"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
