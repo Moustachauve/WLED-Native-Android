@@ -140,17 +140,13 @@ class DeviceViewFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        var fromRestore = false
         val webViewFactory = WebViewViewModel.Factory(requireActivity())
         webViewViewModel = ViewModelProvider(this, webViewFactory)[WebViewViewModel::class.java]
         webViewViewModel.webView().observe(viewLifecycleOwner) { webView: WebView ->
             _webview = webView
             loadDevice()
 
-            if (!webViewViewModel.firstLoad) {
-                Log.i(TAG_NAME, "Webview restored")
-                fromRestore = true
-            } else {
+            if (webViewViewModel.firstLoad) {
                 Log.i(TAG_NAME, "Webview first load")
                 webViewViewModel.firstLoad = false
                 webView.setBackgroundColor(Color.TRANSPARENT)
@@ -264,15 +260,8 @@ class DeviceViewFragment : Fragment() {
 
                 webView.settings.javaScriptEnabled = true
                 webView.settings.domStorageEnabled = true
-
-                if (savedInstanceState != null && !fromRestore) {
-                    savedInstanceState.getBundle(BUNDLE_WEBVIEW_STATE)
-                        ?.let {
-                            Log.i(TAG_NAME, "Restoring webview from bundle")
-                            _webview.restoreState(it)
-                            fromRestore = true
-                        }
-                }
+            } else {
+                Log.i(TAG_NAME, "Webview restored")
             }
 
             binding.deviceWebViewContainer.addView(webView)
@@ -286,7 +275,6 @@ class DeviceViewFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBundle(BUNDLE_WEBVIEW_STATE, webViewViewModel.bundle)
     }
 
     private fun loadDevice() {
@@ -465,7 +453,6 @@ class DeviceViewFragment : Fragment() {
     companion object {
         // TODO: Rename TAG_NAME to just TAG for consistency
         const val TAG_NAME = "deviceWebview"
-        const val BUNDLE_WEBVIEW_STATE = "bundleWebviewStateKey"
 
         private const val DEVICE_ADDRESS = "device_address"
 

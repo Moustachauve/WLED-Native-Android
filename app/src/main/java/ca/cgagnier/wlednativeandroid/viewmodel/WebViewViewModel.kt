@@ -1,7 +1,6 @@
 package ca.cgagnier.wlednativeandroid.viewmodel
 
 import android.content.Context
-import android.os.Bundle
 import android.webkit.WebView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -9,11 +8,9 @@ import androidx.lifecycle.ViewModelProvider
 import ca.cgagnier.wlednativeandroid.WebViewLiveData
 
 class WebViewViewModel(appContext: Context) : ViewModel() {
-
     private val webView = WebViewLiveData(appContext)
     fun webView(): LiveData<WebView> = webView
 
-    val bundle: Bundle get() { return webView.bundle }
     var firstLoad: Boolean
         get() {
             return webView.firstLoad
