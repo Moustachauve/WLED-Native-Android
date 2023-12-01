@@ -2,6 +2,7 @@ package ca.cgagnier.wlednativeandroid.service.update
 
 import android.content.Context
 import android.util.Log
+import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -10,6 +11,8 @@ import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.vdurmont.semver4j.Semver
 
 
@@ -33,15 +36,23 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         if (latestVersion.version.tagName == ignoreVersion) {
             return ""
         }
-        return if (Semver(
-                latestVersion.version.tagName.drop(1),
-                Semver.SemverType.LOOSE
-            ).isGreaterThan(versionName)
-        ) {
-            latestVersion.version.tagName
-        } else {
-            ""
+
+        try {
+            return if (Semver(
+                    latestVersion.version.tagName.drop(1),
+                    Semver.SemverType.LOOSE
+                ).isGreaterThan(versionName)
+            ) {
+                latestVersion.version.tagName
+            } else {
+                ""
+            }
+        } catch (e: Exception) {
+            Log.e(DeviceListFragment.TAG, "Error in getNewerReleaseTag: " + e.message, e)
+            Firebase.crashlytics.recordException(e)
         }
+
+        return ""
     }
 
     suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
