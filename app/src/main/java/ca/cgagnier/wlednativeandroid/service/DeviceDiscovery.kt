@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import android.util.Log
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import ca.cgagnier.wlednativeandroid.model.Device
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -100,7 +100,8 @@ class DeviceDiscovery(val context: Context) {
         if (discoveryListener != null) {
             try {
                 nsdManager.stopServiceDiscovery(discoveryListener)
-            } finally {
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to stop: ${e.message}", e)
             }
 
             discoveryListener = null

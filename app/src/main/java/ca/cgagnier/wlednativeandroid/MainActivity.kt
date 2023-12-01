@@ -84,10 +84,12 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.autoDiscovery.collect {
                 isAutoDiscoveryEnabled = it
-                if (isAutoDiscoveryEnabled) {
-                    startAutoDiscovery()
-                } else {
-                    stopAutoDiscovery()
+                runOnUiThread {
+                    if (isAutoDiscoveryEnabled) {
+                        startAutoDiscovery()
+                    } else {
+                        stopAutoDiscovery()
+                    }
                 }
             }
         }
@@ -114,7 +116,11 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         (application as DevicesApplication).deviceDiscovery
             .registerDeviceDiscoveredListener(this)
         (application as DevicesApplication).deviceDiscovery.start()
-        autoDiscoveryLoopHandler.postDelayed({ stopAutoDiscovery() }, 25000)
+        autoDiscoveryLoopHandler.postDelayed({
+            runOnUiThread {
+                stopAutoDiscovery()
+            }
+        }, 25000)
     }
 
     override fun stopAutoDiscovery() {
