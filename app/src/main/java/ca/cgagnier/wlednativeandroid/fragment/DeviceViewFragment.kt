@@ -247,14 +247,15 @@ class DeviceViewFragment : Fragment() {
                         Environment.DIRECTORY_DOWNLOADS,
                         fullFilename
                     )
-                    val dm =
-                        requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-                    dm!!.enqueue(request)
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.downloading_file),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    val dm = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+                    dm?.enqueue(request)
+                    context?.let {
+                        Toast.makeText(
+                            it,
+                            getString(R.string.downloading_file),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
 
 

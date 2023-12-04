@@ -16,6 +16,7 @@ import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
+import java.net.UnknownHostException
 
 
 abstract class GithubApi(
@@ -30,6 +31,8 @@ abstract class GithubApi(
             val release = api.getAllReleases(repoOwner, repoName)
             val execute = release.execute()
             return execute.body()
+        } catch (e: UnknownHostException) {
+            Log.w(TAG, e.toString())
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }

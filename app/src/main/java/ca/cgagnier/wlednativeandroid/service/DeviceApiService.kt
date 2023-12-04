@@ -9,7 +9,10 @@ import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -140,7 +143,7 @@ object DeviceApiService {
                     name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
                     brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
                     isPoweredOn = deviceStateInfo.state.isOn,
-                    color = if (colorInfo != null) Color.rgb(
+                    color = if (colorInfo != null && colorInfo.size == 3) Color.rgb(
                         colorInfo[0],
                         colorInfo[1],
                         colorInfo[2]
