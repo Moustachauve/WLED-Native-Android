@@ -47,7 +47,6 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             }
         } catch (e: Exception) {
             Log.e(DeviceListFragment.TAG, "Error in getNewerReleaseTag: " + e.message, e)
-            Firebase.crashlytics.recordException(e)
         }
 
         return ""
