@@ -129,11 +129,17 @@ class DeviceEditFragment : Fragment() {
             customNameToSave = deviceEditViewModel.device.name
         }
 
+        var updateAvailable = deviceEditViewModel.device.newUpdateVersionTagAvailable
+        if (deviceEditViewModel.branchHasChanged()) {
+            updateAvailable = deviceEditViewModel.device.version
+        }
+
         val updatedDevice = deviceEditViewModel.device.copy(
             name = customNameToSave,
             isCustomName = isCustomName,
             isHidden = deviceEditViewModel.hideDevice,
             branch = deviceEditViewModel.updateBranch,
+            newUpdateVersionTagAvailable = updateAvailable,
         )
 
         lifecycleScope.launch {
