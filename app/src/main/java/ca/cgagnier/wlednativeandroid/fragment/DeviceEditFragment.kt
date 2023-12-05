@@ -1,6 +1,8 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -167,7 +169,25 @@ class DeviceEditFragment : Fragment() {
             binding.branchToggleButtonGroup.check(deviceEditViewModel.getViewIdForCurrentBranch())
         }
         updateUpdateCardVisibility()
+        updateUpdateFields()
 
+
+        firstLoad = false
+    }
+
+    private fun updateUpdateFields() {
+        val deltaSinceUpdateStart = System.currentTimeMillis() - deviceEditViewModel.updateCheckStartTime
+        // If the check for update was really really fast, make it feel slower for a better UX.
+        // It's strange, but if it's too fast, it feels like the button did nothing and people might
+        // spam it.
+        if (binding.progressCheckForUpdate.visibility == View.VISIBLE && deltaSinceUpdateStart < MIN_UPDATE_CHECK_TIME) {
+            Log.i(TAG, "Delaying update UI refresh.")
+            Handler(Looper.getMainLooper()).postDelayed({
+                updateUpdateFields()
+            }, MIN_UPDATE_CHECK_TIME)
+            return
+        }
+        // deviceEditViewModel.updateCheckStartTime
         binding.labelCurrentVersion.text =
             getString(R.string.version_v_num, deviceEditViewModel.device.version)
         if (!firstLoad) {
@@ -198,8 +218,6 @@ class DeviceEditFragment : Fragment() {
                 deviceEditViewModel.device.newUpdateVersionTagAvailable
             )
         }
-
-        firstLoad = false
     }
 
     private fun updateUpdateCardVisibility() {
@@ -214,6 +232,7 @@ class DeviceEditFragment : Fragment() {
         binding.buttonCheckForUpdate.isEnabled = false
         binding.buttonCheckForUpdate.text = getString(R.string.checking_progress_update)
         binding.progressCheckForUpdate.visibility = View.VISIBLE
+        deviceEditViewModel.updateCheckStartTime = System.currentTimeMillis()
         removeSkipVersionTag()
         refreshUpdates()
     }
@@ -247,6 +266,8 @@ class DeviceEditFragment : Fragment() {
     companion object {
         private const val TAG = "DeviceEditFragment"
         private const val DEVICE_ADDRESS = "device_address"
+
+        private const val MIN_UPDATE_CHECK_TIME = 2000L
 
         @JvmStatic
         fun newInstance(deviceAddress: String) = DeviceEditFragment().apply {
