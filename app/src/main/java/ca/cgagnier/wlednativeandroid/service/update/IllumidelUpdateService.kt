@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
 import android.content.Context
+import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
@@ -13,15 +14,16 @@ class IllumidelUpdateService(
     versionWithAssets: VersionWithAssets
 ) : DeviceUpdateService(context, device, versionWithAssets) {
 
-    override fun determineAsset() {
-        val assetName = "${versionWithAssets.version.tagName}.bin"
-        for (asset in versionWithAssets.assets) {
-            if (asset.name == assetName) {
-                this.asset = asset
-                couldDetermineAsset = true
-                return
-            }
+    override val supportedPlatforms = listOf(
+        "esp32",
+    )
+
+    override fun getVersionWithPlatformName(): String {
+        val langCode = when (device.branch) {
+            Branch.BETA -> "en"
+            else -> "fr"
         }
+        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}_$langCode"
     }
 
     override suspend fun downloadBinary(): Flow<DownloadState> {

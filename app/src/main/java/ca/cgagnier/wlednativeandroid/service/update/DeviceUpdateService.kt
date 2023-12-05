@@ -17,7 +17,7 @@ open class DeviceUpdateService(
     val device: Device,
     val versionWithAssets: VersionWithAssets
 ) {
-    protected val supportedPlatforms = listOf(
+    protected open val supportedPlatforms = listOf(
         "esp01",
         "esp02",
         "esp32",
@@ -27,9 +27,9 @@ open class DeviceUpdateService(
     protected var couldDetermineAsset: Boolean = false
     protected lateinit var asset: Asset
 
-    fun getVersionWithPlatformName(): String {
+    open fun getVersionWithPlatformName(): String {
         val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
-        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}${ethernetVariant}"
+        return "WLED_${versionWithAssets.version.tagName.drop(1)}_${device.platformName.uppercase()}${ethernetVariant}.bin"
     }
 
     open fun determineAsset() {
@@ -37,8 +37,7 @@ open class DeviceUpdateService(
             return
         }
 
-        val versionWithPlatform = getVersionWithPlatformName().drop(1)
-        val assetName = "WLED_${versionWithPlatform}.bin"
+        val assetName = getVersionWithPlatformName()
         for (asset in versionWithAssets.assets) {
             if (asset.name == assetName) {
                 this.asset = asset

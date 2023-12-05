@@ -129,7 +129,7 @@ object DeviceApiService {
 
                 var branch = device.branch
                 if (branch == Branch.UNKNOWN) {
-                    branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
+                    branch = if (device.version.contains("-en")) Branch.BETA else Branch.STABLE
                 }
 
                 val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
