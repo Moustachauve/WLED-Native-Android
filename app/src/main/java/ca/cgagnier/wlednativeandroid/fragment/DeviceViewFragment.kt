@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,8 @@ import android.view.*
 import android.webkit.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -78,6 +81,16 @@ class DeviceViewFragment : Fragment() {
     private val binding get() = _binding!!
 
     var uploadMessage: ValueCallback<Array<Uri>>? = null
+
+    val editDeviceActivity = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            if (result.data?.getBooleanExtra(DEVICE_SHOULD_RELOAD, false) == true) {
+                _webview.reload()
+            }
+        }
+    }
 
     val fileUpload =
         registerForActivityResult(FileUploadContract()) { result: FileUploadContractResult ->
@@ -416,7 +429,7 @@ class DeviceViewFragment : Fragment() {
     fun showEditDevice() {
         val intent = Intent(requireActivity(), DeviceEditActivity::class.java)
         intent.putExtra(DeviceEditActivity.EXTRA_DEVICE_ADDRESS, device.address)
-        startActivity(intent)
+        editDeviceActivity.launch(intent)
     }
 
     fun webCanGoBack(): Boolean {
@@ -451,7 +464,7 @@ class DeviceViewFragment : Fragment() {
 
     companion object {
         const val TAG = "deviceWebview"
-
+        const val DEVICE_SHOULD_RELOAD = "should_reload"
         private const val DEVICE_ADDRESS = "device_address"
 
         @JvmStatic

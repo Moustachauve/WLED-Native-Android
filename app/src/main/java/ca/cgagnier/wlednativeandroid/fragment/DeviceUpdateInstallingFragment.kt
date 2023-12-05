@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
@@ -66,6 +67,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding.buttonCancel.setOnClickListener {
+            setFragmentResult(DeviceEditFragment.UPDATE_COMPLETED, Bundle())
             dismiss()
         }
         binding.buttonErrorDetails.setOnClickListener {

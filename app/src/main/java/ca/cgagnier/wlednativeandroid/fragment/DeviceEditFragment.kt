@@ -1,5 +1,7 @@
 package ca.cgagnier.wlednativeandroid.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +15,7 @@ import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
@@ -61,8 +64,15 @@ class DeviceEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDeviceEditBinding.inflate(layoutInflater, null, false)
-
         setMenu(binding.deviceToolbar)
+
+        setFragmentResultListener(UPDATE_COMPLETED) { _, _ ->
+            val intent = Intent()
+            intent.putExtra(DeviceViewFragment.DEVICE_SHOULD_RELOAD, true)
+            activity?.setResult(Activity.RESULT_OK, intent)
+            activity?.finish()
+        }
+
         binding.buttonCheckForUpdate.setOnClickListener {
             checkForUpdate()
         }
@@ -131,24 +141,24 @@ class DeviceEditFragment : Fragment() {
             customNameToSave = deviceEditViewModel.device.name
         }
 
-        var updateAvailable = deviceEditViewModel.device.newUpdateVersionTagAvailable
-        if (deviceEditViewModel.branchHasChanged()) {
-            updateAvailable = deviceEditViewModel.device.version
-        }
-
+        val languageChanged = deviceEditViewModel.branchHasChanged()
         val updatedDevice = deviceEditViewModel.device.copy(
             name = customNameToSave,
             isCustomName = isCustomName,
             isHidden = deviceEditViewModel.hideDevice,
             branch = deviceEditViewModel.updateBranch,
-            newUpdateVersionTagAvailable = updateAvailable,
         )
 
         lifecycleScope.launch {
             Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
             DeviceApiService.update(updatedDevice, false)
-            requireActivity().finish()
+
+            if (languageChanged) {
+                startDeviceUpdate()
+            } else {
+                requireActivity().finish()
+            }
         }
     }
 
@@ -182,7 +192,8 @@ class DeviceEditFragment : Fragment() {
     }
 
     private fun updateUpdateFields() {
-        val deltaSinceUpdateStart = System.currentTimeMillis() - deviceEditViewModel.updateCheckStartTime
+        val deltaSinceUpdateStart =
+            System.currentTimeMillis() - deviceEditViewModel.updateCheckStartTime
         // If the check for update was really really fast, make it feel slower for a better UX.
         // It's strange, but if it's too fast, it feels like the button did nothing and people might
         // spam it.
@@ -269,9 +280,19 @@ class DeviceEditFragment : Fragment() {
         newFragment.show(fragmentManager, "dialog")
     }
 
+    private fun startDeviceUpdate() {
+        val updateFragment = DeviceUpdateInstallingFragment.newInstance(
+            deviceAddress,
+            "v${deviceEditViewModel.device.version}"
+        )
+        updateFragment.show(parentFragmentManager, "dialog")
+    }
+
     companion object {
         private const val TAG = "DeviceEditFragment"
         private const val DEVICE_ADDRESS = "device_address"
+
+        const val UPDATE_COMPLETED = "update_completed"
 
         private const val MIN_UPDATE_CHECK_TIME = 2000L
 

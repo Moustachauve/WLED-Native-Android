@@ -23,7 +23,7 @@ class IllumidelUpdateService(
             Branch.BETA -> "en"
             else -> "fr"
         }
-        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}_$langCode"
+        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}_$langCode.bin"
     }
 
     override suspend fun downloadBinary(): Flow<DownloadState> {
