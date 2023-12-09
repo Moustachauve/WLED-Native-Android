@@ -143,7 +143,7 @@ object DeviceApiService {
                     name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
                     brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
                     isPoweredOn = deviceStateInfo.state.isOn,
-                    color = if (colorInfo != null && colorInfo.size == 3) Color.rgb(
+                    color = if (colorInfo != null && colorInfo.size in 3..4) Color.rgb(
                         colorInfo[0],
                         colorInfo[1],
                         colorInfo[2]
