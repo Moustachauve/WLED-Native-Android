@@ -17,7 +17,6 @@
             android:id="@+id/device_toolbar_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Theme.Material3.Dark"
             android:fitsSystemWindows="true">
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/device_toolbar"

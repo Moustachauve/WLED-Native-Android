@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import android.util.Log
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import ca.cgagnier.wlednativeandroid.model.Device
 import java.math.BigInteger
@@ -49,7 +49,7 @@ class DeviceDiscovery(val context: Context) {
             }
 
             override fun onDiscoveryStarted(serviceType: String?) {
-                Log.d(TAG, "Service discovery started")
+                Log.d(TAG, "Service discovery started: $serviceType")
             }
 
             override fun onDiscoveryStopped(serviceType: String?) {
@@ -90,7 +90,8 @@ class DeviceDiscovery(val context: Context) {
         if (discoveryListener != null) {
             try {
                 nsdManager.stopServiceDiscovery(discoveryListener)
-            } finally {
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to stop: ${e.message}", e)
             }
 
             discoveryListener = null
@@ -147,7 +148,7 @@ class DeviceDiscovery(val context: Context) {
         const val TAG = "DEVICE_DISCOVERY"
         const val SERVICE_TYPE = "_wled._tcp."
 
-        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+        private const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
 
         @SuppressLint("WifiManagerPotentialLeak")

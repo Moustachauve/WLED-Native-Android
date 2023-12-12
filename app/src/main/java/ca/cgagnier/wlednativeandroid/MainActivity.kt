@@ -79,10 +79,12 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         lifecycleScope.launch {
             devicesApp.userPreferencesRepository.autoDiscovery.collect {
                 isAutoDiscoveryEnabled = it
-                if (isAutoDiscoveryEnabled) {
-                    startAutoDiscovery()
-                } else {
-                    stopAutoDiscovery()
+                runOnUiThread {
+                    if (isAutoDiscoveryEnabled) {
+                        startAutoDiscovery()
+                    } else {
+                        stopAutoDiscovery()
+                    }
                 }
             }
         }
@@ -91,11 +93,15 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
     }
 
     override fun onResume() {
+        (application as DevicesApplication).deviceDiscovery
+            .registerDeviceDiscoveredListener(this)
         startAutoDiscovery()
         super.onResume()
     }
 
     override fun onPause() {
+        (application as DevicesApplication).deviceDiscovery
+            .unregisterDeviceDiscoveredListener(this)
         stopAutoDiscovery()
         super.onPause()
     }
@@ -106,17 +112,17 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
             return
         }
         Log.i(TAG, "Starting auto discovery")
-        (application as DevicesApplication).deviceDiscovery
-            .registerDeviceDiscoveredListener(this)
         (application as DevicesApplication).deviceDiscovery.start()
-        autoDiscoveryLoopHandler.postDelayed({ stopAutoDiscovery() }, 25000)
+        autoDiscoveryLoopHandler.postDelayed({
+            runOnUiThread {
+                stopAutoDiscovery()
+            }
+        }, 25000)
     }
 
     override fun stopAutoDiscovery() {
         Log.i(TAG, "Stopping auto discovery")
         autoDiscoveryLoopHandler.removeCallbacksAndMessages(null)
-        (application as DevicesApplication).deviceDiscovery
-            .unregisterDeviceDiscoveredListener(this)
         (application as DevicesApplication).deviceDiscovery.stop()
     }
 

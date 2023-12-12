@@ -13,6 +13,8 @@ class DeviceEditViewModel: ViewModel() {
     var hideDevice = false
     var updateBranch = Branch.UNKNOWN
 
+    var updateCheckStartTime: Long = 0
+
     fun isDeviceSet(): Boolean {
         return ::device.isInitialized
     }

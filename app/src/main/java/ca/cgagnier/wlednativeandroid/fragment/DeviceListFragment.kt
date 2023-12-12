@@ -189,7 +189,7 @@ class DeviceListFragment : Fragment(),
 
         deviceListAdapter.isSelectable = false
 
-        binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
+        binding.emptyDataParent.addDeviceButton.setOnClickListener {
             openAddDeviceFragment()
         }
 
@@ -280,9 +280,9 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun openAddDeviceFragment() {
-        val dialog = DiscoverDeviceFragment()
-        dialog.showsDialog = true
-        dialog.show(parentFragmentManager, "device_discovery")
+        val newDialog = DeviceAddManuallyFragment()
+        newDialog.showsDialog = true
+        newDialog.show(childFragmentManager, "device_add_manually")
     }
 
     private fun openDeviceList() {

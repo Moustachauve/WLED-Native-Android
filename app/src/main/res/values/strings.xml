@@ -1,10 +1,8 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" translatable="false">WLED Native</string>
     <string name="app_logo">WLED Logo</string>
-    <string name="add_a_device">Add or Discover a Device</string>
+    <string name="add_a_device">Add a Device</string>
     <string name="looking_for_devices">Discovering Devices</string>
-    <string name="add_device_manually">Add Manually</string>
-    <string name="add_device">Add Device</string>
     <string name="ip_address_or_url">IP Address or URL</string>
     <string name="custom_name">Custom Name</string>
     <string name="leave_this_empty_to_use_the_device_name">Leave this field empty to use the device name</string>

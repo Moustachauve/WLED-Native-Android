@@ -20,7 +20,7 @@
             android:id="@+id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_device_manually"
+            android:text="@string/add_a_device"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:paddingBottom="?dialogPreferredPadding"
             android:maxLines="1"
