@@ -17,8 +17,8 @@ android {
         applicationId "ca.cgagnier.wlednativeandroid"
         minSdk 24
         targetSdk 34
-        versionCode 31
-        versionName "4.0.4"
+        versionCode 32
+        versionName "4.1.0"
         resourceConfigurations += ['en', 'fr']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -111,7 +111,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     // Firebase stuff
-    implementation platform('com.google.firebase:firebase-bom:32.6.0')
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.6.0'
     implementation 'com.google.firebase:firebase-perf-ktx:20.5.1'
 
