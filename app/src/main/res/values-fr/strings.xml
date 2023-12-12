@@ -3,8 +3,6 @@
     <string name="app_logo">Logo WLED</string>
     <string name="add_a_device">Découvrir un appareil</string>
     <string name="looking_for_devices">Recherche d\'appareils</string>
-    <string name="add_device_manually">Ajouter manuellement</string>
-    <string name="add_device">Ajouter un appareil</string>
     <string name="ip_address_or_url">Adresse IP ou URL</string>
     <string name="custom_name">Nom personnalisé</string>
     <string name="leave_this_empty_to_use_the_device_name">Laisser ce champ vide pour utiliser le nom de l\'appareil</string>

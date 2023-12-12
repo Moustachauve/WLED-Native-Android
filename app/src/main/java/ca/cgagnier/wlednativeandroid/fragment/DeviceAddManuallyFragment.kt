@@ -29,11 +29,6 @@ class DeviceAddManuallyFragment : DialogFragment() {
     private var _binding: FragmentDeviceAddBinding? = null
     private val binding get() = _binding!!
 
-    private var listeners = ArrayList<NoticeDialogListener>()
-
-    interface NoticeDialogListener {
-        fun onDeviceManuallyAdded(dialog: DialogFragment, device: Device)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = FragmentDeviceAddBinding.inflate(layoutInflater, null, false)
@@ -87,8 +82,6 @@ class DeviceAddManuallyFragment : DialogFragment() {
 
         deviceListViewModel.insert(device)
         DeviceApiService.update(device, false)
-
-        notifyListeners(device)
         dismiss()
     }
 
@@ -108,15 +101,5 @@ class DeviceAddManuallyFragment : DialogFragment() {
         }
 
         return true
-    }
-
-    fun registerDeviceAddedListener(listener: NoticeDialogListener) {
-        listeners.add(listener)
-    }
-
-    private fun notifyListeners(device: Device) {
-        for (listener in listeners) {
-            listener.onDeviceManuallyAdded(this, device)
-        }
     }
 }

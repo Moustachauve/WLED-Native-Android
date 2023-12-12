@@ -74,10 +74,10 @@ class ManageDeviceFragment : BottomSheetDialogFragment() {
         )
         binding.deviceListRecyclerView.addItemDecoration(dividerItemDecoration)
 
-        binding.emptyDataParent.findMyDeviceButton.setOnClickListener {
-            val dialog = DiscoverDeviceFragment()
-            dialog.showsDialog = true
-            dialog.show(childFragmentManager, "device_discovery")
+        binding.emptyDataParent.addDeviceButton.setOnClickListener {
+            val newDialog = DeviceAddManuallyFragment()
+            newDialog.showsDialog = true
+            newDialog.show(childFragmentManager, "device_add_manually")
         }
 
         return binding.root
