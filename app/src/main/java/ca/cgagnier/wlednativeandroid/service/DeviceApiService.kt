@@ -106,8 +106,8 @@ object DeviceApiService {
         callback: ((Device) -> Unit)? = null
     ) {
         if (t != null) {
-            Log.e(TAG, t.message!!)
             Firebase.crashlytics.recordException(t)
+            Log.e(TAG, t.message!!)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
         if (callback != null) {
@@ -127,50 +127,79 @@ object DeviceApiService {
         callback: ((Device) -> Unit)? = null
     ) {
         scope.launch {
-            if (response.code() == 200 && response.isSuccessful && response.body() != null) {
-                val deviceStateInfo = response.body()!!
-                val colorInfo = deviceStateInfo.state.segment?.get(0)?.colors?.get(0)
+            if (response.code() in 200..299 && response.isSuccessful && response.body() != null) {
+                try {
+                    val deviceStateInfo = response.body()!!
 
-                var branch = device.branch
-                if (branch == Branch.UNKNOWN) {
-                    branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
-                }
+                    var color = Color.WHITE
+                    if (!deviceStateInfo.state.segment.isNullOrEmpty()) {
+                        val colors = deviceStateInfo.state.segment[0].colors
+                        if (!colors.isNullOrEmpty()) {
+                            val colorInfo = colors[0]
+                            color = if (colorInfo.size in 3..4) Color.rgb(
+                                colorInfo[0],
+                                colorInfo[1],
+                                colorInfo[2]
+                            ) else Color.WHITE
+                        }
+                    }
 
-                val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
-                val releaseService = ReleaseService(application!!.versionWithAssetsRepository)
-                val updateVersionTagAvailable =
-                    releaseService.getNewerReleaseTag(deviceVersion, branch, device.skipUpdateTag)
+                    var branch = device.branch
+                    if (branch == Branch.UNKNOWN) {
+                        branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
+                    }
 
-                val updatedDevice = device.copy(
-                    macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
-                    isOnline = true,
-                    name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
-                    brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
-                    isPoweredOn = deviceStateInfo.state.isOn,
-                    color = if (colorInfo != null && colorInfo.size in 3..4) Color.rgb(
-                        colorInfo[0],
-                        colorInfo[1],
-                        colorInfo[2]
-                    ) else Color.WHITE,
-                    isRefreshing = false,
-                    networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
-                    isEthernet = false,
-                    platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
-                    version = deviceVersion,
-                    newUpdateVersionTagAvailable = updateVersionTagAvailable,
-                    branch = branch,
-                    brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
-                    productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
-                )
+                    val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
+                    val releaseService = ReleaseService(application!!.versionWithAssetsRepository)
+                    val updateVersionTagAvailable =
+                        releaseService.getNewerReleaseTag(
+                            deviceVersion,
+                            branch,
+                            device.skipUpdateTag
+                        )
 
-                if (saveChanges && updatedDevice != device) {
-                    Log.d(TAG, "Saving update of device from API")
-                    application!!.deviceRepository.update(updatedDevice)
-                }
+                    val updatedDevice = device.copy(
+                        macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
+                        isOnline = true,
+                        name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
+                        brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
+                        isPoweredOn = deviceStateInfo.state.isOn,
+                        color = color,
+                        isRefreshing = false,
+                        networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
+                        isEthernet = false,
+                        platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
+                        version = deviceVersion,
+                        newUpdateVersionTagAvailable = updateVersionTagAvailable,
+                        branch = branch,
+                        brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
+                        productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
+                    )
 
-                if (callback != null) {
-                    callback(updatedDevice)
-                    return@launch
+                    if (saveChanges && updatedDevice != device) {
+                        Log.d(TAG, "Saving update of device from API")
+                        application!!.deviceRepository.update(updatedDevice)
+                    }
+
+                    if (callback != null) {
+                        callback(updatedDevice)
+                        return@launch
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Exception when parsing success callback")
+                    Firebase.crashlytics.log("Response success, but parsing result failed")
+                    Firebase.crashlytics.setCustomKey("response code", response.code())
+                    Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
+                    Firebase.crashlytics.setCustomKey(
+                        "response errorBody",
+                        response.errorBody().toString()
+                    )
+                    Firebase.crashlytics.setCustomKey(
+                        "exception message",
+                        e.message ?: "[No Message]"
+                    )
+                    Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
+                    Firebase.crashlytics.recordException(e)
                 }
             } else {
                 Firebase.crashlytics.log("Response success, but not valid")
@@ -181,7 +210,6 @@ object DeviceApiService {
                     response.errorBody().toString()
                 )
                 Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
-
                 onFailure(device, Exception("Response success, but not valid"), callback = callback)
             }
         }
