@@ -55,7 +55,7 @@ class DeviceDiscovery(val context: Context) {
             }
 
             override fun onDiscoveryStarted(serviceType: String?) {
-                Log.d(TAG, "Service discovery started")
+                Log.d(TAG, "Service discovery started: $serviceType")
             }
 
             override fun onDiscoveryStopped(serviceType: String?) {
@@ -162,7 +162,7 @@ class DeviceDiscovery(val context: Context) {
         const val TAG = "DEVICE_DISCOVERY"
         const val SERVICE_TYPE = "_wled._tcp."
 
-        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+        private const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
 
         @SuppressLint("WifiManagerPotentialLeak")
