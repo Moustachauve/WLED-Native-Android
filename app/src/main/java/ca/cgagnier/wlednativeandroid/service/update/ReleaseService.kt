@@ -11,8 +11,6 @@ import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import com.vdurmont.semver4j.Semver
 
 
@@ -49,7 +47,6 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             }
         } catch (e: Exception) {
             Log.e(DeviceListFragment.TAG, "Error in getNewerReleaseTag: " + e.message, e)
-            Firebase.crashlytics.recordException(e)
         }
 
         return ""
