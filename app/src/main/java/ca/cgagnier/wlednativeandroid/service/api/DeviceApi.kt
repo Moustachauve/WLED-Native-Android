@@ -2,6 +2,7 @@ package ca.cgagnier.wlednativeandroid.service.api
 
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
+import ca.cgagnier.wlednativeandroid.model.wledapi.JsonWithoutUpdate
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -17,6 +18,9 @@ interface DeviceApi {
 
     @POST("json")
     fun postJson(@Body requestBody: JsonPost): Call<DeviceStateInfo>
+
+    @POST("json")
+    fun postJsonWithoutUpdate(@Body requestBody: JsonPost): Call<JsonWithoutUpdate>
 
     @Multipart
     @POST("update")

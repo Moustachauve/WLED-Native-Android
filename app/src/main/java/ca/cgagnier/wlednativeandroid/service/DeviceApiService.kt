@@ -7,6 +7,7 @@ import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
+import ca.cgagnier.wlednativeandroid.model.wledapi.JsonWithoutUpdate
 import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -77,6 +78,10 @@ object DeviceApiService {
     }
 
     fun postJson(device: Device, jsonData: JsonPost, saveChanges: Boolean = true) {
+        if (arrayOf("esp8266", "esp01", "esp02").contains(device.platformName)) {
+            postJsonWithoutUpdate(device, jsonData)
+            return
+        }
         Log.d(TAG, "Posting update to device [${device.address}]")
 
         val stateInfoCall = getJsonApi(device).postJson(jsonData)
@@ -89,6 +94,52 @@ object DeviceApiService {
 
             override fun onFailure(call: Call<DeviceStateInfo>, t: Throwable) =
                 onFailure(device, t)
+        })
+    }
+
+    private fun postJsonWithoutUpdate(device: Device, jsonData: JsonPost, saveChanges: Boolean = true) {
+        Log.d(TAG, "Posting update to device without syncing state [${device.address}]")
+
+        val nonVerboseJson = jsonData.copy(verbose = false)
+        val call = getJsonApi(device).postJsonWithoutUpdate(nonVerboseJson)
+        call.enqueue(object : Callback<JsonWithoutUpdate> {
+            override fun onResponse(
+                call: Call<JsonWithoutUpdate>,
+                response: Response<JsonWithoutUpdate>
+            ) {
+                scope.launch {
+                    if (response.code() in 200..299 && response.isSuccessful && response.body() != null) {
+                        val responseObject = response.body()!!
+                        if (!responseObject.success) {
+                            Log.e(TAG, "postJsonWithoutUpdate call return success false")
+                            return@launch
+                        }
+                        if (!saveChanges) {
+                            return@launch
+                        }
+                        // TODO: This should be improved when we set more fields
+                        val isOn = jsonData.isOn ?: device.isPoweredOn
+                        val brightness = jsonData.brightness ?: device.brightness
+                        val updatedDevice = device.copy(isPoweredOn = isOn, brightness = brightness)
+                        application!!.deviceRepository.update(updatedDevice)
+                    } else {
+                        Log.e(TAG, "Response success (without update), but not valid")
+                        Firebase.crashlytics.log("Response success (without update), but not valid")
+                        Firebase.crashlytics.setCustomKey("response code", response.code())
+                        Firebase.crashlytics.setCustomKey("response isSuccessful", response.isSuccessful)
+                        Firebase.crashlytics.setCustomKey(
+                            "response errorBody",
+                            response.errorBody().toString()
+                        )
+                        Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
+                        onFailure(device, Exception("Response success (without update), but not valid"))
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonWithoutUpdate>, t: Throwable) {
+                onFailure(device, t)
+            }
         })
     }
 
