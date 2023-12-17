@@ -1,24 +1,24 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" translatable="false">WLED Native</string>
     <string name="app_logo">WLED Logo</string>
-    <string name="add_a_device">Add a Device</string>
+    <string name="add_a_device">Füge ein Gerät hinzu</string>
     <string name="looking_for_devices">Discovering Devices</string>
-    <string name="ip_address_or_url">IP Address or URL</string>
+    <string name="ip_address_or_url">IP Addresse oder URL</string>
     <string name="custom_name">Custom Name</string>
     <string name="leave_this_empty_to_use_the_device_name">Leave this field empty to use the device name</string>
     <string name="please_enter_value">Please enter a value</string>
     <string name="please_enter_valid_value">Please enter a valid value</string>
-    <string name="cancel">Cancel</string>
-    <string name="close">Close</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="close">Schließen</string>
     <string name="default_device_name">(New Device)</string>
     <string name="default_ip" translatable="false">0.0.0.0</string>
     <string name="is_offline">Offline</string>
-    <string name="update_available">Update Available</string>
-    <string name="network_status">Network Status</string>
+    <string name="update_available">Update verfügbar</string>
+    <string name="network_status">Netzwerk Status</string>
     <string name="refresh_list">Refresh List</string>
     <string name="refresh_page">Refresh Page</string>
-    <string name="manage_devices">Manage Devices</string>
-    <string name="remove">Remove</string>
+    <string name="manage_devices">Geräte verwalten</string>
+    <string name="remove">Entfernen</string>
     <string name="edit_device">Edit Device</string>
     <string name="edit_device_with_name">Edit Device - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
     <string name="remove_device">Remove Device</string>
@@ -38,9 +38,9 @@
     <string name="device_view">Device View</string>
     <string name="select_a_device">Select a Device</string>
     <string name="settings">Settings</string>
-    <string name="theme">Theme</string>
-    <string name="light">Light</string>
-    <string name="dark">Dark</string>
+    <string name="theme">Thema</string>
+    <string name="light">Hell</string>
+    <string name="dark">Dunkel</string>
     <string name="system_default">System default</string>
     <string name="listing_options">Listing Options</string>
     <string name="automatically_discover_new_devices">Automatically Discover New Devices</string>
@@ -52,7 +52,7 @@
     <string name="privacy">Privacy</string>
     <string name="send_crash_data_to_developer">Send Crash Data To Developer</string>
     <string name="send_performance_data_to_developer">Send Performance Data to Developer</string>
-    <string name="device_ap_mode">WLED AP Mode</string>
+    <string name="device_ap_mode">WLED AP Modus</string>
     <string name="device_ap_mode_detected">WLED AP Mode Detected</string>
     <string name="device_ap_mode_detected_click">Click here to open Device</string>
     <string name="install">Install</string>
@@ -63,17 +63,17 @@
     <string name="from_version_to_version">
         From <xliff:g example="v0.13.0" id="old_version">%1$s</xliff:g> To <xliff:g example="v0.14.0" id="new_version">%2$s</xliff:g>
     </string>
-    <string name="see_update_details">See Update</string>
+    <string name="see_update_details">Siehe Update</string>
     <string name="checking_progress_update">Checking…</string>
     <string name="updating">Updating %1$s</string>
     <string name="please_do_not_close_the_app_or_turn_off_the_device">Please do not close the app or turn off the device.</string>
     <string name="starting_up">Starting Up</string>
     <string name="downloading_version">Downloading Version</string>
     <string name="installing_update">Installing Update</string>
-    <string name="update_failed">Update Failed</string>
+    <string name="update_failed">Update fehlgeschlagen</string>
     <string name="done">Done</string>
     <string name="update_completed">Update Completed!</string>
-    <string name="are_you_sure">Are you sure?</string>
+    <string name="are_you_sure">Bist du dir sicher?</string>
     <string name="device_update_disclaimer_part1">You are about to install a new version of WLED on your device. If you had a custom version installed previously, you might lose some functionalities (for example, if you had some usermods enabled, they might not work anymore).</string>
     <string name="device_update_disclaimer_part2">If someone installed this device for you, you should maybe ask them if it is alright to update the device to a new version.</string>
     <string name="device_update_disclaimer_part3">WLED and WLED Native are not responsible if something goes wrong due to an update.</string>
@@ -93,5 +93,5 @@
     <string name="save_after_branch_change">Save the device after changing the channel to check for updates</string>
     <string name="downloading_file">Downloading File</string>
     <string name="help">WLED Help</string>
-    <string name="support_me">Support Moustachauve</string>
+    <string name="support_me">Unterstütze Moustachauve</string>
 </resources>
