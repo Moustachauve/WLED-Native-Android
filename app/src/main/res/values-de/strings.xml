@@ -44,9 +44,9 @@
     <string name="system_default">Systemeinstellungen</string>
     <string name="listing_options">Listenoptionen</string>
     <string name="automatically_discover_new_devices">Neue Geräte automatisch erkennen</string>
-    <string name="show_offline_devices_last">Zeige Geräte, die offline sind, als letztes</string>
+    <string name="show_offline_devices_last">Zeige Geräte, die offline sind, als letztes an</string>
     <string name="description_brightness_slider">Helligkeitsregler</string>
-    <string name="description_menu_button">Öffne Menu</string>
+    <string name="description_menu_button">Öffne Menü</string>
     <string name="description_back_button">Gehe zurück</string>
     <string name="description_list_of_discovered_devices">Liste an erkannten Geräten</string>
     <string name="privacy">Privatsphäre</string>
