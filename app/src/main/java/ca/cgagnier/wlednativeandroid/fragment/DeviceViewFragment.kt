@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -29,7 +30,6 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import ca.cgagnier.wlednativeandroid.BuildConfig
 import ca.cgagnier.wlednativeandroid.DeviceEditActivity
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.FileUploadContract
@@ -120,7 +120,8 @@ class DeviceViewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+        val isDebuggable = 0 != requireActivity().applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+        WebView.setWebContentsDebuggingEnabled(isDebuggable)
         Log.i(TAG, "Device view creating")
         _binding = FragmentDeviceViewBinding.inflate(layoutInflater, container, false)
         isLargeLayout = resources.getBoolean(R.bool.large_layout)
