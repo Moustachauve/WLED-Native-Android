@@ -8,6 +8,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.model.wledapi.State
+import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -27,16 +28,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 
-object DeviceApiService {
-    private const val TAG = "DeviceApi"
-    private var application: DevicesApplication? = null
+class DeviceApiService(
+    private var deviceRepository: DeviceRepository,
+    private var releaseService: ReleaseService
+) {
 
     @OptIn(DelicateCoroutinesApi::class)
     private val scope = CoroutineScope(newSingleThreadContext(TAG))
-
-    fun setApplication(devicesApplication: DevicesApplication) {
-        application = devicesApplication
-    }
 
     fun update(
         device: Device,
@@ -49,7 +47,7 @@ object DeviceApiService {
 
             scope.launch {
                 Log.d(TAG, "Saving non-silent update")
-                application!!.deviceRepository.update(newDevice)
+                deviceRepository.update(newDevice)
             }
         }
 
@@ -60,7 +58,7 @@ object DeviceApiService {
             Log.wtf(TAG, "Device has invalid address: " + device.address)
             Firebase.crashlytics.recordException(e)
             scope.launch {
-                application!!.deviceRepository.delete(device)
+                deviceRepository.delete(device)
             }
             return
         }
@@ -177,7 +175,7 @@ object DeviceApiService {
         }
         scope.launch {
             Log.d(TAG, "Saving device API onFailure")
-            application!!.deviceRepository.update(updatedDevice)
+            deviceRepository.update(updatedDevice)
         }
     }
 
@@ -209,7 +207,6 @@ object DeviceApiService {
             }
 
             val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
-            val releaseService = ReleaseService(application!!.versionWithAssetsRepository)
             val updateVersionTagAvailable =
                 releaseService.getNewerReleaseTag(
                     deviceVersion,
@@ -237,7 +234,7 @@ object DeviceApiService {
 
             if (saveChanges && updatedDevice != device) {
                 Log.d(TAG, "Saving update of device from API")
-                application!!.deviceRepository.update(updatedDevice)
+                deviceRepository.update(updatedDevice)
             }
 
             if (callback != null) {
@@ -278,7 +275,7 @@ object DeviceApiService {
 
             if (saveChanges && updatedDevice != device) {
                 Log.d(TAG, "Saving update of device from post API")
-                application!!.deviceRepository.update(updatedDevice)
+                deviceRepository.update(updatedDevice)
             }
         }
     }
@@ -288,5 +285,16 @@ object DeviceApiService {
         return getJsonApi(device).updateDevice(
             MultipartBody.Part.createFormData("file", "binary", reqFile)
         )
+    }
+
+    companion object {
+        private const val TAG = "DeviceApi"
+
+        fun fromApplication(application: DevicesApplication): DeviceApiService {
+            return DeviceApiService(
+                application.deviceRepository,
+                ReleaseService(application.versionWithAssetsRepository)
+            )
+        }
     }
 }

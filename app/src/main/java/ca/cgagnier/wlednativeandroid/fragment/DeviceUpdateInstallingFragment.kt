@@ -163,9 +163,11 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
 
         Log.d(TAG, "Uploading binary to device")
         lifecycleScope.launch(Dispatchers.IO) {
-            updateService.installUpdate().enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
+            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+                .installUpdate(device, updateService.getPathForAsset())
+                .enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
                     response: Response<ResponseBody>
                 ) {
                     activity?.runOnUiThread {
@@ -244,7 +246,8 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
             val deviceRepository =
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(device)
-            DeviceApiService.update(device, false)
+            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+                .update(device, false)
         }
     }
 
