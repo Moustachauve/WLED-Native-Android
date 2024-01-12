@@ -4,12 +4,9 @@ import android.content.Context
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import kotlinx.coroutines.flow.Flow
-import okhttp3.ResponseBody
-import retrofit2.Call
 import java.io.File
 
 class DeviceUpdateService(
@@ -73,11 +70,7 @@ class DeviceUpdateService(
         return githubApi.downloadReleaseBinary(asset, getPathForAsset())
     }
 
-    fun installUpdate(): Call<ResponseBody> {
-        return DeviceApiService.installUpdate(device, getPathForAsset())
-    }
-
-    private fun getPathForAsset(): File {
+    fun getPathForAsset(): File {
         val cacheDirectory = File(context.cacheDir, versionWithAssets.version.tagName)
         cacheDirectory.mkdirs()
         return File(cacheDirectory, asset.name)

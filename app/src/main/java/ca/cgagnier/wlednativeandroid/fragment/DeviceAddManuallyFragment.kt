@@ -81,7 +81,8 @@ class DeviceAddManuallyFragment : DialogFragment() {
         )
 
         deviceListViewModel.insert(device)
-        DeviceApiService.update(device, false)
+        DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+            .update(device, false)
         dismiss()
     }
 

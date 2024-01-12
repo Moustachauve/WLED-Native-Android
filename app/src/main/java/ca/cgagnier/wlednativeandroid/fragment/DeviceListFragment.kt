@@ -158,7 +158,9 @@ class DeviceListFragment : Fragment(),
             DeviceListOnBackPressedCallback(slidingPaneLayout)
         )
 
-        deviceListAdapter = DeviceListAdapter { device: Device ->
+        val deviceApi =
+            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+        deviceListAdapter = DeviceListAdapter(deviceApi) { device: Device ->
             openDevice(device)
         }
 
@@ -375,7 +377,8 @@ class DeviceListFragment : Fragment(),
     private fun refreshListFromApi(silentUpdate: Boolean) {
         if (deviceListViewModel.allDevices.value != null) {
             for (device in deviceListViewModel.allDevices.value!!) {
-                DeviceApiService.update(device, silentUpdate)
+                DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+                    .update(device, silentUpdate)
             }
             hasDoneFirstRefresh = true
         }

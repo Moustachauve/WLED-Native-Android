@@ -21,6 +21,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 
 
 class DeviceListAdapter(
+    private val deviceApi: DeviceApiService,
     private val onItemClicked: (Device) -> Unit
 ) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>() {
 
@@ -52,14 +53,14 @@ class DeviceListAdapter(
 
             itemBinding.powerStatusSwitch.setOnClickListener {
                 val deviceSetPost = JsonPost(isOn = itemBinding.powerStatusSwitch.isChecked)
-                DeviceApiService.postJson(device, deviceSetPost)
+                deviceApi.postJson(device, deviceSetPost)
             }
 
             itemBinding.brightnessSeekbar.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
                     if (fromUser) {
-                        ThrottleApiPostCall.send(device, JsonPost(brightness = value))
+                        ThrottleApiPostCall.send(deviceApi, device, JsonPost(brightness = value))
                     }
                 }
 
