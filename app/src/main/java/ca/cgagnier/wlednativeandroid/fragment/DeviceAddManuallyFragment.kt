@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddBinding
@@ -18,6 +19,8 @@ import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class DeviceAddManuallyFragment : DialogFragment() {
@@ -80,10 +83,12 @@ class DeviceAddManuallyFragment : DialogFragment() {
             macAddress = Device.UNKNOWN_VALUE
         )
 
-        deviceListViewModel.insert(device)
-        DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-            .update(device, false)
-        dismiss()
+        lifecycleScope.launch(Dispatchers.IO)  {
+            deviceListViewModel.insert(device)
+            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+                .update(device, false)
+            dismiss()
+        }
     }
 
     private fun validateForm(): Boolean {

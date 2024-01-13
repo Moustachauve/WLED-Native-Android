@@ -18,6 +18,9 @@ import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
 import com.google.android.material.materialswitch.MaterialSwitch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class DeviceListAdapter(
@@ -53,7 +56,9 @@ class DeviceListAdapter(
 
             itemBinding.powerStatusSwitch.setOnClickListener {
                 val deviceSetPost = JsonPost(isOn = itemBinding.powerStatusSwitch.isChecked)
-                deviceApi.postJson(device, deviceSetPost)
+                CoroutineScope(Dispatchers.IO).launch {
+                    deviceApi.postJson(device, deviceSetPost)
+                }
             }
 
             itemBinding.brightnessSeekbar.setOnSeekBarChangeListener(object :

@@ -52,6 +52,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -375,12 +376,14 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun refreshListFromApi(silentUpdate: Boolean) {
-        if (deviceListViewModel.allDevices.value != null) {
-            for (device in deviceListViewModel.allDevices.value!!) {
-                DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                    .update(device, silentUpdate)
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (deviceListViewModel.allDevices.value != null) {
+                for (device in deviceListViewModel.allDevices.value!!) {
+                    DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+                        .update(device, silentUpdate)
+                }
+                hasDoneFirstRefresh = true
             }
-            hasDoneFirstRefresh = true
         }
     }
 
