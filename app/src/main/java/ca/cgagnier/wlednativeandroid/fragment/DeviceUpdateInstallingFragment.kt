@@ -22,8 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 
 
@@ -163,36 +161,30 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
 
         Log.d(TAG, "Uploading binary to device")
         lifecycleScope.launch(Dispatchers.IO) {
-            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .installUpdate(device, updateService.getPathForAsset())
-                .enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(
-                        call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    activity?.runOnUiThread {
-                        if (response.code() in 200..299) {
-                            displaySuccess()
-                        } else {
-                            Log.d(TAG, "OTA Failed, code ${response.code()}")
-                            errorString = "${response.code()}: ${getHtmlErrorMessage(response)}"
-                            Log.d(TAG, "OTA Failed onResponse, error $errorString")
-                            displayFailure(getString(R.string.ota_install_failed_device_locked))
-                        }
-                        updateDeviceUpdated()
-                    }
+            val response = try {
+                DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
+                    .installUpdate(device, updateService.getPathForAsset())
+            } catch (e: Exception) {
+                activity?.runOnUiThread {
+                    Log.d(TAG, "OTA Failed, call failed")
+                    Log.e(TAG, e.toString())
+                    errorString = e.toString()
+                    displayFailure()
+                    Log.d(TAG, "OTA Failed onFailure, error $errorString")
                 }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    activity?.runOnUiThread {
-                        Log.d(TAG, "OTA Failed, call failed")
-                        Log.e(TAG, t.toString())
-                        errorString = t.toString()
-                        displayFailure()
-                        Log.d(TAG, "OTA Failed onFailure, error $errorString")
-                    }
+                return@launch
+            }
+            activity?.runOnUiThread {
+                if (response.code() in 200..299) {
+                    displaySuccess()
+                } else {
+                    Log.d(TAG, "OTA Failed, code ${response.code()}")
+                    errorString = "${response.code()}: ${getHtmlErrorMessage(response)}"
+                    Log.d(TAG, "OTA Failed onResponse, error $errorString")
+                    displayFailure(getString(R.string.ota_install_failed_device_locked))
                 }
-            })
+                updateDeviceUpdated()
+            }
         }
     }
 
@@ -247,7 +239,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(device)
             DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .update(device, false)
+                .refresh(device, false)
         }
     }
 

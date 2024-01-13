@@ -162,36 +162,38 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         }
         Log.i(TAG, "IP: ${deviceIp}\tName: ${deviceName}\t")
 
-        DeviceApiService.fromApplication(application as DevicesApplication)
-            .update(device, silentUpdate = true, saveChanges = false) { refreshedDevice ->
-                lifecycleScope.launch {
-                    val existingDevice = deviceListViewModel.findWithSameMacAddress(refreshedDevice)
-                    if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
-                        Log.i(
-                            TAG,
-                            "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
-                        )
-                        val refreshedExistingDevice = existingDevice.copy(
-                            address = refreshedDevice.address,
-                            isOnline = refreshedDevice.isOnline,
-                            name = refreshedDevice.name,
-                            brightness = refreshedDevice.brightness,
-                            isPoweredOn = refreshedDevice.isPoweredOn,
-                            color = refreshedDevice.color,
-                            networkRssi = refreshedDevice.networkRssi,
-                            isEthernet = refreshedDevice.isEthernet,
-                            platformName = refreshedDevice.platformName,
-                            version = refreshedDevice.version,
-                            brand = refreshedDevice.brand,
-                            productName = refreshedDevice.productName,
-                        )
-                        deviceListViewModel.delete(existingDevice)
-                        deviceListViewModel.insert(refreshedExistingDevice)
-                    } else {
-                        deviceListViewModel.insert(refreshedDevice)
-                    }
-                }
+        lifecycleScope.launch {
+            val refreshedDevice =
+                DeviceApiService.fromApplication(application as DevicesApplication)
+                    .refresh(device, silentRefresh = true, saveChanges = false)
+
+            val existingDevice =
+                deviceListViewModel.findWithSameMacAddress(refreshedDevice)
+            if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
+                Log.i(
+                    TAG,
+                    "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
+                )
+                val refreshedExistingDevice = existingDevice.copy(
+                    address = refreshedDevice.address,
+                    isOnline = refreshedDevice.isOnline,
+                    name = refreshedDevice.name,
+                    brightness = refreshedDevice.brightness,
+                    isPoweredOn = refreshedDevice.isPoweredOn,
+                    color = refreshedDevice.color,
+                    networkRssi = refreshedDevice.networkRssi,
+                    isEthernet = refreshedDevice.isEthernet,
+                    platformName = refreshedDevice.platformName,
+                    version = refreshedDevice.version,
+                    brand = refreshedDevice.brand,
+                    productName = refreshedDevice.productName,
+                )
+                deviceListViewModel.delete(existingDevice)
+                deviceListViewModel.insert(refreshedExistingDevice)
+            } else {
+                deviceListViewModel.insert(refreshedDevice)
             }
+        }
     }
 
     private fun setThemeMode(theme: ThemeSettings) {
