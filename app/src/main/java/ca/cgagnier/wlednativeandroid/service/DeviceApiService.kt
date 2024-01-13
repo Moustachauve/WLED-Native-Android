@@ -42,7 +42,7 @@ class DeviceApiService(
             .create(DeviceApi::class.java)
     }
 
-    suspend fun update(
+    suspend fun refresh(
         device: Device,
         silentUpdate: Boolean,
         saveChanges: Boolean = true,

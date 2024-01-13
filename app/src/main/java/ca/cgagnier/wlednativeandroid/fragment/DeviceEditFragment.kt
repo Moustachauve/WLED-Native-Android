@@ -141,7 +141,7 @@ class DeviceEditFragment : Fragment() {
         lifecycleScope.launch {
             Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
-            getDeviceApi().update(updatedDevice, false)
+            getDeviceApi().refresh(updatedDevice, false)
             requireActivity().finish()
         }
     }
@@ -252,7 +252,7 @@ class DeviceEditFragment : Fragment() {
         val releaseService = ReleaseService(versionWithAssetsRepository)
         lifecycleScope.launch(Dispatchers.IO) {
             releaseService.refreshVersions(requireContext())
-            getDeviceApi().update(deviceEditViewModel.device, false)
+            getDeviceApi().refresh(deviceEditViewModel.device, false)
         }
     }
 

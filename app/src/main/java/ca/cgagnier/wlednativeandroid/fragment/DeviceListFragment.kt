@@ -380,7 +380,7 @@ class DeviceListFragment : Fragment(),
             if (deviceListViewModel.allDevices.value != null) {
                 for (device in deviceListViewModel.allDevices.value!!) {
                     DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                        .update(device, silentUpdate)
+                        .refresh(device, silentUpdate)
                 }
                 hasDoneFirstRefresh = true
             }

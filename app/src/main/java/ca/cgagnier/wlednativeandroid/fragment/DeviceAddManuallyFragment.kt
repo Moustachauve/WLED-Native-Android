@@ -86,7 +86,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
         lifecycleScope.launch(Dispatchers.IO)  {
             deviceListViewModel.insert(device)
             DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .update(device, false)
+                .refresh(device, false)
             dismiss()
         }
     }

@@ -239,7 +239,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(device)
             DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .update(device, false)
+                .refresh(device, false)
         }
     }
 
