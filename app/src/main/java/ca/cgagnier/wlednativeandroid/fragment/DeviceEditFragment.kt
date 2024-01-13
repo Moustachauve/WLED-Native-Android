@@ -142,8 +142,8 @@ class DeviceEditFragment : Fragment() {
             Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
             getDeviceApi().refresh(updatedDevice, false)
-            requireActivity().finish()
         }
+        requireActivity().finish()
     }
 
     private fun loadDevice() {

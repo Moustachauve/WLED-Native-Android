@@ -376,14 +376,15 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun refreshListFromApi(silentUpdate: Boolean) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            if (deviceListViewModel.allDevices.value != null) {
-                for (device in deviceListViewModel.allDevices.value!!) {
+        if (deviceListViewModel.allDevices.value != null) {
+            for (device in deviceListViewModel.allDevices.value!!) {
+                lifecycleScope.launch(Dispatchers.IO) {
                     DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
                         .refresh(device, silentUpdate)
+
                 }
-                hasDoneFirstRefresh = true
             }
+            hasDoneFirstRefresh = true
         }
     }
 

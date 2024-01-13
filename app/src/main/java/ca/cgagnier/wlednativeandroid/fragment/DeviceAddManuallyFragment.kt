@@ -87,8 +87,8 @@ class DeviceAddManuallyFragment : DialogFragment() {
             deviceListViewModel.insert(device)
             DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
                 .refresh(device, false)
-            dismiss()
         }
+        dismiss()
     }
 
     private fun validateForm(): Boolean {
