@@ -13,10 +13,6 @@ import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -30,10 +26,6 @@ class DeviceApiService(
     private var deviceRepository: DeviceRepository,
     private var releaseService: ReleaseService
 ) {
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private val scope = CoroutineScope(newSingleThreadContext(TAG))
-
     private fun getJsonApi(device: Device): DeviceApi {
         return Retrofit.Builder()
             .baseUrl(device.getDeviceUrl())
@@ -45,28 +37,23 @@ class DeviceApiService(
     suspend fun refresh(
         device: Device,
         silentRefresh: Boolean,
-        saveChanges: Boolean = true,
-        callback: ((Device) -> Unit)? = null
-    ) {
+        saveChanges: Boolean = true
+    ): Device {
         if (!silentRefresh) {
             val newDevice = device.copy(isRefreshing = true)
-
-            scope.launch {
-                Log.d(TAG, "Saving non-silent update")
-                deviceRepository.update(newDevice)
-            }
+            Log.d(TAG, "Saving non-silent update")
+            deviceRepository.update(newDevice)
         }
 
         val response = try {
             getJsonApi(device).getStateInfo()
         } catch (e: Exception) {
-            onFailure(device, e, callback)
-            return
+            return onFailure(device, e)
         }
 
         if (response.code() in 200..299 && response.isSuccessful && response.body() != null) {
             try {
-                updateDevice(device, response, saveChanges, callback)
+                return updateDevice(device, response, saveChanges)
             } catch (e: Exception) {
                 Log.e(TAG, "Exception when parsing success callback")
                 Firebase.crashlytics.log("Response success, but parsing result failed")
@@ -82,6 +69,7 @@ class DeviceApiService(
                 )
                 Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
                 Firebase.crashlytics.recordException(e)
+                return device
             }
         } else {
             Firebase.crashlytics.log("Response success, but not valid")
@@ -92,23 +80,22 @@ class DeviceApiService(
                 response.errorBody().toString()
             )
             Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
-            onFailure(device, Exception("Response success, but not valid"), callback = callback)
+            return onFailure(device, Exception("Response success, but not valid"))
         }
     }
 
-    suspend fun postJson(device: Device, jsonData: JsonPost, saveChanges: Boolean = true) {
+    suspend fun postJson(device: Device, jsonData: JsonPost, saveChanges: Boolean = true): Device {
         Log.d(TAG, "Posting update to device [${device.address}]")
 
         val response = try {
             getJsonApi(device).postJson(jsonData)
         } catch (e: Exception) {
-            onFailure(device, e)
-            return
+            return onFailure(device, e)
         }
 
         if (response.code() in 200..299 && response.isSuccessful && response.body() != null) {
             try {
-                updateDevice(device, response, saveChanges)
+                return updateDevice(device, response, saveChanges)
             } catch (e: Exception) {
                 Log.e(TAG, "Exception when parsing post response")
                 Firebase.crashlytics.log("Response success, but parsing result failed")
@@ -124,6 +111,7 @@ class DeviceApiService(
                 )
                 Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
                 Firebase.crashlytics.recordException(e)
+                return device
             }
         } else {
             Firebase.crashlytics.log("Response success, but not valid")
@@ -134,34 +122,30 @@ class DeviceApiService(
                 response.errorBody().toString()
             )
             Firebase.crashlytics.setCustomKey("response headers", response.headers().toString())
-            onFailure(device, Exception("Response success, but not valid"))
+            return onFailure(device, Exception("Response success, but not valid"))
         }
     }
 
     private suspend fun onFailure(
         device: Device,
-        t: Throwable? = null,
-        callback: ((Device) -> Unit)? = null
-    ) {
+        t: Throwable? = null
+    ): Device {
         if (t != null) {
             Firebase.crashlytics.recordException(t)
             Log.e(TAG, t.message!!)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
-        if (callback != null) {
-            callback(updatedDevice)
-            return
-        }
+
         Log.d(TAG, "Saving device API onFailure")
         deviceRepository.update(updatedDevice)
+        return updatedDevice
     }
 
     private suspend fun updateDevice(
         device: Device,
         response: Response<DeviceStateInfo>,
-        saveChanges: Boolean,
-        callback: ((Device) -> Unit)? = null
-    ) {
+        saveChanges: Boolean
+    ): Device {
         val deviceStateInfo = response.body()!!
 
         var color = Color.WHITE
@@ -213,16 +197,15 @@ class DeviceApiService(
             deviceRepository.update(updatedDevice)
         }
 
-        if (callback != null) {
-            callback(updatedDevice)
-        }
+        return updatedDevice
     }
 
+    @JvmName("updateDeviceFromState")
     private suspend fun updateDevice(
         device: Device,
         response: Response<State>,
         saveChanges: Boolean
-    ) {
+    ): Device {
         val state = response.body()!!
 
         var color = Color.WHITE
@@ -250,6 +233,8 @@ class DeviceApiService(
             Log.d(TAG, "Saving update of device from post API")
             deviceRepository.update(updatedDevice)
         }
+
+        return updatedDevice
     }
 
     suspend fun installUpdate(device: Device, binaryFile: File): Response<ResponseBody> {
