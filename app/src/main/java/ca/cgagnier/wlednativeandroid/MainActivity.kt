@@ -164,7 +164,7 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
 
         lifecycleScope.launch {
             DeviceApiService.fromApplication(application as DevicesApplication)
-                .refresh(device, silentUpdate = true, saveChanges = false) { refreshedDevice ->
+                .refresh(device, silentRefresh = true, saveChanges = false) { refreshedDevice ->
                     lifecycleScope.launch {
                         val existingDevice =
                             deviceListViewModel.findWithSameMacAddress(refreshedDevice)

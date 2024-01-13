@@ -44,11 +44,11 @@ class DeviceApiService(
 
     suspend fun refresh(
         device: Device,
-        silentUpdate: Boolean,
+        silentRefresh: Boolean,
         saveChanges: Boolean = true,
         callback: ((Device) -> Unit)? = null
     ) {
-        if (!silentUpdate) {
+        if (!silentRefresh) {
             val newDevice = device.copy(isRefreshing = true)
 
             scope.launch {
