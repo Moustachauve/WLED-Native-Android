@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.WLEDNativeAndroid.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/WLEDNativeAndroid.AppWidgetContainer">
+
+    <TextView
+        android:id="@+id/appwidget_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/power_button"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/appwidget_text"
+        android:text="@string/appwidget_text"
+        android:textSize="12sp"
+        android:textStyle="bold|italic" />
+
+    <ImageButton
+        android:id="@+id/power_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/round_button"
+        android:contentDescription="@string/awkward_akemi_character"
+        android:padding="4dp"
+        android:layout_marginStart="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/akemi_042_cheerful_rgb" />
+</RelativeLayout>

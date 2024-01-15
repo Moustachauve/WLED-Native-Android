@@ -56,4 +56,15 @@
         <item name="colorPrimaryDark">@color/md_theme_light_primary</item>
         <item name="colorAccent">@color/md_theme_dark_secondary</item>
     </style>
+
+
+    <style name="WLEDNativeAndroid.AppWidgetContainerParent" parent="@style/Theme.Material3.DynamicColors.DayNight">
+        <!-- Radius of the outer bound of widgets to make the rounded corners -->
+        <item name="appWidgetRadius">16dp</item>
+    </style>
+
+    <style name="WLEDNativeAndroid.AppWidgetContainer" parent="WLEDNativeAndroid.AppWidgetContainerParent">
+        <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
+        <item name="appWidgetPadding">14dp</item>
+    </style>
 </resources>
