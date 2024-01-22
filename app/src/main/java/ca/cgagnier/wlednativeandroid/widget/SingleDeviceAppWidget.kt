@@ -91,6 +91,7 @@ class SingleDeviceAppWidget : AppWidgetProvider() {
             Log.e(TAG, "Could not load device with address $deviceAddress to toggle")
             return
         }
+        Log.i(TAG, "Toggling ${device.name} to ${!device.isPoweredOn}")
 
         val database = DevicesDatabase.getDatabase(context)
         val deviceRepository = DeviceRepository(database)
@@ -124,11 +125,10 @@ class SingleDeviceAppWidget : AppWidgetProvider() {
         ): PendingIntent? {
             val intent = Intent(context, SingleDeviceAppWidget::class.java)
             intent.setAction(action)
-            Log.d(TAG, "Extra appWidgetId:$appWidgetId")
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             return PendingIntent.getBroadcast(
                 context,
-                0,
+                appWidgetId,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE
             )
@@ -136,11 +136,12 @@ class SingleDeviceAppWidget : AppWidgetProvider() {
 
         private suspend fun loadDevice(context: Context, appWidgetId: Int): Device? {
             val deviceAddress = loadTitlePref(context, appWidgetId)
+            Log.d(TAG, "Loading device for widget $appWidgetId : $deviceAddress")
 
             val database = DevicesDatabase.getDatabase(context)
             val deviceRepository = DeviceRepository(database)
 
-            return deviceRepository.findDeviceByAddress(deviceAddress)
+            return deviceRepository.findDeviceByMacAddress(deviceAddress)
         }
 
         @RequiresApi(Build.VERSION_CODES.S)
@@ -164,7 +165,7 @@ class SingleDeviceAppWidget : AppWidgetProvider() {
                 return
             }
 
-            Log.d(TAG, "Refreshing widget for device ${device.name}")
+            Log.d(TAG, "Refreshing widget $appWidgetId for device ${device.name}")
 
             val smallView =
                 RemoteViews(context.packageName, R.layout.single_device_app_widget_small)
