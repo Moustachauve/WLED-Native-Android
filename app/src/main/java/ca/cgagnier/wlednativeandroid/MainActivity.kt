@@ -18,8 +18,8 @@ import ca.cgagnier.wlednativeandroid.databinding.ActivityMainBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import ca.cgagnier.wlednativeandroid.repository_v0.DataMigrationV0toV1
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
@@ -39,6 +39,9 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
             (application as DevicesApplication).deviceRepository,
             (application as DevicesApplication).userPreferencesRepository
         )
+    }
+    private val deviceStateFactory by lazy {
+        (application as DevicesApplication).deviceStateFactory
     }
 
     private var isAutoDiscoveryEnabled = false
@@ -163,36 +166,38 @@ class MainActivity : AutoDiscoveryActivity, DeviceDiscovery.DeviceDiscoveredList
         Log.i(TAG, "IP: ${deviceIp}\tName: ${deviceName}\t")
 
         lifecycleScope.launch {
-            val refreshedDevice =
-                DeviceApiService.fromApplication(application as DevicesApplication)
-                    .refresh(device, silentRefresh = true, saveChanges = false)
-
-            val existingDevice =
-                deviceListViewModel.findWithSameMacAddress(refreshedDevice)
-            if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
-                Log.i(
-                    TAG,
-                    "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
-                )
-                val refreshedExistingDevice = existingDevice.copy(
-                    address = refreshedDevice.address,
-                    isOnline = refreshedDevice.isOnline,
-                    name = refreshedDevice.name,
-                    brightness = refreshedDevice.brightness,
-                    isPoweredOn = refreshedDevice.isPoweredOn,
-                    color = refreshedDevice.color,
-                    networkRssi = refreshedDevice.networkRssi,
-                    isEthernet = refreshedDevice.isEthernet,
-                    platformName = refreshedDevice.platformName,
-                    version = refreshedDevice.version,
-                    brand = refreshedDevice.brand,
-                    productName = refreshedDevice.productName,
-                )
-                deviceListViewModel.delete(existingDevice)
-                deviceListViewModel.insert(refreshedExistingDevice)
-            } else {
-                deviceListViewModel.insert(refreshedDevice)
+            val request = RefreshRequest(
+                device, silentRefresh = true, saveChanges = false
+            ) { refreshedDevice ->
+                val existingDevice =
+                    deviceListViewModel.findWithSameMacAddress(refreshedDevice)
+                if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
+                    Log.i(
+                        TAG,
+                        "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
+                    )
+                    val refreshedExistingDevice = existingDevice.copy(
+                        address = refreshedDevice.address,
+                        isOnline = refreshedDevice.isOnline,
+                        name = refreshedDevice.name,
+                        brightness = refreshedDevice.brightness,
+                        isPoweredOn = refreshedDevice.isPoweredOn,
+                        color = refreshedDevice.color,
+                        networkRssi = refreshedDevice.networkRssi,
+                        isEthernet = refreshedDevice.isEthernet,
+                        platformName = refreshedDevice.platformName,
+                        version = refreshedDevice.version,
+                        brand = refreshedDevice.brand,
+                        productName = refreshedDevice.productName,
+                    )
+                    deviceListViewModel.delete(existingDevice)
+                    deviceListViewModel.insert(refreshedExistingDevice)
+                } else {
+                    deviceListViewModel.insert(refreshedDevice)
+                }
             }
+
+            deviceStateFactory.getState(device).requestsManager.addRequest(request)
         }
     }
 

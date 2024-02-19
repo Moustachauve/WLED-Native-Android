@@ -12,7 +12,7 @@ class DeviceViewViewModel : ViewModel() {
 }
 
 
-class DeviceViewViewModelFactory() : ViewModelProvider.Factory {
+class DeviceViewViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DeviceViewViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

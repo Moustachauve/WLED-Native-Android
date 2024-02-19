@@ -14,8 +14,9 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateInstallingBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
+import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
+import ca.cgagnier.wlednativeandroid.service.device.api.request.SoftwareUpdateRequest
 import ca.cgagnier.wlednativeandroid.service.update.DeviceUpdateService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,9 @@ private const val VERSION_TAG = "version_tag"
 
 
 class DeviceUpdateInstallingFragment : DialogFragment() {
+    private val deviceStateFactory by lazy {
+        (requireActivity().application as DevicesApplication).deviceStateFactory
+    }
     private lateinit var deviceAddress: String
     private lateinit var device: Device
     private lateinit var versionTag: String
@@ -160,31 +164,35 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
         binding.buttonCancel.isEnabled = false
 
         Log.d(TAG, "Uploading binary to device")
-        lifecycleScope.launch(Dispatchers.IO) {
-            val response = try {
-                DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                    .installUpdate(device, updateService.getPathForAsset())
-            } catch (e: Exception) {
-                activity?.runOnUiThread {
-                    Log.d(TAG, "OTA Failed, call failed")
-                    Log.e(TAG, e.toString())
-                    errorString = e.toString()
-                    displayFailure()
-                    Log.d(TAG, "OTA Failed onFailure, error $errorString")
-                }
-                return@launch
+        deviceStateFactory.getState(device).requestsManager.addRequest(SoftwareUpdateRequest(
+            device,
+            updateService.getPathForAsset(),
+            ::onSoftwareUpdateResponse,
+            ::onSoftwareUpdateError
+        ))
+    }
+
+    private fun onSoftwareUpdateResponse(response: Response<ResponseBody>) {
+        activity?.runOnUiThread {
+            if (response.code() in 200..299) {
+                displaySuccess()
+            } else {
+                Log.d(TAG, "OTA Failed, code ${response.code()}")
+                errorString = "${response.code()}: ${getHtmlErrorMessage(response)}"
+                Log.d(TAG, "OTA Failed onResponse, error $errorString")
+                displayFailure(getString(R.string.ota_install_failed_device_locked))
             }
-            activity?.runOnUiThread {
-                if (response.code() in 200..299) {
-                    displaySuccess()
-                } else {
-                    Log.d(TAG, "OTA Failed, code ${response.code()}")
-                    errorString = "${response.code()}: ${getHtmlErrorMessage(response)}"
-                    Log.d(TAG, "OTA Failed onResponse, error $errorString")
-                    displayFailure(getString(R.string.ota_install_failed_device_locked))
-                }
-                updateDeviceUpdated()
-            }
+            updateDeviceUpdated()
+        }
+    }
+
+    private fun onSoftwareUpdateError(e: Exception) {
+        activity?.runOnUiThread {
+            Log.d(TAG, "OTA Failed, call failed")
+            Log.e(TAG, e.toString())
+            errorString = e.toString()
+            displayFailure()
+            Log.d(TAG, "OTA Failed onFailure, error $errorString")
         }
     }
 
@@ -238,8 +246,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
             val deviceRepository =
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(device)
-            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .refresh(device, false)
+            deviceStateFactory.getState(device).requestsManager.addRequest(RefreshRequest(device))
         }
     }
 

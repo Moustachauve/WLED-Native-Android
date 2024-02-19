@@ -15,7 +15,7 @@ import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddBinding
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
+import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,6 +28,9 @@ class DeviceAddManuallyFragment : DialogFragment() {
         DeviceListViewModelFactory(
             (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository)
+    }
+    private val deviceStateFactory by lazy {
+        (requireActivity().application as DevicesApplication).deviceStateFactory
     }
     private var _binding: FragmentDeviceAddBinding? = null
     private val binding get() = _binding!!
@@ -85,8 +88,7 @@ class DeviceAddManuallyFragment : DialogFragment() {
 
         lifecycleScope.launch(Dispatchers.IO)  {
             deviceListViewModel.insert(device)
-            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .refresh(device, false)
+            deviceStateFactory.getState(device).requestsManager.addRequest(RefreshRequest(device, silentRefresh = false))
         }
         dismiss()
     }

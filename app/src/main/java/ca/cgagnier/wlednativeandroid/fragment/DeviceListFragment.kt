@@ -44,8 +44,8 @@ import ca.cgagnier.wlednativeandroid.adapter.RecyclerViewAnimator
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceListBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
@@ -67,6 +67,9 @@ class DeviceListFragment : Fragment(),
             (requireActivity().application as DevicesApplication).deviceRepository,
             (requireActivity().application as DevicesApplication).userPreferencesRepository
         )
+    }
+    private val deviceStateFactory by lazy {
+        (requireActivity().application as DevicesApplication).deviceStateFactory
     }
 
     private var _binding: FragmentDeviceListBinding? = null
@@ -152,19 +155,14 @@ class DeviceListFragment : Fragment(),
         val slidingPaneLayout = binding.slidingPaneLayout
         slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
 
-
-
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             DeviceListOnBackPressedCallback(slidingPaneLayout)
         )
 
-        val deviceApi =
-            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-        deviceListAdapter = DeviceListAdapter(deviceApi) { device: Device ->
+        deviceListAdapter = DeviceListAdapter(deviceStateFactory) { device: Device ->
             openDevice(device)
         }
-
 
         binding.deviceListRecyclerView.adapter = deviceListAdapter
         binding.deviceListRecyclerView.layoutManager = layoutManager
@@ -376,12 +374,16 @@ class DeviceListFragment : Fragment(),
     }
 
     private fun refreshListFromApi(silentUpdate: Boolean) {
+        Log.d(TAG, "Refreshing list of devices from API")
         if (deviceListViewModel.allDevices.value != null) {
             for (device in deviceListViewModel.allDevices.value!!) {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                        .refresh(device, silentUpdate)
-
+                    deviceStateFactory.getState(device).requestsManager.addRequest(
+                        RefreshRequest(
+                            device,
+                            silentUpdate
+                        )
+                    )
                 }
             }
             hasDoneFirstRefresh = true

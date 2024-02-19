@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +16,9 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.DeviceListItemBinding
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.ThrottleApiPostCall
+import ca.cgagnier.wlednativeandroid.service.device.StateFactory
+import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeRequest
 import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 
 
 class DeviceListAdapter(
-    private val deviceApi: DeviceApiService,
+    private val deviceStateFactory: StateFactory,
     private val onItemClicked: (Device) -> Unit
 ) : AbstractDeviceListAdapter<DeviceListAdapter.DeviceListViewHolder>() {
 
@@ -57,7 +59,9 @@ class DeviceListAdapter(
             itemBinding.powerStatusSwitch.setOnClickListener {
                 val deviceSetPost = JsonPost(isOn = itemBinding.powerStatusSwitch.isChecked)
                 CoroutineScope(Dispatchers.IO).launch {
-                    deviceApi.postJson(device, deviceSetPost)
+                    deviceStateFactory.getState(device).requestsManager.addRequest(
+                        StateChangeRequest(device, deviceSetPost)
+                    )
                 }
             }
 
@@ -65,16 +69,22 @@ class DeviceListAdapter(
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
                     if (fromUser) {
-                        ThrottleApiPostCall.send(deviceApi, device, JsonPost(brightness = value))
+                        ThrottleApiPostCall.send(
+                            deviceStateFactory,
+                            device,
+                            JsonPost(brightness = value)
+                        )
                     }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                     device.isSliding = true
+                    Log.i(TAG, "Brightness seekbar start tracking touch")
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     device.isSliding = false
+                    Log.i(TAG, "Brightness seekbar stop tracking touch")
                 }
             })
         }
@@ -141,4 +151,8 @@ class DeviceListAdapter(
     private fun Context.getThemeColor(@AttrRes attrRes: Int): Int = TypedValue()
         .apply { theme.resolveAttribute(attrRes, this, true) }
         .data
+
+    companion object {
+        const val TAG = "DeviceListAdapter"
+    }
 }

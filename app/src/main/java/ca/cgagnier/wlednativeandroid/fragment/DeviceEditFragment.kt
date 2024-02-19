@@ -24,7 +24,7 @@ import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
-import ca.cgagnier.wlednativeandroid.service.DeviceApiService
+import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceEditViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceEditViewModelFactory
@@ -42,6 +42,9 @@ class DeviceEditFragment : Fragment() {
     }
     private val versionWithAssetsRepository: VersionWithAssetsRepository by lazy {
         (requireActivity().application as DevicesApplication).versionWithAssetsRepository
+    }
+    private val deviceStateFactory by lazy {
+        (requireActivity().application as DevicesApplication).deviceStateFactory
     }
 
     private var firstLoad = true
@@ -141,7 +144,7 @@ class DeviceEditFragment : Fragment() {
         lifecycleScope.launch {
             Log.d(TAG, "Saving update from edit page")
             deviceRepository.update(updatedDevice)
-            getDeviceApi().refresh(updatedDevice, false)
+            deviceStateFactory.getState(updatedDevice).requestsManager.addRequest(RefreshRequest(updatedDevice))
         }
         requireActivity().finish()
     }
@@ -252,7 +255,9 @@ class DeviceEditFragment : Fragment() {
         val releaseService = ReleaseService(versionWithAssetsRepository)
         lifecycleScope.launch(Dispatchers.IO) {
             releaseService.refreshVersions(requireContext())
-            getDeviceApi().refresh(deviceEditViewModel.device, false)
+            deviceStateFactory.getState(deviceEditViewModel.device).requestsManager.addRequest(
+                RefreshRequest(deviceEditViewModel.device)
+            )
         }
     }
 
@@ -261,10 +266,6 @@ class DeviceEditFragment : Fragment() {
         val isLargeLayout = resources.getBoolean(R.bool.large_layout)
         val newFragment = DeviceUpdateAvailableFragment.newInstance(deviceAddress, isLargeLayout)
         newFragment.show(fragmentManager, "dialog")
-    }
-
-    private fun getDeviceApi(): DeviceApiService {
-        return DeviceApiService(deviceRepository, ReleaseService(versionWithAssetsRepository))
     }
 
     companion object {
