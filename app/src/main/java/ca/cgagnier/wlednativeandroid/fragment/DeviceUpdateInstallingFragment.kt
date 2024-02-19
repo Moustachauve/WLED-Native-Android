@@ -16,6 +16,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.service.DeviceApiService
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
+import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.update.DeviceUpdateService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,9 @@ private const val VERSION_TAG = "version_tag"
 
 
 class DeviceUpdateInstallingFragment : DialogFragment() {
+    private val deviceStateFactory by lazy {
+        (requireActivity().application as DevicesApplication).deviceStateFactory
+    }
     private lateinit var deviceAddress: String
     private lateinit var device: Device
     private lateinit var versionTag: String
@@ -238,8 +242,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
             val deviceRepository =
                 (requireActivity().application as DevicesApplication).deviceRepository
             deviceRepository.update(device)
-            DeviceApiService.fromApplication(requireActivity().application as DevicesApplication)
-                .refresh(device, false)
+            deviceStateFactory.getState(device).requestsManager.addRequest(RefreshRequest(device))
         }
     }
 

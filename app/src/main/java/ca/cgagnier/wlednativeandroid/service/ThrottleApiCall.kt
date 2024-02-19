@@ -3,6 +3,8 @@ package ca.cgagnier.wlednativeandroid.service
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
+import ca.cgagnier.wlednativeandroid.service.device.StateFactory
+import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeRequest
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -15,13 +17,13 @@ object ThrottleApiPostCall {
 
     private var alreadySent = true
     private var sendPending = false
-    private var nextTargetDevice: Device? = null
-    private var nextJsonData: JsonPost? = null
+    private lateinit var nextTargetDevice: Device
+    private lateinit var nextJsonData: JsonPost
 
     private var sendJob: Job? = null
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun send(deviceApi: DeviceApiService, device: Device, jsonData: JsonPost) {
+    fun send(deviceStateFactory: StateFactory, device: Device, jsonData: JsonPost) {
         Log.d(TAG, "Queueing [${jsonData}]")
 
         nextTargetDevice = device
@@ -38,7 +40,9 @@ object ThrottleApiPostCall {
             delay(TIME_MS_BETWEEN_CALL)
             if (!alreadySent) {
                 Log.d(TAG, "Posting from coroutine [${nextJsonData}]")
-                deviceApi.postJson(nextTargetDevice!!, nextJsonData!!)
+                deviceStateFactory.getState(nextTargetDevice).requestsManager.addRequest(
+                    StateChangeRequest(device, nextJsonData, saveChanges = false)
+                )
                 alreadySent = true
                 sendPending = false
             }
