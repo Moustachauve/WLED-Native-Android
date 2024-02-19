@@ -8,5 +8,6 @@ import java.io.File
 class SoftwareUpdateRequest(
     device: Device,
     val binaryFile: File,
-    val callback: (suspend (Response<ResponseBody>) -> Unit)? = null
+    val callback: (suspend (Response<ResponseBody>) -> Unit)? = null,
+    val errorCallback: (suspend (Exception) -> Unit)? = null
 ) : Request(device)

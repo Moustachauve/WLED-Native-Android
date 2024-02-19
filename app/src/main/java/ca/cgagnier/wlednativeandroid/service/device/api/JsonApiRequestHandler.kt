@@ -19,8 +19,12 @@ class JsonApiRequestHandler(application: DevicesApplication) : RequestHandler(ap
     }
 
     override suspend fun handleSoftwareUpdateRequest(request: SoftwareUpdateRequest) {
-        val response = DeviceApiService.fromApplication(application)
-            .installUpdate(request.device, request.binaryFile)
-        request.callback?.invoke(response)
+        try {
+            val response = DeviceApiService.fromApplication(application)
+                .installUpdate(request.device, request.binaryFile)
+            request.callback?.invoke(response)
+        } catch (e: Exception) {
+            request.errorCallback?.invoke(e)
+        }
     }
 }
