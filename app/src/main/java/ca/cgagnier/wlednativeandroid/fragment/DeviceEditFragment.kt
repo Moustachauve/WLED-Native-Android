@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceEditBinding
@@ -37,14 +38,17 @@ class DeviceEditFragment : Fragment() {
     private val deviceEditViewModel: DeviceEditViewModel by activityViewModels {
         DeviceEditViewModelFactory()
     }
+    private val appContainer: AppContainer by lazy {
+        (requireActivity().application as DevicesApplication).container
+    }
     private val deviceRepository: DeviceRepository by lazy {
-        (requireActivity().application as DevicesApplication).deviceRepository
+        appContainer.deviceRepository
     }
     private val versionWithAssetsRepository: VersionWithAssetsRepository by lazy {
-        (requireActivity().application as DevicesApplication).versionWithAssetsRepository
+        appContainer.versionWithAssetsRepository
     }
     private val deviceStateFactory by lazy {
-        (requireActivity().application as DevicesApplication).deviceStateFactory
+        appContainer.deviceStateFactory
     }
 
     private var firstLoad = true

@@ -2,7 +2,7 @@ package ca.cgagnier.wlednativeandroid.service.device.api
 
 import android.graphics.Color
 import android.util.Log
-import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
@@ -22,15 +22,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class JsonApiRequestHandler(application: DevicesApplication) : RequestHandler(application) {
+class JsonApiRequestHandler(appContainer: AppContainer) : RequestHandler() {
 
-    private var deviceRepository: DeviceRepository
-    private var releaseService: ReleaseService
-
-    init {
-        deviceRepository = application.deviceRepository
-        releaseService = ReleaseService(application.versionWithAssetsRepository)
-    }
+    private var deviceRepository: DeviceRepository = appContainer.deviceRepository
+    private var releaseService: ReleaseService = ReleaseService(appContainer.versionWithAssetsRepository)
 
     private fun getJsonApi(device: Device): DeviceApi {
         return Retrofit.Builder().baseUrl(device.getDeviceUrl())

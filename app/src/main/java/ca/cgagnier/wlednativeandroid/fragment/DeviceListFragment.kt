@@ -36,6 +36,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.AutoDiscoveryActivity
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
@@ -59,17 +60,19 @@ import kotlinx.coroutines.launch
 class DeviceListFragment : Fragment(),
     SwipeRefreshLayout.OnRefreshListener {
 
+    private val appContainer: AppContainer by lazy {
+        (requireActivity().application as DevicesApplication).container
+    }
     private val deviceRepository: DeviceRepository by lazy {
-        (requireActivity().application as DevicesApplication).deviceRepository
+        appContainer.deviceRepository
     }
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).deviceRepository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository
+            appContainer.deviceRepository, appContainer.userPreferencesRepository
         )
     }
     private val deviceStateFactory by lazy {
-        (requireActivity().application as DevicesApplication).deviceStateFactory
+        appContainer.deviceStateFactory
     }
 
     private var _binding: FragmentDeviceListBinding? = null

@@ -1,13 +1,17 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import ca.cgagnier.wlednativeandroid.R
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 @Entity
+@Parcelize
 data class Device(
     @PrimaryKey
     val address: String,
@@ -45,8 +49,9 @@ data class Device(
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val productName: String = UNKNOWN_VALUE,
-) {
+): Parcelable {
     @Ignore
+    @IgnoredOnParcel
     var isSliding = false
 
     fun getDeviceUrl(): String {

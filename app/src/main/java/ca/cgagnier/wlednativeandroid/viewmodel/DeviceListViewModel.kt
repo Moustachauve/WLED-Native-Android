@@ -26,6 +26,8 @@ class DeviceListViewModel(private val repository: DeviceRepository,
         }
     }.asLiveData()
 
+    val allDevicesFlow = repository.allDevices
+
     var selectedDevice: Device? = null
     var isTwoPane = MutableLiveData(false)
     var isListHidden = MutableLiveData(false)

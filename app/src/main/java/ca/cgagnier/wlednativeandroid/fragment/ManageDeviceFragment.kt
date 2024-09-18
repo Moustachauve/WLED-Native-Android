@@ -27,7 +27,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class ManageDeviceFragment : BottomSheetDialogFragment() {
 
     private val manageDevicesViewModel: ManageDevicesViewModel by activityViewModels {
-        ManageDevicesViewModelFactory((requireActivity().application as DevicesApplication).deviceRepository)
+        ManageDevicesViewModelFactory(
+            (requireActivity().application as DevicesApplication).container.deviceRepository
+        )
     }
 
     private lateinit var deviceListAdapter: DeviceListManageAdapter

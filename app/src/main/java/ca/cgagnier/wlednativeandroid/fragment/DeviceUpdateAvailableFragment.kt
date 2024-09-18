@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateAvailableBinding
@@ -33,6 +34,9 @@ private const val IS_LARGE_LAYOUT = "is_large_layout"
  * create an instance of this fragment.
  */
 class DeviceUpdateAvailableFragment : WiderDialogFragment() {
+    private val appContainer: AppContainer by lazy {
+        (requireActivity().application as DevicesApplication).container
+    }
     private lateinit var deviceAddress: String
     private lateinit var device: Device
     private lateinit var version: VersionWithAssets
@@ -112,10 +116,8 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
     }
 
     private fun loadDeviceAndVersion() {
-        val deviceRepository =
-            (requireActivity().application as DevicesApplication).deviceRepository
-        val versionRepository =
-            (requireActivity().application as DevicesApplication).versionWithAssetsRepository
+        val deviceRepository = appContainer.deviceRepository
+        val versionRepository = appContainer.versionWithAssetsRepository
         lifecycleScope.launch {
             device = deviceRepository.findDeviceByAddress(deviceAddress)!!
             version = if (device.branch == Branch.BETA) {
@@ -157,8 +159,7 @@ class DeviceUpdateAvailableFragment : WiderDialogFragment() {
 
         lifecycleScope.launch {
             Log.d(TAG, "Saving skipUpdateTag from update available dialog")
-            val deviceRepository =
-                (requireActivity().application as DevicesApplication).deviceRepository
+            val deviceRepository = appContainer.deviceRepository
             deviceRepository.update(updatedDevice)
             dismiss()
         }

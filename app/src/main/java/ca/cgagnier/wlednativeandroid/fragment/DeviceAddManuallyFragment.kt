@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceAddBinding
@@ -24,13 +25,16 @@ import kotlinx.coroutines.launch
 
 
 class DeviceAddManuallyFragment : DialogFragment() {
+    private val appContainer: AppContainer by lazy {
+        (requireActivity().application as DevicesApplication).container
+    }
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            (requireActivity().application as DevicesApplication).deviceRepository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository)
+            appContainer.deviceRepository,
+            appContainer.userPreferencesRepository)
     }
     private val deviceStateFactory by lazy {
-        (requireActivity().application as DevicesApplication).deviceStateFactory
+        appContainer.deviceStateFactory
     }
     private var _binding: FragmentDeviceAddBinding? = null
     private val binding get() = _binding!!

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentDeviceUpdateInstallingBinding
@@ -31,8 +32,11 @@ private const val VERSION_TAG = "version_tag"
 
 
 class DeviceUpdateInstallingFragment : DialogFragment() {
+    private val appContainer: AppContainer by lazy {
+        (requireActivity().application as DevicesApplication).container
+    }
     private val deviceStateFactory by lazy {
-        (requireActivity().application as DevicesApplication).deviceStateFactory
+        appContainer.deviceStateFactory
     }
     private lateinit var deviceAddress: String
     private lateinit var device: Device
@@ -90,10 +94,8 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
     }
 
     private fun loadDeviceAndVersion() {
-        val deviceRepository =
-            (requireActivity().application as DevicesApplication).deviceRepository
-        val versionRepository =
-            (requireActivity().application as DevicesApplication).versionWithAssetsRepository
+        val deviceRepository = appContainer.deviceRepository
+        val versionRepository = appContainer.versionWithAssetsRepository
         lifecycleScope.launch {
             device = deviceRepository.findDeviceByAddress(deviceAddress)!!
             version = versionRepository.getVersionByTag(versionTag)!!
@@ -243,8 +245,7 @@ class DeviceUpdateInstallingFragment : DialogFragment() {
 
         lifecycleScope.launch {
             Log.d(TAG, "Saving deviceUpdated")
-            val deviceRepository =
-                (requireActivity().application as DevicesApplication).deviceRepository
+            val deviceRepository = appContainer.deviceRepository
             deviceRepository.update(device)
             deviceStateFactory.getState(device).requestsManager.addRequest(RefreshRequest(device))
         }

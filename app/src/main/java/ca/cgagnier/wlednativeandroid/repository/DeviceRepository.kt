@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import ca.cgagnier.wlednativeandroid.model.Device
 import kotlinx.coroutines.flow.Flow
 
+// TODO: Should only pass the Dao, not the whole database
 class DeviceRepository(deviceDatabase: DevicesDatabase) {
     private val deviceDao = deviceDatabase.deviceDao()
     val allDevices: Flow<List<Device>> = deviceDao.getAlphabetizedDevices()

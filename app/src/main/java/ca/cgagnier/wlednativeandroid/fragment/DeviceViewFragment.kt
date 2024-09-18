@@ -11,8 +11,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.view.*
-import android.webkit.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.URLUtil
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.view.menu.MenuBuilder
@@ -30,6 +41,7 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.DeviceEditActivity
 import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.FileUploadContract
@@ -51,16 +63,18 @@ import java.util.Date
 
 class DeviceViewFragment : Fragment() {
 
+    private val appContainer: AppContainer by lazy {
+        (requireActivity().application as DevicesApplication).container
+    }
     private val deviceRepository: DeviceRepository by lazy {
-        (requireActivity().application as DevicesApplication).deviceRepository
+        appContainer.deviceRepository
     }
     private val deviceViewViewModel: DeviceViewViewModel by viewModels {
         DeviceViewViewModelFactory()
     }
     private val deviceListViewModel: DeviceListViewModel by activityViewModels {
         DeviceListViewModelFactory(
-            deviceRepository,
-            (requireActivity().application as DevicesApplication).userPreferencesRepository
+            deviceRepository, appContainer.userPreferencesRepository
         )
     }
 

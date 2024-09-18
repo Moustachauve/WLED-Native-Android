@@ -8,6 +8,7 @@ plugins {
     id 'com.google.firebase.firebase-perf'
     id 'com.google.devtools.ksp'
     id 'org.jetbrains.kotlin.kapt'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -38,6 +39,10 @@ android {
 
     buildFeatures {
         dataBinding true
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.7"
     }
 
     buildTypes {
@@ -67,6 +72,7 @@ dependencies {
     def room_version = '2.6.1'
 
     implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.5'
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation 'androidx.activity:activity-ktx:1.9.2'
     implementation 'com.google.android.material:material:1.12.0'
@@ -95,8 +101,33 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14'
 
+    // Compose
+    def composeBom = platform('androidx.compose:compose-bom:2024.09.00')
+    implementation composeBom
+    androidTestImplementation composeBom
+
+    // Material Design 3
+    implementation 'androidx.compose.material3:material3'
+    // Android Studio Preview support
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    implementation "androidx.compose.ui:ui"
+    implementation "androidx.compose.ui:ui-graphics"
+    implementation "androidx.activity:activity-compose"
+    implementation "androidx.compose.material3.adaptive:adaptive"
+    implementation "androidx.compose.material3.adaptive:adaptive-layout"
+    implementation "androidx.compose.material3.adaptive:adaptive-navigation"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose"
+
+
     // Can't update because of conflict with firebase
     // https://github.com/firebase/firebase-android-sdk/issues/5997#issuecomment-2135743248
+    //noinspection GradleDependency
     implementation 'com.google.protobuf:protobuf-javalite:4.26.1'
 
     testImplementation "junit:junit:4.13.2"

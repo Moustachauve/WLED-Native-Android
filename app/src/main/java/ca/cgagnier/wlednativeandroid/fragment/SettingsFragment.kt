@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
-import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.databinding.FragmentSettingsBinding
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -26,10 +26,10 @@ class SettingsFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(layoutInflater)
-        val devicesApp = (requireActivity().application as DevicesApplication)
+        val appContainer = (requireActivity().application as DevicesApplication).container
 
         lifecycleScope.launch {
-            devicesApp.userPreferencesRepository.themeMode.collect {
+            appContainer.userPreferencesRepository.themeMode.collect {
                 when (it) {
                     ThemeSettings.Light -> binding.radioThemeLight.isChecked = true
                     ThemeSettings.Dark -> binding.radioThemeDark.isChecked = true
@@ -38,22 +38,22 @@ class SettingsFragment : BottomSheetDialogFragment() {
             }
         }
         lifecycleScope.launch {
-            devicesApp.userPreferencesRepository.autoDiscovery.collect {
+            appContainer.userPreferencesRepository.autoDiscovery.collect {
                 binding.switchAutoDiscovery.isChecked = it
             }
         }
         lifecycleScope.launch {
-            devicesApp.userPreferencesRepository.showOfflineDevicesLast.collect {
+            appContainer.userPreferencesRepository.showOfflineDevicesLast.collect {
                 binding.switchOfflineLast.isChecked = it
             }
         }
         lifecycleScope.launch {
-            devicesApp.userPreferencesRepository.sendCrashData.collect {
+            appContainer.userPreferencesRepository.sendCrashData.collect {
                 binding.switchSendCrashData.isChecked = it
             }
         }
         lifecycleScope.launch {
-            devicesApp.userPreferencesRepository.sendPerformanceData.collect {
+            appContainer.userPreferencesRepository.sendPerformanceData.collect {
                 binding.switchSendPerformanceData.isChecked = it
             }
         }
@@ -65,32 +65,32 @@ class SettingsFragment : BottomSheetDialogFragment() {
                     R.id.radio_theme_dark-> ThemeSettings.Dark
                     else -> ThemeSettings.Auto
                 }
-                devicesApp.userPreferencesRepository.updateThemeMode(mode)
+                appContainer.userPreferencesRepository.updateThemeMode(mode)
             }
         }
 
         binding.switchAutoDiscovery.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch {
-                devicesApp.userPreferencesRepository.updateAutoDiscovery(isChecked)
+                appContainer.userPreferencesRepository.updateAutoDiscovery(isChecked)
             }
         }
 
         // TODO When this is on, add a separation before offline devices (Future update)
         binding.switchOfflineLast.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch {
-                devicesApp.userPreferencesRepository.updateShowOfflineDeviceLast(isChecked)
+                appContainer.userPreferencesRepository.updateShowOfflineDeviceLast(isChecked)
             }
         }
 
         binding.switchSendCrashData.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch {
-                devicesApp.userPreferencesRepository.updateSendCrashData(isChecked)
+                appContainer.userPreferencesRepository.updateSendCrashData(isChecked)
             }
         }
 
         binding.switchSendPerformanceData.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch {
-                devicesApp.userPreferencesRepository.updateSendPerformanceData(isChecked)
+                appContainer.userPreferencesRepository.updateSendPerformanceData(isChecked)
             }
         }
         return binding.root

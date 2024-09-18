@@ -1,16 +1,16 @@
 package ca.cgagnier.wlednativeandroid.service.device.api
 
 import android.util.Log
-import ca.cgagnier.wlednativeandroid.DevicesApplication
+import ca.cgagnier.wlednativeandroid.AppContainer
 import ca.cgagnier.wlednativeandroid.service.device.api.request.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 
-class RequestsManager(val application: DevicesApplication) {
+class RequestsManager(appContainer: AppContainer) {
     // TODO: Add websocket support
-    private val requestHandler: RequestHandler = JsonApiRequestHandler(application)
+    private val requestHandler: RequestHandler = JsonApiRequestHandler(appContainer)
     private val requestQueue = ArrayDeque<Request>()
 
     @OptIn(DelicateCoroutinesApi::class)
