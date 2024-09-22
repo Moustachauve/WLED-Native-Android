@@ -1,15 +1,19 @@
 package ca.cgagnier.wlednativeandroid.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,24 +25,42 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceWebView
+import ca.cgagnier.wlednativeandroid.ui.components.LoadingState
+import ca.cgagnier.wlednativeandroid.ui.components.WebViewState
 import ca.cgagnier.wlednativeandroid.ui.components.rememberSaveableWebViewState
 import ca.cgagnier.wlednativeandroid.ui.components.rememberWebViewNavigator
+
+const val TAG = "ui.DeviceDetail"
 
 @Composable
 fun DeviceDetailAppBar(
     device: Device,
     canNavigateBack: Boolean,
+    webViewState: WebViewState,
     navigateUp: () -> Unit,
+    refreshPage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         title = {
-            Column {
-                Text(text = device.name)
-                Text(text = device.address)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text(text = device.name)
+                    Text(text = device.address)
+                }
+                if (webViewState.loadingState is LoadingState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(22.dp)
+                            .width(22.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         },
         modifier = modifier,
@@ -53,7 +75,7 @@ fun DeviceDetailAppBar(
             }
         },
         actions = {
-            IconButton(onClick = navigateUp) {
+            IconButton(onClick = refreshPage) {
                 Icon(
                     imageVector = Icons.Filled.Refresh,
                     contentDescription = stringResource(R.string.refresh_page)
@@ -76,12 +98,18 @@ fun DeviceDetail(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ) {
+    val webViewState = rememberSaveableWebViewState()
+    val navigator = rememberWebViewNavigator()
     Scaffold(
         topBar = {
             DeviceDetailAppBar(
+                device = device,
                 canNavigateBack = canNavigateBack,
+                webViewState = webViewState,
                 navigateUp = navigateUp,
-                device = device
+                refreshPage = {
+                    navigator.reload()
+                },
             )
         }
     ) { innerPadding ->
@@ -93,14 +121,12 @@ fun DeviceDetail(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val webViewState = rememberSaveableWebViewState()
-            val navigator = rememberWebViewNavigator()
-
             LaunchedEffect(navigator) {
                 val bundle = webViewState.viewState
                 if (bundle == null) {
+                    Log.i(TAG, "Loading device for first time")
                     // This is the first time load, so load the home page.
-                    navigator.loadUrl(device.getDeviceUrl())
+                    //navigator.loadUrl(device.getDeviceUrl())
                 }
             }
             DeviceWebView(

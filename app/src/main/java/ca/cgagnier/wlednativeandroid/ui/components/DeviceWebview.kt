@@ -21,6 +21,7 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -87,6 +88,7 @@ fun DeviceWebView(
 ) {
     Log.i(DeviceViewFragment.TAG, "composing webview")
     val webView = webViewViewModel.webView().observeAsState().value ?: return
+    navigator.backQueue = webViewViewModel.backQueue
 
     BackHandler(navigator.canGoBack) {
         // TODO: Investigate why back is not working when opening a 2nd device
@@ -133,6 +135,16 @@ fun DeviceWebView(
     client.navigator = navigator
     chromeClient.state = state
 
+    if (webViewViewModel.displayedDevice == null || webViewViewModel.displayedDevice != device) {
+        webViewViewModel.displayedDevice = device
+        Log.i(TAG, "Device changed, resetting")
+        webView.loadUrl("about:blank")
+        navigator.reset()
+        Log.i(TAG, "Navigating to ${device.getDeviceUrl()}")
+        state.loadingState = Loading(0.0f)
+        navigator.loadUrl(device.getDeviceUrl())
+    }
+
     AndroidView(
         factory = { context ->
             webView.apply {
@@ -141,6 +153,7 @@ fun DeviceWebView(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
+                webView.setBackgroundColor(Color.TRANSPARENT)
                 webChromeClient = chromeClient
                 webViewClient = client
 
@@ -158,6 +171,7 @@ fun DeviceWebView(
             }
         },
         update = {
+            Log.d(TAG, "update!")
             //it.loadUrl(url)
         },
     )
@@ -171,6 +185,7 @@ class CustomWebViewClient: WebViewClient() {
 
     override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
+        Log.d(TAG, "onPageStarted $url")
         state.loadingState = Loading(0.0f)
         state.errorsForCurrentRequest.clear()
         state.pageTitle = null
@@ -178,7 +193,10 @@ class CustomWebViewClient: WebViewClient() {
 
     override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        state.loadingState = Finished
+        Log.d(TAG, "onPageFinished $url")
+        if (url != "about:blank") {
+            state.loadingState = Finished
+        }
     }
 
     override fun doUpdateVisitedHistory(view: WebView, url: String?, isReload: Boolean) {
@@ -188,7 +206,7 @@ class CustomWebViewClient: WebViewClient() {
         if (url != null && !isReload) {
             if (navigator.isGoingBack) {
                 navigator.isGoingBack = false
-            } else if (!state.lastLoadedUrl.isNullOrEmpty()) {
+            } else if (!state.lastLoadedUrl.isNullOrEmpty() && state.lastLoadedUrl != "about:blank") {
                 state.lastLoadedUrl?.let { lastLoadedUrl ->
                     navigator.backQueue.addLast(lastLoadedUrl)
                 }
@@ -206,6 +224,7 @@ class CustomWebViewClient: WebViewClient() {
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
+        Log.i(TAG, "onReceivedError ${request?.url} - ${error?.description}")
         if (request?.isForMainFrame == true) {
             Log.i(
                 TAG,
@@ -215,6 +234,9 @@ class CustomWebViewClient: WebViewClient() {
             view?.loadUrl("file:///android_asset/device_error.html")
         }
         super.onReceivedError(view, request, error)
+        if (error != null) {
+            state.errorsForCurrentRequest.add(WebViewError(request, error))
+        }
     }
 }
 
@@ -432,7 +454,15 @@ fun downloadListener(
 @Stable
 class WebViewNavigator(private val coroutineScope: CoroutineScope) {
 
-    internal val backQueue = ArrayDeque<String>(5)
+    init {
+        Log.d(DeviceViewFragment.TAG, "WebViewNavigator init")
+    }
+
+    internal var backQueue = ArrayDeque<String>(5)
+        set(value) {
+            canGoBack = value.isNotEmpty()
+            field = value
+        }
 
     private sealed interface NavigationEvent {
         object Back : NavigationEvent
@@ -532,15 +562,22 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
     var canGoForward: Boolean by mutableStateOf(false)
         internal set
 
-    fun loadUrl(url: String, additionalHttpHeaders: Map<String, String> = emptyMap()) {
-        coroutineScope.launch {
-            navigationEvents.emit(
-                NavigationEvent.LoadUrl(
-                    url,
-                    additionalHttpHeaders
-                )
-            )
+    fun goBackLogic(): Boolean {
+        if (canGoBack) {
+            val backUrl = backQueue.removeLast()
+            loadUrl(backUrl)
+            isGoingBack = true
+            return true
         }
+        Log.i(DeviceViewFragment.TAG, "Can't go back")
+        return false
+    }
+
+    internal fun reset() {
+        Log.d(DeviceViewFragment.TAG, "Resetting back queue")
+        backQueue.clear()
+        canGoBack = false
+        canGoForward = false
     }
 
     /**
@@ -552,6 +589,7 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
     internal fun filterBackQueue(currentUrl: String) {
         Log.i(DeviceViewFragment.TAG, "== Starting filter ========")
         Log.i(DeviceViewFragment.TAG, "Current Url: $currentUrl")
+        Log.i(DeviceViewFragment.TAG, backQueue.count().toString())
         Log.i(DeviceViewFragment.TAG, backQueue.toString())
         var i = backQueue.size
         for (url in backQueue.asReversed()) {
@@ -562,6 +600,17 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
                 Log.i(DeviceViewFragment.TAG, backQueue.toString())
                 return
             }
+        }
+    }
+
+    fun loadUrl(url: String, additionalHttpHeaders: Map<String, String> = emptyMap()) {
+        coroutineScope.launch {
+            navigationEvents.emit(
+                NavigationEvent.LoadUrl(
+                    url,
+                    additionalHttpHeaders
+                )
+            )
         }
     }
 
