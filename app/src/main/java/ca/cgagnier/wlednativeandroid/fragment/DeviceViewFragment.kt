@@ -468,8 +468,7 @@ class DeviceViewFragment : Fragment() {
 
     companion object {
         const val TAG = "deviceWebview"
-
-        private const val DEVICE_ADDRESS = "device_address"
+        const val DEVICE_ADDRESS = "device_address"
 
         @JvmStatic
         fun newInstance(deviceAddress: String) =

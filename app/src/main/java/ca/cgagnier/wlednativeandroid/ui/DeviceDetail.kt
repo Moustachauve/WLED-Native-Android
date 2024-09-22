@@ -1,16 +1,15 @@
 package ca.cgagnier.wlednativeandroid.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,11 +17,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.ui.components.DeviceWebView
+import ca.cgagnier.wlednativeandroid.ui.components.rememberSaveableWebViewState
+import ca.cgagnier.wlednativeandroid.ui.components.rememberWebViewNavigator
 
 @Composable
 fun DeviceDetailAppBar(
@@ -66,11 +69,12 @@ fun DeviceDetailAppBar(
     )
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DeviceDetail(
     device: Device,
     canNavigateBack: Boolean,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -89,7 +93,22 @@ fun DeviceDetail(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = device.name)
+            val webViewState = rememberSaveableWebViewState()
+            val navigator = rememberWebViewNavigator()
+
+            LaunchedEffect(navigator) {
+                val bundle = webViewState.viewState
+                if (bundle == null) {
+                    // This is the first time load, so load the home page.
+                    navigator.loadUrl(device.getDeviceUrl())
+                }
+            }
+            DeviceWebView(
+                device,
+                state = webViewState,
+                navigator = navigator
+            )
+            /*
             Row {
                 AssistChip(onClick = {
                     //navigator.navigateTo(
@@ -98,7 +117,7 @@ fun DeviceDetail(
                 }, label = {
                     Text(text = "Option 1")
                 })
-            }
+            }*/
         }
     }
 }

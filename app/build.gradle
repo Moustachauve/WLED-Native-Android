@@ -65,13 +65,14 @@ android {
 }
 
 dependencies {
-
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6'
-    implementation 'androidx.navigation:navigation-compose:2.8.1'
     def moshiVersion = '1.15.1'
     def retrofit2_version = '2.11.0'
     def okhttp3_version = '5.0.0-alpha.14'
     def room_version = '2.6.1'
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6'
+    implementation 'androidx.navigation:navigation-compose:2.8.1'
+    implementation 'androidx.compose.runtime:runtime-livedata:1.7.2'
 
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.6'

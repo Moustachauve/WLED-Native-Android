@@ -30,19 +30,20 @@ fun DeviceListDetail(devices: State<List<Device>>, modifier: Modifier = Modifier
                     onItemClick = { device ->
                         navigator.navigateTo(
                             pane = ListDetailPaneScaffoldRole.Detail,
-                            content = device.name
+                            content = device
                         )
                     }
                 )
             }
         }, detailPane = {
-            val content = navigator.currentDestination?.content?.toString() ?: "Select an item"
             AnimatedPane {
-                DeviceDetail(
-                    Device("123", content, false, false, "123"),
-                    canNavigateBack = navigator.canNavigateBack(),
-                    navigateUp = { navigator.navigateBack() }
-                )
+                navigator.currentDestination?.content?.let {
+                    DeviceDetail(
+                        it as Device,
+                        canNavigateBack = navigator.canNavigateBack(),
+                        navigateUp = { navigator.navigateBack() }
+                    )
+                }
             }
         }, extraPane = {
             val content = navigator.currentDestination?.content?.toString() ?: "Select an option"
