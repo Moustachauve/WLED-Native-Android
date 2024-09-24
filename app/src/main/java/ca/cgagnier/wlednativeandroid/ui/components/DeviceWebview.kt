@@ -536,17 +536,6 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
         }
     }
 
-    fun goBackLogic(): Boolean {
-        if (canGoBack) {
-            val backUrl = backQueue.removeLast()
-            loadUrl(backUrl)
-            isGoingBack = true
-            return true
-        }
-        Log.i(DeviceViewFragment.TAG, "Can't go back")
-        return false
-    }
-
     var isGoingBack: Boolean by mutableStateOf(false)
         internal set
 
