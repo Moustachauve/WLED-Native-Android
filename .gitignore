@@ -87,3 +87,6 @@ lint/tmp/
 # lint/reports/
 .DS_Store
 .idea/deploymentTargetDropDown.xml
+.idea/deploymentTargetSelector.xml
+.idea/inspectionProfiles/
+.idea/studiobot.xml
