@@ -11,6 +11,10 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -19,6 +23,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 @Composable
 fun DeviceListDetail(devices: State<List<Device>>, modifier: Modifier = Modifier) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Any>()
+    var selectedDevice by remember { mutableStateOf<Device?>(null) }
     NavigableListDetailPaneScaffold(
         modifier = modifier,
         navigator = navigator,
@@ -27,7 +32,9 @@ fun DeviceListDetail(devices: State<List<Device>>, modifier: Modifier = Modifier
             AnimatedPane {
                 DeviceList(
                     devices,
+                    selectedDevice,
                     onItemClick = { device ->
+                        selectedDevice = device
                         navigator.navigateTo(
                             pane = ListDetailPaneScaffoldRole.Detail,
                             content = device
@@ -41,7 +48,10 @@ fun DeviceListDetail(devices: State<List<Device>>, modifier: Modifier = Modifier
                     DeviceDetail(
                         it as Device,
                         canNavigateBack = navigator.canNavigateBack(),
-                        navigateUp = { navigator.navigateBack() }
+                        navigateUp = {
+                            //selectedDevice = null
+                            navigator.navigateBack()
+                        }
                     )
                 }
             }

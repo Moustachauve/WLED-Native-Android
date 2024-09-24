@@ -38,7 +38,7 @@ fun DeviceListItem(device: Device, modifier: Modifier = Modifier) {
     )
 
     Column(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier.padding(12.dp),
     ) {
         Row(
             modifier = Modifier, verticalAlignment = Alignment.CenterVertically
