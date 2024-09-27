@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
@@ -21,23 +20,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
 
 
 @Composable
 fun DeviceAdd(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deviceAdded: () -> Unit,
+    viewModel: DeviceAddViewModel = hiltViewModel(),
 ) {
     Column(
         modifier = modifier
@@ -56,15 +58,20 @@ fun DeviceAdd(
                 FocusRequester()
             }
             val focusManager = LocalFocusManager.current
-            val context = LocalContext.current
+
+            LaunchedEffect("initialFocus") {
+                focusRequester.requestFocus()
+            }
             Text(
                 text = stringResource(R.string.add_a_device),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = viewModel.address,
+                onValueChange = {
+                    viewModel.address = it
+                },
                 label = { Text(stringResource(R.string.ip_address_or_url)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -81,8 +88,10 @@ fun DeviceAdd(
             )
             Spacer(Modifier.padding(4.dp))
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = viewModel.name,
+                onValueChange = {
+                    viewModel.name = it
+                },
                 label = { Text(stringResource(R.string.custom_name)) },
                 supportingText = { Text(stringResource(R.string.leave_this_empty_to_use_the_device_name)) },
                 singleLine = true,
@@ -91,9 +100,8 @@ fun DeviceAdd(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        focusManager.clearFocus()
-                        // TODO: Submit with keyboard
-                        Toast.makeText(context, "Submit", Toast.LENGTH_SHORT).show()
+                        viewModel.createDevice()
+                        deviceAdded()
                     }
                 ),
                 modifier = Modifier
@@ -105,7 +113,10 @@ fun DeviceAdd(
                     .weight(1f)
             )
             Button(
-                onClick = { /* TODO: Submit with button */ },
+                onClick = {
+                    viewModel.createDevice()
+                    deviceAdded()
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(

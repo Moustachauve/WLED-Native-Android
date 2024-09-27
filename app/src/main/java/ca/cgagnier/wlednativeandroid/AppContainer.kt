@@ -1,37 +1,73 @@
 package ca.cgagnier.wlednativeandroid
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
+import ca.cgagnier.wlednativeandroid.repository.AssetDao
+import ca.cgagnier.wlednativeandroid.repository.DeviceDao
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.DevicesDatabase
-import ca.cgagnier.wlednativeandroid.repository.UserPreferences
-import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
-import ca.cgagnier.wlednativeandroid.repository.UserPreferencesSerializer
+import ca.cgagnier.wlednativeandroid.repository.VersionDao
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
-import ca.cgagnier.wlednativeandroid.repository.migrations.UserPreferencesV0ToV1
-import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 private const val DATA_STORE_FILE_NAME = "user_prefs.pb"
 
-/**
- * [AppContainer] implementation that provides instance of [DeviceRepository]
- */
-class AppContainer(private val context: Context) {
-    private val database by lazy { DevicesDatabase.getDatabase(context) }
-    val deviceRepository by lazy { DeviceRepository(database) }
-    val deviceDiscovery by lazy { DeviceDiscovery(context) }
-    val versionWithAssetsRepository by lazy { VersionWithAssetsRepository(database) }
-    val deviceStateFactory by lazy { StateFactory(this) }
+@Module
+@InstallIn(SingletonComponent::class)
+object AppContainer {
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext appContext: Context): DevicesDatabase {
+        return DevicesDatabase.getDatabase(appContext)
+    }
 
-    private val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
+    @Provides
+    @Singleton
+    fun provideDeviceDao(appDatabase: DevicesDatabase): DeviceDao {
+        return appDatabase.deviceDao()
+    }
+    @Provides
+    @Singleton
+    fun provideVersionDao(appDatabase: DevicesDatabase): VersionDao {
+        return appDatabase.versionDao()
+    }
+    @Provides
+    @Singleton
+    fun provideAssetDao(appDatabase: DevicesDatabase): AssetDao {
+        return appDatabase.assetDao()
+    }
+    @Provides
+    @Singleton
+    fun provideDeviceRepository(deviceDao: DeviceDao): DeviceRepository {
+        return DeviceRepository(deviceDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVersionWithAssetsRepository(versionDao: VersionDao, assetDao: AssetDao): VersionWithAssetsRepository {
+        return VersionWithAssetsRepository(versionDao, assetDao)
+    }
+    @Provides
+    @Singleton
+    fun provideStateFactory(): StateFactory {
+        return StateFactory()
+    }
+
+    //val deviceDiscovery by lazy { DeviceDiscovery(context) }
+    //val deviceStateFactory by lazy { StateFactory(this) }
+
+    /*private val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
         fileName = DATA_STORE_FILE_NAME,
         serializer = UserPreferencesSerializer(),
         produceMigrations = { _ ->
             listOf(UserPreferencesV0ToV1())
         }
-    )
+    )*/
 
-    val userPreferencesRepository by lazy { UserPreferencesRepository(context.userPreferencesStore) }
+    //val userPreferencesRepository by lazy { UserPreferencesRepository(context.userPreferencesStore) }
 }

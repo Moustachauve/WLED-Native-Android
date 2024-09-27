@@ -46,6 +46,7 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceListItem
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DeviceListAppBar(
@@ -134,6 +135,32 @@ fun DeviceList(
             }
             item {
                 Spacer(Modifier.padding(42.dp))
+            }
+        }
+
+        if (showBottomSheet) {
+            if (isKeyboardOpen) {
+                LaunchedEffect("keyboardOpen") {
+                    delay(300)
+                    sheetState.expand()
+                }
+            }
+            ModalBottomSheet(
+                modifier = Modifier.fillMaxHeight(),
+                sheetState = sheetState,
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+            ) {
+                DeviceAdd(
+                    deviceAdded = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                showBottomSheet = false
+                            }
+                        }
+                    }
+                )
             }
         }
 

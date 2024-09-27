@@ -56,7 +56,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.fragment.DeviceViewFragment
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Finished
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Loading
@@ -86,13 +85,13 @@ fun DeviceWebView(
     client: CustomWebViewClient = remember { CustomWebViewClient() },
     chromeClient: CustomWebChromeClient = remember { CustomWebChromeClient() },
 ) {
-    Log.i(DeviceViewFragment.TAG, "composing webview")
+    Log.i(TAG, "composing webview")
     val webView = webViewViewModel.webView().observeAsState().value ?: return
     navigator.backQueue = webViewViewModel.backQueue
 
     BackHandler(navigator.canGoBack) {
         // TODO: Investigate why back is not working when opening a 2nd device
-        Log.i(DeviceViewFragment.TAG, "back handler triggered")
+        Log.i(TAG, "back handler triggered")
         navigator.goBackLogic()
     }
     LaunchedEffect(webView, navigator) {
@@ -455,7 +454,7 @@ fun downloadListener(
 class WebViewNavigator(private val coroutineScope: CoroutineScope) {
 
     init {
-        Log.d(DeviceViewFragment.TAG, "WebViewNavigator init")
+        Log.d(TAG, "WebViewNavigator init")
     }
 
     internal var backQueue = ArrayDeque<String>(5)
@@ -558,12 +557,12 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
             isGoingBack = true
             return true
         }
-        Log.i(DeviceViewFragment.TAG, "Can't go back")
+        Log.i(TAG, "Can't go back")
         return false
     }
 
     internal fun reset() {
-        Log.d(DeviceViewFragment.TAG, "Resetting back queue")
+        Log.d(TAG, "Resetting back queue")
         backQueue.clear()
         canGoBack = false
         canGoForward = false
@@ -576,17 +575,17 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
      * @param currentUrl
      */
     internal fun filterBackQueue(currentUrl: String) {
-        Log.i(DeviceViewFragment.TAG, "== Starting filter ========")
-        Log.i(DeviceViewFragment.TAG, "Current Url: $currentUrl")
-        Log.i(DeviceViewFragment.TAG, backQueue.count().toString())
-        Log.i(DeviceViewFragment.TAG, backQueue.toString())
+        Log.i(TAG, "== Starting filter ========")
+        Log.i(TAG, "Current Url: $currentUrl")
+        Log.i(TAG, backQueue.count().toString())
+        Log.i(TAG, backQueue.toString())
         var i = backQueue.size
         for (url in backQueue.asReversed()) {
             i--
             if (url == currentUrl) {
                 backQueue.subList(i, backQueue.size).clear()
-                Log.i(DeviceViewFragment.TAG, "Removing up to $i")
-                Log.i(DeviceViewFragment.TAG, backQueue.toString())
+                Log.i(TAG, "Removing up to $i")
+                Log.i(TAG, backQueue.toString())
                 return
             }
         }

@@ -1,22 +1,21 @@
 package ca.cgagnier.wlednativeandroid.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
-import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flatMapLatest
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DeviceListViewModel(private val repository: DeviceRepository,
-    userPreferencesRepository: UserPreferencesRepository): ViewModel() {
-
+@HiltViewModel
+class DeviceListViewModel @Inject constructor(
+    private val repository: DeviceRepository,
+    //userPreferencesRepository: UserPreferencesRepository
+): ViewModel() {
+/*
     @OptIn(ExperimentalCoroutinesApi::class)
     val allDevices: LiveData<List<Device>> = userPreferencesRepository.showOfflineDevicesLast.flatMapLatest { showOfflineLast ->
         if (showOfflineLast) {
@@ -25,7 +24,7 @@ class DeviceListViewModel(private val repository: DeviceRepository,
             repository.allVisibleDevices
         }
     }.asLiveData()
-
+*/
     val allDevicesFlow = repository.allDevices
 
     var selectedDevice: Device? = null
@@ -57,18 +56,5 @@ class DeviceListViewModel(private val repository: DeviceRepository,
 
     companion object {
         const val TAG = "DeviceListViewModel"
-    }
-}
-
-class DeviceListViewModelFactory(
-        private val repository: DeviceRepository,
-        private val userPreferencesRepository: UserPreferencesRepository
-    ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(DeviceListViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return DeviceListViewModel(repository, userPreferencesRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
