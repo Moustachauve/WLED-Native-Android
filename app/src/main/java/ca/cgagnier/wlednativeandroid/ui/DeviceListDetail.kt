@@ -23,7 +23,10 @@ import ca.cgagnier.wlednativeandroid.model.Device
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun DeviceListDetail(devices: State<List<Device>>, modifier: Modifier = Modifier) {
+fun DeviceListDetail(
+    devices: State<List<Device>>,
+    modifier: Modifier = Modifier
+) {
     val defaultScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val customScaffoldDirective = defaultScaffoldDirective.copy(
         horizontalPartitionSpacerSize = 0.dp,
@@ -50,7 +53,7 @@ fun DeviceListDetail(devices: State<List<Device>>, modifier: Modifier = Modifier
                                 pane = ListDetailPaneScaffoldRole.Detail,
                                 content = device
                             )
-                        }
+                        },
                     )
                 }
             }, detailPane = {

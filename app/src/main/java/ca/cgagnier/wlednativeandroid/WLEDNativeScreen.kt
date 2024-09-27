@@ -10,10 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import ca.cgagnier.wlednativeandroid.ui.DeviceListDetail
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
-
-enum class WLEDNativeScreen {
-    Start,
-}
+import kotlinx.serialization.Serializable
 
 @Composable
 fun WLEDNativeApp(
@@ -27,11 +24,19 @@ fun WLEDNativeApp(
 ) {
     NavHost(
         navController = navController,
-        startDestination = WLEDNativeScreen.Start.name,
+        startDestination = DeviceListDetail,
     ) {
-        composable(route = WLEDNativeScreen.Start.name) {
+        composable<DeviceListDetail> {
             val devices = viewModel.allDevicesFlow.collectAsState(initial = emptyList())
-            DeviceListDetail(devices)
+            DeviceListDetail(
+                devices = devices,
+            )
         }
     }
 }
+
+@Serializable
+object DeviceListDetail
+
+@Serializable
+object DeviceAdd

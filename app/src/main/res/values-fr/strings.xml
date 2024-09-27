@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_logo">Logo WLED</string>
-    <string name="add_a_device">Découvrir un appareil</string>
+    <string name="add_a_device">Ajouter un appareil</string>
+    <string name="add">Ajouter</string>
     <string name="looking_for_devices">Recherche d\'appareils</string>
     <string name="ip_address_or_url">Adresse IP ou URL</string>
     <string name="custom_name">Nom personnalisé</string>

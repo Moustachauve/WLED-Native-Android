@@ -52,7 +52,7 @@ fun DeviceListItem(device: Device, modifier: Modifier = Modifier) {
                     }
                 }
             }
-            Spacer(modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             Switch(
                 checked = checked,
                 colors = SwitchDefaults.colors(
