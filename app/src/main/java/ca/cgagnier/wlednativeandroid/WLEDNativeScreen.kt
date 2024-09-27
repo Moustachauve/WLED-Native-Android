@@ -9,17 +9,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ca.cgagnier.wlednativeandroid.ui.DeviceListDetail
 import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
-import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModelFactory
 import kotlinx.serialization.Serializable
 
 @Composable
 fun WLEDNativeApp(
-    appContainer: AppContainer,
-    viewModel: DeviceListViewModel = viewModel(
-        factory = DeviceListViewModelFactory(
-            appContainer.deviceRepository, appContainer.userPreferencesRepository
-        )
-    ),
+    viewModel: DeviceListViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
@@ -37,6 +31,3 @@ fun WLEDNativeApp(
 
 @Serializable
 object DeviceListDetail
-
-@Serializable
-object DeviceAdd

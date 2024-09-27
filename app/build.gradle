@@ -10,6 +10,7 @@ plugins {
     id 'org.jetbrains.kotlin.kapt'
     id 'kotlin-parcelize'
     id 'org.jetbrains.kotlin.plugin.serialization' version '2.0.20'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -63,6 +64,10 @@ android {
         freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
     }
     namespace 'ca.cgagnier.wlednativeandroid'
+}
+
+kapt {
+    correctErrorTypes true
 }
 
 dependencies {
@@ -148,6 +153,11 @@ dependencies {
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
+
+    // DI - hilt
+    implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
+    implementation "com.google.dagger:hilt-android:2.51.1"
+    kapt "com.google.dagger:hilt-compiler:2.51.1"
 
     // Firebase stuff
     implementation platform('com.google.firebase:firebase-bom:33.3.0')

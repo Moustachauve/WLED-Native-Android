@@ -3,10 +3,9 @@ package ca.cgagnier.wlednativeandroid.repository
 import androidx.annotation.WorkerThread
 import ca.cgagnier.wlednativeandroid.model.Device
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-// TODO: Should only pass the Dao, not the whole database
-class DeviceRepository(deviceDatabase: DevicesDatabase) {
-    private val deviceDao = deviceDatabase.deviceDao()
+class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     val allDevices: Flow<List<Device>> = deviceDao.getAlphabetizedDevices()
     val allVisibleDevices: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevices()
     val allVisibleDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevicesOfflineLast()

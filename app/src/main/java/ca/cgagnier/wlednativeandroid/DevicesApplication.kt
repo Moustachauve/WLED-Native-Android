@@ -1,15 +1,7 @@
 package ca.cgagnier.wlednativeandroid
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class DevicesApplication : Application() {
-    /**
-     * AppContainer instance used by the rest of classes to obtain dependencies
-     */
-    lateinit var container: AppContainer
-
-    override fun onCreate() {
-        super.onCreate()
-        container = AppContainer(this)
-    }
-}
+@HiltAndroidApp
+class DevicesApplication : Application()
