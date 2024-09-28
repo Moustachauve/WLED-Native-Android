@@ -189,6 +189,32 @@ fun DeviceList(
                 )
             }
         }
+
+        if (showBottomSheet) {
+            if (isKeyboardOpen) {
+                LaunchedEffect("keyboardOpen") {
+                    delay(300)
+                    sheetState.expand()
+                }
+            }
+            ModalBottomSheet(
+                modifier = Modifier.fillMaxHeight(),
+                sheetState = sheetState,
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+            ) {
+                DeviceAdd(
+                    deviceAdded = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                showBottomSheet = false
+                            }
+                        }
+                    }
+                )
+            }
+        }
     }
 }
 
