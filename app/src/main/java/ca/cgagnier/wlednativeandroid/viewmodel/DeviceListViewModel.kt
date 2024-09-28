@@ -25,7 +25,7 @@ class DeviceListViewModel @Inject constructor(
         }
     }.asLiveData()
 */
-    val allDevicesFlow = repository.allDevices
+    val allDevicesFlow = repository.allVisibleDevicesOfflineLast
 
     var selectedDevice: Device? = null
     var isTwoPane = MutableLiveData(false)

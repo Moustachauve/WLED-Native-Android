@@ -1,8 +1,6 @@
 package ca.cgagnier.wlednativeandroid.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,7 +18,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,8 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -121,20 +116,40 @@ fun DeviceList(
                 .padding(innerPadding),
         ) {
             itemsIndexed(devices.value) { _, device ->
-                DeviceListItem(device,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                        .background(
-                            if (device == selectedDevice) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-                            shape = MaterialTheme.shapes.large
-                        )
-                        .clip(MaterialTheme.shapes.large)
-                        .clickable {
-                            onItemClick(device)
-                        })
+                DeviceListItem(
+                    device = device,
+                    isSelected = device == selectedDevice,
+                    onClick = { onItemClick(device) },
+                )
             }
             item {
                 Spacer(Modifier.padding(42.dp))
+            }
+        }
+
+        if (showBottomSheet) {
+            if (isKeyboardOpen) {
+                LaunchedEffect("keyboardOpen") {
+                    delay(300)
+                    sheetState.expand()
+                }
+            }
+            ModalBottomSheet(
+                modifier = Modifier.fillMaxHeight(),
+                sheetState = sheetState,
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+            ) {
+                DeviceAdd(
+                    deviceAdded = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                showBottomSheet = false
+                            }
+                        }
+                    }
+                )
             }
         }
 
