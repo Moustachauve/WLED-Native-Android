@@ -21,6 +21,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,6 +84,9 @@ fun DeviceList(
     var showBottomSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val expandedFab by remember { derivedStateOf { !listState.canScrollBackward } }
+    val pullToRefreshState = rememberPullToRefreshState()
+    var isRefreshing by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -109,99 +114,113 @@ fun DeviceList(
         floatingActionButtonPosition = FabPosition.End,
 
         ) { innerPadding ->
-        LazyColumn(
-            state = listState,
+        PullToRefreshBox(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding),
+            state = pullToRefreshState,
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                // TODO: Implement refresh
+                isRefreshing = true
+                coroutineScope.launch {
+                    delay(1000)
+                    isRefreshing = false
+                }
+            },
         ) {
-            itemsIndexed(devices.value) { _, device ->
-                DeviceListItem(
-                    device = device,
-                    isSelected = device == selectedDevice,
-                    onClick = { onItemClick(device) },
-                )
-            }
-            item {
-                Spacer(Modifier.padding(42.dp))
-            }
-        }
-
-        if (showBottomSheet) {
-            if (isKeyboardOpen) {
-                LaunchedEffect("keyboardOpen") {
-                    delay(300)
-                    sheetState.expand()
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+                itemsIndexed(devices.value) { _, device ->
+                    DeviceListItem(
+                        device = device,
+                        isSelected = device == selectedDevice,
+                        onClick = { onItemClick(device) },
+                    )
+                }
+                item {
+                    Spacer(Modifier.padding(42.dp))
                 }
             }
-            ModalBottomSheet(
-                modifier = Modifier.fillMaxHeight(),
-                sheetState = sheetState,
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-            ) {
-                DeviceAdd(
-                    deviceAdded = {
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showBottomSheet = false
+
+            if (showBottomSheet) {
+                if (isKeyboardOpen) {
+                    LaunchedEffect("keyboardOpen") {
+                        delay(300)
+                        sheetState.expand()
+                    }
+                }
+                ModalBottomSheet(
+                    modifier = Modifier.fillMaxHeight(),
+                    sheetState = sheetState,
+                    onDismissRequest = {
+                        showBottomSheet = false
+                    },
+                ) {
+                    DeviceAdd(
+                        deviceAdded = {
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+                                }
                             }
                         }
-                    }
-                )
-            }
-        }
-
-        if (showBottomSheet) {
-            if (isKeyboardOpen) {
-                LaunchedEffect("keyboardOpen") {
-                    delay(300)
-                    sheetState.expand()
+                    )
                 }
             }
-            ModalBottomSheet(
-                modifier = Modifier.fillMaxHeight(),
-                sheetState = sheetState,
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-            ) {
-                DeviceAdd(
-                    deviceAdded = {
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showBottomSheet = false
+
+            if (showBottomSheet) {
+                if (isKeyboardOpen) {
+                    LaunchedEffect("keyboardOpen") {
+                        delay(300)
+                        sheetState.expand()
+                    }
+                }
+                ModalBottomSheet(
+                    modifier = Modifier.fillMaxHeight(),
+                    sheetState = sheetState,
+                    onDismissRequest = {
+                        showBottomSheet = false
+                    },
+                ) {
+                    DeviceAdd(
+                        deviceAdded = {
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+                                }
                             }
                         }
-                    }
-                )
-            }
-        }
-
-        if (showBottomSheet) {
-            if (isKeyboardOpen) {
-                LaunchedEffect("keyboardOpen") {
-                    delay(300)
-                    sheetState.expand()
+                    )
                 }
             }
-            ModalBottomSheet(
-                modifier = Modifier.fillMaxHeight(),
-                sheetState = sheetState,
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-            ) {
-                DeviceAdd(
-                    deviceAdded = {
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showBottomSheet = false
+
+            if (showBottomSheet) {
+                if (isKeyboardOpen) {
+                    LaunchedEffect("keyboardOpen") {
+                        delay(300)
+                        sheetState.expand()
+                    }
+                }
+                ModalBottomSheet(
+                    modifier = Modifier.fillMaxHeight(),
+                    sheetState = sheetState,
+                    onDismissRequest = {
+                        showBottomSheet = false
+                    },
+                ) {
+                    DeviceAdd(
+                        deviceAdded = {
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }

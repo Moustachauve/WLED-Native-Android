@@ -15,18 +15,21 @@ import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun DeviceListDetail(
-    devices: State<List<Device>>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
+    val devices = viewModel.allDevicesFlow.collectAsState(initial = emptyList())
     val defaultScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val customScaffoldDirective = defaultScaffoldDirective.copy(
         horizontalPartitionSpacerSize = 0.dp,
