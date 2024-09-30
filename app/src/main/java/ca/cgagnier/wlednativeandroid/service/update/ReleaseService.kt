@@ -14,6 +14,7 @@ import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.vdurmont.semver4j.Semver
 
+private const val TAG = "updateService"
 
 class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
 
@@ -112,9 +113,5 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             )
         }
         return assetsModels
-    }
-
-    companion object {
-        const val TAG = "updateService"
     }
 }

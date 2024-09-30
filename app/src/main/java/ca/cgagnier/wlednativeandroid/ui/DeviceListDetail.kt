@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.viewmodel.DeviceListViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable

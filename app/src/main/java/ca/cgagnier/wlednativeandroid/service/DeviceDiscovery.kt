@@ -159,7 +159,7 @@ class DeviceDiscovery(val context: Context) {
     }
 
     companion object {
-        const val TAG = "DEVICE_DISCOVERY"
+        private const val TAG = "DEVICE_DISCOVERY"
         const val SERVICE_TYPE = "_wled._tcp."
 
         private const val DEFAULT_WLED_AP_IP = "4.3.2.1"

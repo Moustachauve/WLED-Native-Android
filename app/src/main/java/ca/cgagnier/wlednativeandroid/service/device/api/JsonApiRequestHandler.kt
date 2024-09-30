@@ -199,6 +199,6 @@ class JsonApiRequestHandler @Inject constructor(
     }
 
     companion object {
-        const val TAG = "JsonApiRequestHandler"
+        private const val TAG = "JsonApiRequestHandler"
     }
 }

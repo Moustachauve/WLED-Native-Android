@@ -50,6 +50,6 @@ class RequestsManager @Inject constructor(private val requestHandler: RequestHan
     }
 
     companion object {
-        const val TAG = "RequestsManager"
+        private const val TAG = "RequestsManager"
     }
 }

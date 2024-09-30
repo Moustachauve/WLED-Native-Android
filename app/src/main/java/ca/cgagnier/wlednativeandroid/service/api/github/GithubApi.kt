@@ -86,7 +86,7 @@ class GithubApi(val context: Context) {
     }
 
     companion object {
-        const val TAG = "github-release"
+        private const val TAG = "github-release"
         const val BASE_URL = "https://api.github.com"
         const val REPO_OWNER = "Aircoookie"
         const val REPO_NAME = "WLED"

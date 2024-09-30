@@ -1,9 +1,11 @@
-package ca.cgagnier.wlednativeandroid.viewmodel
+package ca.cgagnier.wlednativeandroid.ui
 
 import androidx.lifecycle.ViewModel
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+
+private const val TAG = "DeviceListViewModel"
 
 @HiltViewModel
 class DeviceListViewModel @Inject constructor(
@@ -21,8 +23,4 @@ class DeviceListViewModel @Inject constructor(
     }.asLiveData()
 */
     val allDevicesFlow = repository.allVisibleDevicesOfflineLast
-
-    companion object {
-        const val TAG = "DeviceListViewModel"
-    }
 }

@@ -34,7 +34,7 @@ import ca.cgagnier.wlednativeandroid.ui.components.WebViewState
 import ca.cgagnier.wlednativeandroid.ui.components.rememberSaveableWebViewState
 import ca.cgagnier.wlednativeandroid.ui.components.rememberWebViewNavigator
 
-const val TAG = "ui.DeviceDetail"
+private const val TAG = "ui.DeviceDetail"
 
 @Composable
 fun DeviceDetailAppBar(

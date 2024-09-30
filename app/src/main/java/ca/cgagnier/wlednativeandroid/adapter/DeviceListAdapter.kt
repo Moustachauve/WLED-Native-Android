@@ -153,6 +153,6 @@ class DeviceListAdapter(
         .data
 
     companion object {
-        const val TAG = "DeviceListAdapter"
+        private const val TAG = "DeviceListAdapter"
     }
 }

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.lifecycle.LiveData
 
-const val TAG = "WebViewLiveData"
+private const val TAG = "WebViewLiveData"
 
 // Solution from https://medium.com/@nicholas.rose/keeping-webview-state-across-configuration-changes-8e071ee9de86
 // Allows to keep the webview alive through device rotation and activity recreation

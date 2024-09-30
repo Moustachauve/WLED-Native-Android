@@ -69,7 +69,7 @@ import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
 
-const val TAG = "ui.components.DeviceWebView"
+private const val TAG = "ui.components.DeviceWebView"
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
