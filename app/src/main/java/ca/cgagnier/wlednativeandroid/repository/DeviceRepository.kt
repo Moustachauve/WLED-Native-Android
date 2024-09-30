@@ -11,6 +11,11 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     val allVisibleDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevicesOfflineLast()
 
     @WorkerThread
+    fun getAllDevices(): List<Device> {
+        return deviceDao.getAllDevices()
+    }
+
+    @WorkerThread
     fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>> {
         return deviceDao.findDevicesWithAddresses(addresses)
     }

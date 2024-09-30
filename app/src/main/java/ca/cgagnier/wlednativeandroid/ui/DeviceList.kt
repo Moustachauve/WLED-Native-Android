@@ -72,9 +72,10 @@ fun DeviceListAppBar(
 
 @Composable
 fun DeviceList(
-    devices: State<List<Device>>,
+    devices: List<Device>,
     selectedDevice: Device?,
     onItemClick: (Device) -> Unit,
+    onRefresh: () -> Unit,
 ) {
     val isKeyboardOpen by keyboardAsState()
     val sheetState = rememberModalBottomSheetState(
@@ -87,6 +88,15 @@ fun DeviceList(
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+
+    val refresh: () -> Unit = {
+        isRefreshing = true
+        onRefresh()
+        coroutineScope.launch {
+            delay(4000)
+            isRefreshing = false
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -119,21 +129,14 @@ fun DeviceList(
                 .padding(innerPadding),
             state = pullToRefreshState,
             isRefreshing = isRefreshing,
-            onRefresh = {
-                // TODO: Implement refresh
-                isRefreshing = true
-                coroutineScope.launch {
-                    delay(1000)
-                    isRefreshing = false
-                }
-            },
+            onRefresh = refresh,
         ) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize(),
             ) {
-                itemsIndexed(devices.value) { _, device ->
+                itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
                     DeviceListItem(
                         device = device,
                         isSelected = device == selectedDevice,

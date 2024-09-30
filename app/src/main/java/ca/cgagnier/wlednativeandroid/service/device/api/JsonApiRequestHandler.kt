@@ -35,14 +35,15 @@ class JsonApiRequestHandler @Inject constructor(
     override suspend fun handleRefreshRequest(request: RefreshRequest) {
         if (!request.silentRefresh) {
             val newDevice = request.device.copy(isRefreshing = true)
-            Log.d(TAG, "Saving non-silent update")
+            Log.d(TAG, "[${request.device.address}] Saving non-silent update")
             deviceRepository.update(newDevice)
         }
 
         val response = try {
             getJsonApi(request.device).getStateInfo()
         } catch (e: Exception) {
-            request.callback?.invoke(onFailure(request.device, e))
+            val newDevice = onFailure(request.device, e)
+            request.callback?.invoke(newDevice)
             return
         }
 
@@ -53,7 +54,7 @@ class JsonApiRequestHandler @Inject constructor(
                 )
                 request.callback?.invoke(newDevice)
             } catch (e: Exception) {
-                Log.e(TAG, "Exception when parsing success callback")
+                Log.e(TAG, "[${request.device.address}] Exception when parsing success callback")
                 request.callback?.invoke(request.device)
             }
         } else {
@@ -65,7 +66,7 @@ class JsonApiRequestHandler @Inject constructor(
     }
 
     override suspend fun handleChangeStateRequest(request: StateChangeRequest) {
-        Log.d(TAG, "Posting update to device [${request.device.address}]")
+        Log.d(TAG, "[${request.device.address}] Posting update to device")
 
         val response = try {
             getJsonApi(request.device).postJson(request.state)
@@ -78,7 +79,7 @@ class JsonApiRequestHandler @Inject constructor(
             try {
                 updateDevice(request.device, response, request.saveChanges)
             } catch (e: Exception) {
-                Log.e(TAG, "Exception when parsing post response")
+                Log.e(TAG, "[${request.device.address}] Exception when parsing post response")
             }
         } else {
             onFailure(request.device, Exception("Response success, but not valid"))
@@ -144,7 +145,7 @@ class JsonApiRequestHandler @Inject constructor(
         )
 
         if (saveChanges && updatedDevice != device) {
-            Log.d(TAG, "Saving update of device from API")
+            Log.d(TAG, "[${updatedDevice.address}] Saving update of device from API")
             deviceRepository.update(updatedDevice)
         }
 
@@ -177,7 +178,7 @@ class JsonApiRequestHandler @Inject constructor(
         )
 
         if (saveChanges && updatedDevice != device) {
-            Log.d(TAG, "Saving update of device from post API")
+            Log.d(TAG, "[${updatedDevice.address}] Saving update of device from post API")
             deviceRepository.update(updatedDevice)
         }
 
@@ -193,7 +194,7 @@ class JsonApiRequestHandler @Inject constructor(
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)
 
-        Log.d(TAG, "Saving device API onFailure")
+        Log.d(TAG, "[${updatedDevice.address}] Saving device API onFailure: ${device.name}")
         deviceRepository.update(updatedDevice)
         return updatedDevice
     }

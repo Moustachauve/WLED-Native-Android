@@ -8,6 +8,8 @@ import ca.cgagnier.wlednativeandroid.repository.DevicesDatabase
 import ca.cgagnier.wlednativeandroid.repository.VersionDao
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
+import ca.cgagnier.wlednativeandroid.service.device.api.JsonApiRequestHandler
+import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,16 +33,19 @@ object AppContainer {
     fun provideDeviceDao(appDatabase: DevicesDatabase): DeviceDao {
         return appDatabase.deviceDao()
     }
+
     @Provides
     @Singleton
     fun provideVersionDao(appDatabase: DevicesDatabase): VersionDao {
         return appDatabase.versionDao()
     }
+
     @Provides
     @Singleton
     fun provideAssetDao(appDatabase: DevicesDatabase): AssetDao {
         return appDatabase.assetDao()
     }
+
     @Provides
     @Singleton
     fun provideDeviceRepository(deviceDao: DeviceDao): DeviceRepository {
@@ -49,13 +54,19 @@ object AppContainer {
 
     @Provides
     @Singleton
-    fun provideVersionWithAssetsRepository(versionDao: VersionDao, assetDao: AssetDao): VersionWithAssetsRepository {
+    fun provideVersionWithAssetsRepository(
+        versionDao: VersionDao, assetDao: AssetDao
+    ): VersionWithAssetsRepository {
         return VersionWithAssetsRepository(versionDao, assetDao)
     }
+
     @Provides
     @Singleton
-    fun provideStateFactory(): StateFactory {
-        return StateFactory()
+    fun provideStateFactory(
+        deviceRepository: DeviceRepository, versionWithAssetsRepository: VersionWithAssetsRepository
+    ): StateFactory {
+        val releaseService = ReleaseService(versionWithAssetsRepository)
+        return StateFactory(JsonApiRequestHandler(deviceRepository, releaseService))
     }
 
     //val deviceDiscovery by lazy { DeviceDiscovery(context) }

@@ -4,21 +4,26 @@ import android.util.Log
 import ca.cgagnier.wlednativeandroid.service.device.api.request.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import javax.inject.Inject
 
-class RequestsManager @Inject constructor(private val requestHandler: RequestHandler) {
+private const val TAG = "RequestsManager"
+
+class RequestsManager(
+    private val id: String,
+    private val requestHandler: RequestHandler
+) {
     // TODO: Add websocket support
     private val requestQueue = ArrayDeque<Request>()
 
-    @OptIn(DelicateCoroutinesApi::class)
+    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private val scope = CoroutineScope(newSingleThreadContext(TAG))
     private var locked = false
 
     fun addRequest(request: Request) {
         requestQueue.add(request)
-        Log.d(TAG, "Added new request: ${request.javaClass} (#${requestQueue.size})")
+        Log.d(TAG, "[$id] Added new request: ${request.javaClass} (#${requestQueue.size})")
         processAllRequests()
     }
 
@@ -27,7 +32,7 @@ class RequestsManager @Inject constructor(private val requestHandler: RequestHan
             var canProcessMore = true
             while (requestQueue.isNotEmpty() && canProcessMore) {
                 canProcessMore = processRequests()
-                Log.d(TAG, "Done request, can continue: $canProcessMore")
+                Log.d(TAG, "[$id] Done request, can continue: $canProcessMore (${requestQueue.size} left)")
             }
         }
     }
@@ -41,15 +46,11 @@ class RequestsManager @Inject constructor(private val requestHandler: RequestHan
             if (requestQueue.isEmpty()) {
                 return false
             }
-            Log.d(TAG, "Processing a request")
+            Log.d(TAG, "[$id] Processing a request")
             requestHandler.processRequest(requestQueue.removeFirst())
             return true
         } finally {
             locked = false
         }
-    }
-
-    companion object {
-        private const val TAG = "RequestsManager"
     }
 }

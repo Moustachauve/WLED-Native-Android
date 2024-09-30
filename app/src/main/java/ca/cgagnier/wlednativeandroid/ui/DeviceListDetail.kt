@@ -15,7 +15,9 @@ import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,7 +30,7 @@ fun DeviceListDetail(
     modifier: Modifier = Modifier,
     viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
-    val devices = viewModel.allDevicesFlow.collectAsState(initial = emptyList())
+    val deviceListState by viewModel.deviceListUiState.collectAsState()
     val defaultScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val customScaffoldDirective = defaultScaffoldDirective.copy(
         horizontalPartitionSpacerSize = 0.dp,
@@ -36,6 +38,10 @@ fun DeviceListDetail(
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
     var selectedDevice = navigator.currentDestination?.content as? Device
+
+    LaunchedEffect(viewModel.isPolling) {
+        viewModel.startRefreshDevicesLoop()
+    }
 
     Scaffold { innerPadding ->
         NavigableListDetailPaneScaffold(
@@ -47,7 +53,7 @@ fun DeviceListDetail(
             listPane = {
                 AnimatedPane {
                     DeviceList(
-                        devices,
+                        deviceListState.devices,
                         selectedDevice,
                         onItemClick = { device ->
                             selectedDevice = device
@@ -56,6 +62,9 @@ fun DeviceListDetail(
                                 content = device
                             )
                         },
+                        onRefresh = {
+                            viewModel.refreshDevices(silent = false)
+                        }
                     )
                 }
             }, detailPane = {
@@ -65,7 +74,6 @@ fun DeviceListDetail(
                             it as Device,
                             canNavigateBack = navigator.canNavigateBack(),
                             navigateUp = {
-                                //selectedDevice = null
                                 navigator.navigateBack()
                             }
                         )

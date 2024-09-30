@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -42,8 +44,8 @@ fun DeviceListItem(
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
 ) {
-    var sliderPosition by remember { mutableFloatStateOf(device.brightness.toFloat()) }
-    var checked by remember { mutableStateOf(device.isPoweredOn) }
+    var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
+    var checked by remember(device.isPoweredOn) { mutableStateOf(device.isPoweredOn) }
     val fixedColor = fixColor(device.color, isSystemInDarkTheme())
     val deviceColor = Color(fixedColor)
     // decorationColor is the fixedColor with some transparency
@@ -67,7 +69,19 @@ fun DeviceListItem(
                 modifier = Modifier, verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(device.name, style = MaterialTheme.typography.titleLarge)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(device.name, style = MaterialTheme.typography.titleLarge)
+                        if (device.isRefreshing) {
+                            val size = (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(start = 10.dp)
+                                    .padding(bottom = 2.dp)
+                                    .width(size.dp)
+                                    .height(size.dp),
+                            )
+                        }
+                    }
                     Row(
                         modifier = Modifier.padding(bottom = 2.dp),
                         verticalAlignment = Alignment.Bottom

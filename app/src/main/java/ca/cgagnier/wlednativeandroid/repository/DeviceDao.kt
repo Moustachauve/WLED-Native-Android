@@ -46,6 +46,9 @@ interface DeviceDao {
     @RawQuery
     suspend fun insert(query: SupportSQLiteQuery): Device
 
+    @Query("SELECT * FROM Device")
+    fun getAllDevices(): List<Device>
+
     @Query("SELECT * FROM Device ORDER BY LOWER(name) ASC, LOWER(address) ASC")
     fun getAlphabetizedDevices(): Flow<List<Device>>
 
