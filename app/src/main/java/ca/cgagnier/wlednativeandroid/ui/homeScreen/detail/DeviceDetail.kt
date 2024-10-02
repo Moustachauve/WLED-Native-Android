@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui
+package ca.cgagnier.wlednativeandroid.ui.homeScreen.detail
 
 import android.annotation.SuppressLint
 import android.util.Log

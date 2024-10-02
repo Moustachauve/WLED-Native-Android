@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui.components
+package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -28,14 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
+import kotlin.math.roundToInt
 
 @Composable
 fun DeviceListItem(
@@ -43,6 +42,8 @@ fun DeviceListItem(
     device: Device,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
+    onPowerSwitchToggle: (isOn: Boolean) -> Unit = {},
+    onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
     var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
     var checked by remember(device.isPoweredOn) { mutableStateOf(device.isPoweredOn) }
@@ -117,8 +118,9 @@ fun DeviceListItem(
                         uncheckedTrackColor = MaterialTheme.colorScheme.surface,
                         uncheckedBorderColor = deviceDecorationColor,
                     ),
-                    onCheckedChange = {
-                        checked = it
+                    onCheckedChange = { isOn ->
+                        checked = isOn
+                        onPowerSwitchToggle(isOn)
                     }
                 )
             }
@@ -131,33 +133,11 @@ fun DeviceListItem(
                     activeTrackColor = deviceColor,
                 ),
                 onValueChangeFinished = {
-                    // this is called when the user completed selecting the value
+                    onBrightnessChanged(sliderPosition.roundToInt())
                 },
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun DeviceListItemPreview() {
-    val device = Device(
-        address = "192.168.100.250",
-        name = "Preview Device",
-        isCustomName = false,
-        isHidden = true,
-        macAddress = "1A:2B:3C:4D:5E:6F",
-        brightness = 127,
-        color = Color.Cyan.toArgb(),
-        isPoweredOn = true,
-        isOnline = true,
-        isRefreshing = false,
-        networkRssi = -75,
-        networkSignal = 70,
-        isEthernet = false,
-        newUpdateVersionTagAvailable = ""
-    )
-    DeviceListItem(device = device)
 }
 
 /**

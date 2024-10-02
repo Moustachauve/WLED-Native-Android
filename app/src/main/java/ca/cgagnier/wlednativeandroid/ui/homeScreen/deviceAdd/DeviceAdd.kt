@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui
+package ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize

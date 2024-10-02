@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui
+package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -14,37 +14,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "DeviceListViewModel"
+private const val TAG = "DeviceListDetailViewModel"
 
 @HiltViewModel
-class DeviceListViewModel @Inject constructor(
+class DeviceListDetailViewModel @Inject constructor(
     private val repository: DeviceRepository,
     private val stateFactory: StateFactory
-    //userPreferencesRepository: UserPreferencesRepository
 ): ViewModel() {
-    /*
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val allDevices: LiveData<List<Device>> = userPreferencesRepository.showOfflineDevicesLast.flatMapLatest { showOfflineLast ->
-        if (showOfflineLast) {
-            repository.allVisibleDevicesOfflineLast
-        } else {
-            repository.allVisibleDevices
-        }
-    }.asLiveData()
-    */
-    val deviceListUiState: StateFlow<DeviceListUiState> = repository.allVisibleDevicesOfflineLast.map {
-        DeviceListUiState(it)
-    }.stateIn(
-        scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
-        initialValue = DeviceListUiState()
-    )
     var isPolling by mutableStateOf(false)
         private set
     private var job: Job? = null
@@ -76,14 +55,14 @@ class DeviceListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "Refreshing devices")
             val devices = repository.getAllDevices()
-            Log.d(TAG, "devices found: ${devices.size ?: 0}")
+            Log.d(TAG, "devices found: ${devices.size}")
             devices.map { device ->
                 refreshDevice(device, silent)
             }
         }
     }
 
-    private suspend fun refreshDevice(device: Device, silent: Boolean) {
+    private fun refreshDevice(device: Device, silent: Boolean) {
         Log.d(TAG, "Refreshing device ${device.name} - ${device.address}")
         stateFactory.getState(device).requestsManager.addRequest(
             RefreshRequest(
@@ -107,8 +86,3 @@ class DeviceListViewModel @Inject constructor(
         repository.delete(device)
     }
 }
-
-
-data class DeviceListUiState(
-    val devices: List<Device> = listOf()
-)

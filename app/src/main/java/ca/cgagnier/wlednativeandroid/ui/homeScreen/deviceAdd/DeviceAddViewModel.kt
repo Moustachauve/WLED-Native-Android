@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui
+package ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

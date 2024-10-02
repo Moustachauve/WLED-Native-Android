@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui
+package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -16,21 +16,20 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun DeviceListDetail(
     modifier: Modifier = Modifier,
-    viewModel: DeviceListViewModel = hiltViewModel(),
+    viewModel: DeviceListDetailViewModel = hiltViewModel(),
 ) {
-    val deviceListState by viewModel.deviceListUiState.collectAsState()
     val defaultScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val customScaffoldDirective = defaultScaffoldDirective.copy(
         horizontalPartitionSpacerSize = 0.dp,
@@ -53,7 +52,6 @@ fun DeviceListDetail(
             listPane = {
                 AnimatedPane {
                     DeviceList(
-                        deviceListState.devices,
                         selectedDevice,
                         onItemClick = { device ->
                             selectedDevice = device

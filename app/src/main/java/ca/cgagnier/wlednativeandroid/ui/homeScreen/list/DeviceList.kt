@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.ui
+package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +27,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,9 +40,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.ui.components.DeviceListItem
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -72,21 +74,23 @@ fun DeviceListAppBar(
 
 @Composable
 fun DeviceList(
-    devices: List<Device>,
     selectedDevice: Device?,
     onItemClick: (Device) -> Unit,
     onRefresh: () -> Unit,
+    viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val devices by viewModel.devices.collectAsState()
+
     val isKeyboardOpen by keyboardAsState()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false
     )
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val expandedFab by remember { derivedStateOf { !listState.canScrollBackward } }
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
+
     val coroutineScope = rememberCoroutineScope()
 
     val refresh: () -> Unit = {
@@ -117,8 +121,8 @@ fun DeviceList(
                     )
                 },
                 onClick = {
-                    showBottomSheet = true
-                },
+                    viewModel.showBottomSheet()
+                }
             )
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -139,8 +143,14 @@ fun DeviceList(
                 itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
                     DeviceListItem(
                         device = device,
-                        isSelected = device == selectedDevice,
+                        isSelected = device.address == selectedDevice?.address,
                         onClick = { onItemClick(device) },
+                        onPowerSwitchToggle = { isOn ->
+                            viewModel.toggleDevicePower(device, isOn)
+                        },
+                        onBrightnessChanged = { brightness ->
+                            viewModel.setDeviceBrightness(device, brightness)
+                        }
                     )
                 }
                 item {
@@ -148,7 +158,7 @@ fun DeviceList(
                 }
             }
 
-            if (showBottomSheet) {
+            if (uiState.showBottomSheet) {
                 if (isKeyboardOpen) {
                     LaunchedEffect("keyboardOpen") {
                         delay(300)
@@ -159,66 +169,14 @@ fun DeviceList(
                     modifier = Modifier.fillMaxHeight(),
                     sheetState = sheetState,
                     onDismissRequest = {
-                        showBottomSheet = false
+                        viewModel.hideBottomSheet()
                     },
                 ) {
                     DeviceAdd(
                         deviceAdded = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {
-                                    showBottomSheet = false
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-
-            if (showBottomSheet) {
-                if (isKeyboardOpen) {
-                    LaunchedEffect("keyboardOpen") {
-                        delay(300)
-                        sheetState.expand()
-                    }
-                }
-                ModalBottomSheet(
-                    modifier = Modifier.fillMaxHeight(),
-                    sheetState = sheetState,
-                    onDismissRequest = {
-                        showBottomSheet = false
-                    },
-                ) {
-                    DeviceAdd(
-                        deviceAdded = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showBottomSheet = false
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-
-            if (showBottomSheet) {
-                if (isKeyboardOpen) {
-                    LaunchedEffect("keyboardOpen") {
-                        delay(300)
-                        sheetState.expand()
-                    }
-                }
-                ModalBottomSheet(
-                    modifier = Modifier.fillMaxHeight(),
-                    sheetState = sheetState,
-                    onDismissRequest = {
-                        showBottomSheet = false
-                    },
-                ) {
-                    DeviceAdd(
-                        deviceAdded = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showBottomSheet = false
+                                    viewModel.hideBottomSheet()
                                 }
                             }
                         }
