@@ -26,6 +26,7 @@
     <string name="remove_device_confirm_text">Voulez-vous vraiment retirer %1$s [%2$s]?</string>
     <string name="save_device">Enregistrer l\'appareil</string>
     <string name="hide_device">Cacher l\'appareil</string>
+    <string name="device_is_visible">L\'appareil est visible</string>
     <string name="device_is_hidden">L\'appareil est caché</string>
     <string name="hidden_status">[Caché]</string>
     <string name="navigate_forward">Avancer</string>

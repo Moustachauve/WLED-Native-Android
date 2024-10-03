@@ -30,4 +30,10 @@ class DeviceAddViewModel @Inject constructor(
         )
         repository.insert(device)
     }
+
+    fun clear() {
+        address = ""
+        name = ""
+        isHidden = false
+    }
 }
