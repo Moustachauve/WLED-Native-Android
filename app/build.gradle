@@ -135,6 +135,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-compose"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose"
 
+    implementation "com.materialkolor:material-kolor:2.0.0"
 
     // Can't update because of conflict with firebase
     // https://github.com/firebase/firebase-android-sdk/issues/5997#issuecomment-2135743248
