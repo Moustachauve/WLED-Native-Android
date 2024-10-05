@@ -1,11 +1,20 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -14,8 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -41,90 +54,147 @@ fun DeviceListItem(
     device: Device,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
+    swipeToDismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
     onPowerSwitchToggle: (isOn: Boolean) -> Unit = {},
     onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
     var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
     var checked by remember(device.isPoweredOn) { mutableStateOf(device.isPoweredOn) }
 
-    DynamicMaterialTheme(
-        seedColor = Color(device.color),
-        style = PaletteStyle.Vibrant,
-        animate = true,
-        isExtendedFidelity = false,
-    ) {
+    DeviceTheme(device) {
         val cardColor =
             if (isSelected) MaterialTheme.colorScheme.inversePrimary else MaterialTheme.colorScheme.surfaceContainer
-        SelectableCard(
-            modifier = modifier
-                .padding(6.dp)
-                .clip(CardDefaults.shape),
-            isSelected = isSelected,
-            colors = CardDefaults.cardColors(
-                containerColor = cardColor,
-            ),
-            onClick = onClick
+
+        SwipeDeleteBox(
+            modifier = modifier,
+            swipeToDismissBoxState = swipeToDismissBoxState
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Row(
-                    modifier = Modifier, verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(device.name, style = MaterialTheme.typography.titleLarge)
-                            if (device.isRefreshing) {
-                                val size =
-                                    (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .padding(start = 10.dp)
-                                        .padding(bottom = 2.dp)
-                                        .width(size.dp)
-                                        .height(size.dp),
-                                )
+            SelectableCard(
+                modifier = Modifier
+                    .padding(6.dp)
+                    .clip(CardDefaults.shape),
+                isSelected = isSelected,
+                colors = CardDefaults.cardColors(
+                    containerColor = cardColor,
+                ),
+                onClick = onClick
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Row(
+                        modifier = Modifier, verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        DeviceInfoTwoRows(device = device)
+                        Spacer(Modifier.weight(1f))
+                        Switch(
+                            checked = checked,
+                            onCheckedChange = { isOn ->
+                                checked = isOn
+                                onPowerSwitchToggle(isOn)
                             }
-                        }
-                        Row(
-                            modifier = Modifier.padding(bottom = 2.dp),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Text(
-                                device.address,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                            Icon(
-                                painter = painterResource(R.drawable.twotone_signal_wifi_2_bar_24),
-                                contentDescription = stringResource(R.string.description_back_button),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                                    .height(20.dp)
-                            )
-                            if (!device.isOnline) {
-                                Text(
-                                    stringResource(R.string.is_offline),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(start = 4.dp)
-                                )
-                            }
-                        }
+                        )
                     }
-                    Spacer(Modifier.weight(1f))
-                    Switch(
-                        checked = checked,
-                        onCheckedChange = { isOn ->
-                            checked = isOn
-                            onPowerSwitchToggle(isOn)
-                        }
+                    Slider(
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = 0f..255f,
+                        onValueChangeFinished = {
+                            onBrightnessChanged(sliderPosition.roundToInt())
+                        },
                     )
                 }
-                Slider(
-                    value = sliderPosition,
-                    onValueChange = { sliderPosition = it },
-                    valueRange = 0f..255f,
-                    onValueChangeFinished = {
-                        onBrightnessChanged(sliderPosition.roundToInt())
-                    },
+            }
+        }
+    }
+}
+
+@Composable
+private fun SwipeDeleteBox(
+    modifier: Modifier = Modifier,
+    swipeToDismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
+    content: @Composable () -> Unit
+) {
+    SwipeToDismissBox(
+        modifier = modifier,
+        state = swipeToDismissBoxState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            val color by animateColorAsState(
+                when (swipeToDismissBoxState.targetValue) {
+                    SwipeToDismissBoxValue.Settled -> MaterialTheme.colorScheme.surfaceDim
+                    SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.tertiaryContainer
+                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
+                }, label = "ColorAnimation"
+            )
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(6.dp)
+                    .background(color, shape = CardDefaults.shape)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    val deleteIcon =
+                        if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.EndToStart) Icons.Filled.Delete else Icons.Outlined.Delete
+                    Crossfade(targetState = deleteIcon, label = "delete icon") {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = stringResource(R.string.description_back_button)
+                        )
+                    }
+                }
+            }
+        },
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun DeviceInfoTwoRows(
+    modifier: Modifier = Modifier,
+    device: Device
+) {
+    Column(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(device.name, style = MaterialTheme.typography.titleLarge)
+            if (device.isRefreshing) {
+                val size =
+                    (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .padding(bottom = 2.dp)
+                        .width(size.dp)
+                        .height(size.dp),
+                )
+            }
+        }
+        Row(
+            modifier = Modifier.padding(bottom = 2.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                device.address,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Icon(
+                painter = painterResource(R.drawable.twotone_signal_wifi_2_bar_24),
+                contentDescription = stringResource(R.string.description_back_button),
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .height(20.dp)
+            )
+            if (!device.isOnline) {
+                Text(
+                    stringResource(R.string.is_offline),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 4.dp)
                 )
             }
         }
@@ -155,5 +225,20 @@ fun SelectableCard(
         ) {
             content()
         }
+    }
+}
+
+@Composable
+fun DeviceTheme(
+    device: Device,
+    content: @Composable () -> Unit
+) {
+    DynamicMaterialTheme(
+        seedColor = Color(device.color),
+        style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,
+        animate = true,
+        isExtendedFidelity = false,
+    ) {
+        content()
     }
 }

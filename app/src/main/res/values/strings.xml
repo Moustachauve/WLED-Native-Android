@@ -3,6 +3,8 @@
     <string name="app_logo">WLED Logo</string>
     <string name="add_a_device">Add a New Device</string>
     <string name="add">Add</string>
+    <string name="deleting_device">Delete Device?</string>
+    <string name="delete">Delete</string>
     <string name="looking_for_devices">Discovering Devices</string>
     <string name="ip_address_or_url">IP Address or URL</string>
     <string name="custom_name">Custom Name</string>

@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
+import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Stable
@@ -25,7 +26,7 @@ private const val TAG = "DeviceListViewModel"
 
 @HiltViewModel
 class DeviceListViewModel @Inject constructor(
-    repository: DeviceRepository,
+    private val repository: DeviceRepository,
     private val stateFactory: StateFactory
 ): ViewModel() {
     private val _uiState = MutableStateFlow(DeviceListUiState())
@@ -62,6 +63,13 @@ class DeviceListViewModel @Inject constructor(
             stateFactory.getState(device).requestsManager.addRequest(
                 StateChangeRequest(device, deviceSetPost)
             )
+        }
+    }
+
+    fun deleteDevice(device: Device) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "Deleting device ${device.name} - ${device.address}")
+            repository.delete(device)
         }
     }
 }
