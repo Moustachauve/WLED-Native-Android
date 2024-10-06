@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -8,12 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -21,6 +23,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -43,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -57,32 +61,56 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DeviceListAppBar(
-    canNavigateBack: Boolean, navigateUp: () -> Unit, modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
+    isDiscovering: Boolean = false,
 ) {
     CenterAlignedTopAppBar(
+        modifier = modifier,
         title = {
             Image(
                 painter = painterResource(id = R.drawable.wled_logo_akemi),
                 contentDescription = stringResource(R.string.app_logo)
             )
         },
-        modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.description_back_button)
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = stringResource(R.string.description_menu_button)
                     )
                 }
             }
         },
+        actions = {
+            if (isDiscovering) {
+                Column(
+                    Modifier.padding(end = 16.dp),
+                    horizontalAlignment = CenterHorizontally
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(top = 6.dp),
+                        painter = painterResource(R.drawable.baseline_wifi_find_24),
+                        contentDescription = stringResource(R.string.discovering_devices),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .width(40.dp)
+                            .padding(top = 6.dp)
+                    )
+                }
+            }
+        }
     )
 }
 
 @Composable
 fun DeviceList(
     selectedDevice: Device?,
+    isDiscovering: Boolean = false,
     onItemClick: (Device) -> Unit,
     onRefresh: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
@@ -116,6 +144,7 @@ fun DeviceList(
         topBar = {
             DeviceListAppBar(
                 canNavigateBack = false,
+                isDiscovering = isDiscovering,
                 navigateUp = { /* TODO: implement back navigation */ },
             )
         },

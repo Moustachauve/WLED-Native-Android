@@ -1,13 +1,15 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,12 +23,22 @@ private const val TAG = "DeviceListDetailViewModel"
 
 @HiltViewModel
 class DeviceListDetailViewModel @Inject constructor(
+    application: Application,
     private val repository: DeviceRepository,
-    private val stateFactory: StateFactory
-): ViewModel() {
+    private val stateFactory: StateFactory,
+): AndroidViewModel(application) {
     var isPolling by mutableStateOf(false)
         private set
+    var isDiscovering by mutableStateOf(false)
+        private set
     private var job: Job? = null
+
+    private val discoveryService = DeviceDiscovery(
+        context = getApplication<Application>().applicationContext,
+        onDeviceDiscovered = {
+            deviceDiscovered(it)
+        }
+    )
 
     fun startRefreshDevicesLoop() {
         if (isPolling) {
@@ -44,6 +56,7 @@ class DeviceListDetailViewModel @Inject constructor(
             }
         }
     }
+
     fun stopRefreshDevicesLoop() {
         Log.i(TAG, "Stopping refresh devices loop")
         job?.cancel()
@@ -70,6 +83,59 @@ class DeviceListDetailViewModel @Inject constructor(
                 silentRefresh = silent,
             )
         )
+    }
+
+    fun startDiscoveryService() {
+        isDiscovering = true
+        discoveryService.start()
+    }
+
+    fun stopDiscoveryService() {
+        isDiscovering = false
+        discoveryService.stop()
+    }
+
+    private fun deviceDiscovered(device: Device) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (repository.contains(device)) {
+                Log.i(TAG, "Device already exists")
+                return@launch
+            }
+            Log.i(TAG, "IP: ${device.address}\tName: ${device.name}\t")
+
+            val request = RefreshRequest(
+                device,
+                silentRefresh = true,
+                saveChanges = false
+            ) { refreshedDevice ->
+                val existingDevice = findWithSameMacAddress(refreshedDevice)
+                if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
+                    Log.i(
+                        TAG,
+                        "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
+                    )
+                    val refreshedExistingDevice = existingDevice.copy(
+                        address = refreshedDevice.address,
+                        isOnline = refreshedDevice.isOnline,
+                        name = refreshedDevice.name,
+                        brightness = refreshedDevice.brightness,
+                        isPoweredOn = refreshedDevice.isPoweredOn,
+                        color = refreshedDevice.color,
+                        networkRssi = refreshedDevice.networkRssi,
+                        isEthernet = refreshedDevice.isEthernet,
+                        platformName = refreshedDevice.platformName,
+                        version = refreshedDevice.version,
+                        brand = refreshedDevice.brand,
+                        productName = refreshedDevice.productName,
+                    )
+                    delete(existingDevice)
+                    insert(refreshedExistingDevice)
+                } else {
+                    insert(refreshedDevice)
+                }
+            }
+            stateFactory.getState(device).requestsManager.addRequest(request)
+        }
     }
 
     private suspend fun findWithSameMacAddress(device: Device): Device? {

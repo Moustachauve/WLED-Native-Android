@@ -16,6 +16,7 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -30,6 +33,7 @@ fun DeviceListDetail(
     modifier: Modifier = Modifier,
     viewModel: DeviceListDetailViewModel = hiltViewModel(),
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val defaultScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val customScaffoldDirective = defaultScaffoldDirective.copy(
         horizontalPartitionSpacerSize = 0.dp,
@@ -38,8 +42,19 @@ fun DeviceListDetail(
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
     var selectedDevice = navigator.currentDestination?.content as? Device
 
+    val startDiscovery = {
+        coroutineScope.launch {
+            viewModel.startDiscoveryService()
+            delay(15000)
+            viewModel.stopDiscoveryService()
+        }
+    }
+
     LaunchedEffect(viewModel.isPolling) {
         viewModel.startRefreshDevicesLoop()
+    }
+    LaunchedEffect("onStart-startDiscovery") {
+        startDiscovery()
     }
 
     Scaffold { innerPadding ->
@@ -62,7 +77,9 @@ fun DeviceListDetail(
                         },
                         onRefresh = {
                             viewModel.refreshDevices(silent = false)
-                        }
+                            startDiscovery()
+                        },
+                        isDiscovering = viewModel.isDiscovering
                     )
                 }
             }, detailPane = {

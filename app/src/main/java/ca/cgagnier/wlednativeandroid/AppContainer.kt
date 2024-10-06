@@ -69,9 +69,6 @@ object AppContainer {
         return StateFactory(JsonApiRequestHandler(deviceRepository, releaseService))
     }
 
-    //val deviceDiscovery by lazy { DeviceDiscovery(context) }
-    //val deviceStateFactory by lazy { StateFactory(this) }
-
     /*private val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
         fileName = DATA_STORE_FILE_NAME,
         serializer = UserPreferencesSerializer(),

@@ -16,20 +16,18 @@ import java.net.InetAddress
 import java.nio.ByteOrder
 
 
-class DeviceDiscovery(val context: Context) {
+class DeviceDiscovery(
+    val context: Context,
+    val onDeviceDiscovered: (Device) -> Unit
+) {
 
     val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
     private var discoveryListener: NsdManager.DiscoveryListener? = null
-    private val listeners = ArrayList<DeviceDiscoveredListener>()
 
     private val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
     private val multicastLock: MulticastLock = wifi.createMulticastLock("multicastLock")
 
     private val parent = this
-
-    interface DeviceDiscoveredListener {
-        fun onDeviceDiscovered(serviceInfo: NsdServiceInfo)
-    }
 
     private fun initialize() {
         discoveryListener = object : NsdManager.DiscoveryListener {
@@ -71,7 +69,10 @@ class DeviceDiscovery(val context: Context) {
                         Firebase.crashlytics.recordException(Exception("Unknown service type"))
                         return
                     }
-                    return nsdManager.resolveService(service, ResolveListener(parent, nsdManager))
+                    return nsdManager.resolveService(
+                        service,
+                        ResolveListener(nsdManager) { onServiceResolved(it) }
+                    )
                 }
             }
 
@@ -81,6 +82,22 @@ class DeviceDiscovery(val context: Context) {
                 Firebase.crashlytics.recordException(Exception("service lost"))
             }
         }
+    }
+
+    private fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+        Log.i(TAG, "Device discovered!")
+
+        val deviceIp = serviceInfo.host.hostAddress!!
+        val deviceName = serviceInfo.serviceName ?: ""
+        onDeviceDiscovered(
+            Device(
+                deviceIp,
+                deviceName,
+                isCustomName = false,
+                isHidden = false,
+                macAddress = Device.UNKNOWN_VALUE
+            )
+        )
     }
 
     fun start() {
@@ -108,23 +125,10 @@ class DeviceDiscovery(val context: Context) {
         }
     }
 
-    fun registerDeviceDiscoveredListener(listener: DeviceDiscoveredListener) {
-        listeners.add(listener)
-    }
-
-    fun unregisterDeviceDiscoveredListener(listener: DeviceDiscoveredListener) {
-        listeners.remove(listener)
-    }
-
-    fun notifyListeners(serviceInfo: NsdServiceInfo) {
-        // We copy it to make sure the list doesn't change while we go through it
-        val listenersCopy = parent.listeners.toArray()
-        for (listener in listenersCopy) {
-            (listener as DeviceDiscoveredListener).onDeviceDiscovered(serviceInfo)
-        }
-    }
-
-    class ResolveListener(private val parent: DeviceDiscovery, private val nsdManager: NsdManager): NsdManager.ResolveListener {
+    class ResolveListener(
+        private val nsdManager: NsdManager,
+        private val serviceResolved: (NsdServiceInfo) -> Unit
+    ): NsdManager.ResolveListener {
 
         override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
             Log.e(TAG, "Resolve failed $errorCode")
@@ -132,16 +136,21 @@ class DeviceDiscovery(val context: Context) {
             when (errorCode) {
                 NsdManager.FAILURE_ALREADY_ACTIVE -> {
                     Log.e(TAG, "FAILURE ALREADY ACTIVE")
-                    nsdManager.resolveService(serviceInfo, ResolveListener(parent, nsdManager))
+                    nsdManager.resolveService(
+                        serviceInfo, ResolveListener(nsdManager, serviceResolved)
+                    )
                 }
+
                 NsdManager.FAILURE_INTERNAL_ERROR -> {
                     Log.e(TAG, "FAILURE_INTERNAL_ERROR")
                     Firebase.crashlytics.recordException(Exception("Resolve FAILURE_INTERNAL_ERROR"))
                 }
+
                 NsdManager.FAILURE_MAX_LIMIT -> {
                     Log.e(TAG, "FAILURE_MAX_LIMIT")
                     Firebase.crashlytics.recordException(Exception("Resolve FAILURE_MAX_LIMIT"))
                 }
+
                 else -> Firebase.crashlytics.recordException(Exception("Resolve failed"))
             }
         }
@@ -149,7 +158,7 @@ class DeviceDiscovery(val context: Context) {
         override fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
             Log.i(TAG, "Resolve Succeeded. [$serviceInfo]")
             if (serviceInfo != null) {
-                parent.notifyListeners(serviceInfo)
+                serviceResolved(serviceInfo)
             } else {
                 Log.e(TAG, "Resolve Succeeded, but serviceInfo null.")
                 Firebase.crashlytics.recordException(Exception("Resolve Succeeded, but serviceInfo null"))

@@ -46,6 +46,7 @@
     <string name="dark">Sombre</string>
     <string name="system_default">Par défaut</string>
     <string name="listing_options">Options de la liste</string>
+    <string name="discovering_devices">Découverte d\'appareil en cours</string>
     <string name="automatically_discover_new_devices">Découvrir les nouveaux appareils automatiquement</string>
     <string name="show_offline_devices_last">Afficher les appareils hors-ligne en dernier</string>
     <string name="description_brightness_slider">Curseur de luminosité</string>
