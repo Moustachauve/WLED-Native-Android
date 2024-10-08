@@ -14,6 +14,7 @@ import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeReque
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -33,7 +34,7 @@ class DeviceListViewModel @Inject constructor(
     val uiState: StateFlow<DeviceListUiState> = _uiState.asStateFlow()
     val devices = repository.allVisibleDevicesOfflineLast.stateIn(
         scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        started = WhileSubscribed(5000),
         initialValue = emptyList()
     )
 

@@ -1,11 +1,8 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -16,13 +13,14 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -40,7 +38,10 @@ fun DeviceListDetail(
     )
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
-    var selectedDevice = navigator.currentDestination?.content as? Device
+
+    val selectedDeviceAddress = navigator.currentDestination?.content as? String ?: ""
+    val selectedDevice =
+        viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsState(null)
 
     val startDiscovery = {
         coroutineScope.launch {
@@ -57,6 +58,19 @@ fun DeviceListDetail(
         startDiscovery()
     }
 
+    val navigateToDeviceDetail = { device: Device ->
+        navigator.navigateTo(
+            pane = ListDetailPaneScaffoldRole.Detail,
+            content = device.address
+        )
+    }
+    val navigateToDeviceEdit = { device: Device ->
+        navigator.navigateTo(
+            pane = ListDetailPaneScaffoldRole.Extra,
+            content = device.address
+        )
+    }
+
     Scaffold { innerPadding ->
         NavigableListDetailPaneScaffold(
             modifier = modifier
@@ -67,26 +81,28 @@ fun DeviceListDetail(
             listPane = {
                 AnimatedPane {
                     DeviceList(
-                        selectedDevice,
-                        onItemClick = { device ->
-                            selectedDevice = device
-                            navigator.navigateTo(
-                                pane = ListDetailPaneScaffoldRole.Detail,
-                                content = device
-                            )
-                        },
+                        selectedDevice.value,
+                        onItemClick = navigateToDeviceDetail,
                         onRefresh = {
                             viewModel.refreshDevices(silent = false)
                             startDiscovery()
+                        },
+                        onItemEdit = {
+                            navigateToDeviceDetail(it)
+                            navigateToDeviceEdit(it)
                         },
                         isDiscovering = viewModel.isDiscovering
                     )
                 }
             }, detailPane = {
                 AnimatedPane {
-                    navigator.currentDestination?.content?.let {
+                    // selectedDevice est static, pas dynamic de la database... Utiliser ID à la place
+                    selectedDevice.value?.let { device ->
                         DeviceDetail(
-                            it as Device,
+                            device = device,
+                            onItemEdit = {
+                                navigateToDeviceEdit(device)
+                            },
                             canNavigateBack = navigator.canNavigateBack(),
                             navigateUp = {
                                 navigator.navigateBack()
@@ -95,14 +111,15 @@ fun DeviceListDetail(
                     }
                 }
             }, extraPane = {
-                val content =
-                    navigator.currentDestination?.content?.toString() ?: "Select an option"
                 AnimatedPane {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = content)
+                    selectedDevice.value?.let { device ->
+                        DeviceEdit(
+                            device = device,
+                            canNavigateBack = navigator.canNavigateBack(),
+                            navigateUp = {
+                                navigator.navigateBack()
+                            }
+                        )
                     }
                 }
             }

@@ -36,6 +36,56 @@ import ca.cgagnier.wlednativeandroid.ui.components.rememberWebViewNavigator
 
 private const val TAG = "ui.DeviceDetail"
 
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun DeviceDetail(
+    device: Device,
+    onItemEdit: (Device) -> Unit,
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
+) {
+    val webViewState = rememberSaveableWebViewState()
+    val navigator = rememberWebViewNavigator()
+    Scaffold(
+        topBar = {
+            DeviceDetailAppBar(
+                device = device,
+                canNavigateBack = canNavigateBack,
+                webViewState = webViewState,
+                navigateUp = navigateUp,
+                editItem = {
+                    onItemEdit(device)
+                },
+                refreshPage = {
+                    navigator.reload()
+                },
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LaunchedEffect(navigator) {
+                val bundle = webViewState.viewState
+                if (bundle == null) {
+                    Log.i(TAG, "Loading device for first time")
+                    // This is the first time load, so load the home page.
+                    //navigator.loadUrl(device.getDeviceUrl())
+                }
+            }
+            DeviceWebView(
+                device,
+                state = webViewState,
+                navigator = navigator
+            )
+        }
+    }
+}
+
 @Composable
 fun DeviceDetailAppBar(
     device: Device,
@@ -43,6 +93,7 @@ fun DeviceDetailAppBar(
     webViewState: WebViewState,
     navigateUp: () -> Unit,
     refreshPage: () -> Unit,
+    editItem: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -81,7 +132,7 @@ fun DeviceDetailAppBar(
                     contentDescription = stringResource(R.string.refresh_page)
                 )
             }
-            IconButton(onClick = navigateUp) {
+            IconButton(onClick = editItem) {
                 Icon(
                     imageVector = Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.edit_device)
@@ -89,60 +140,4 @@ fun DeviceDetailAppBar(
             }
         }
     )
-}
-
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-fun DeviceDetail(
-    device: Device,
-    canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
-) {
-    val webViewState = rememberSaveableWebViewState()
-    val navigator = rememberWebViewNavigator()
-    Scaffold(
-        topBar = {
-            DeviceDetailAppBar(
-                device = device,
-                canNavigateBack = canNavigateBack,
-                webViewState = webViewState,
-                navigateUp = navigateUp,
-                refreshPage = {
-                    navigator.reload()
-                },
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            LaunchedEffect(navigator) {
-                val bundle = webViewState.viewState
-                if (bundle == null) {
-                    Log.i(TAG, "Loading device for first time")
-                    // This is the first time load, so load the home page.
-                    //navigator.loadUrl(device.getDeviceUrl())
-                }
-            }
-            DeviceWebView(
-                device,
-                state = webViewState,
-                navigator = navigator
-            )
-            /*
-            Row {
-                AssistChip(onClick = {
-                    //navigator.navigateTo(
-                    //    pane = ListDetailPaneScaffoldRole.Extra, content = "Option 1"
-                    //)
-                }, label = {
-                    Text(text = "Option 1")
-                })
-            }*/
-        }
-    }
 }

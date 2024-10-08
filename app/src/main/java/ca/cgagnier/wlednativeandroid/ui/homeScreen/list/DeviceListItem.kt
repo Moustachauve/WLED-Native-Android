@@ -3,7 +3,6 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -65,7 +66,7 @@ fun DeviceListItem(
         val cardColor =
             if (isSelected) MaterialTheme.colorScheme.inversePrimary else MaterialTheme.colorScheme.surfaceContainer
 
-        SwipeDeleteBox(
+        SwipeBox(
             modifier = modifier,
             swipeToDismissBoxState = swipeToDismissBoxState
         ) {
@@ -108,7 +109,7 @@ fun DeviceListItem(
 }
 
 @Composable
-private fun SwipeDeleteBox(
+private fun SwipeBox(
     modifier: Modifier = Modifier,
     swipeToDismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
     content: @Composable () -> Unit
@@ -116,7 +117,6 @@ private fun SwipeDeleteBox(
     SwipeToDismissBox(
         modifier = modifier,
         state = swipeToDismissBoxState,
-        enableDismissFromStartToEnd = false,
         backgroundContent = {
             val color by animateColorAsState(
                 when (swipeToDismissBoxState.targetValue) {
@@ -131,20 +131,38 @@ private fun SwipeDeleteBox(
                     .padding(6.dp)
                     .background(color, shape = CardDefaults.shape)
             ) {
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
                 ) {
-                    val deleteIcon =
-                        if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.EndToStart) Icons.Filled.Delete else Icons.Outlined.Delete
-                    Crossfade(targetState = deleteIcon, label = "delete icon") {
-                        Icon(
-                            imageVector = it,
-                            contentDescription = stringResource(R.string.description_back_button)
-                        )
+                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                        val deleteIcon =
+                            if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.EndToStart) Icons.Filled.Delete else Icons.Outlined.Delete
+                        Crossfade(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            targetState = deleteIcon,
+                            label = "delete icon"
+                        ) {
+                            Icon(
+                                imageVector = it,
+                                contentDescription = stringResource(R.string.description_back_button),
+                            )
+                        }
+                    }
+                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
+                        val penIcon =
+                            if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.StartToEnd) Icons.Filled.Edit else Icons.Outlined.Edit
+                        Crossfade(
+                            modifier = Modifier.align(Alignment.CenterStart),
+                            targetState = penIcon,
+                            label = "pen icon"
+                        ) {
+                            Icon(
+                                imageVector = it,
+                                contentDescription = stringResource(R.string.description_back_button),
+                            )
+                        }
                     }
                 }
             }

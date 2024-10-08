@@ -134,7 +134,7 @@ fun DeviceWebView(
     client.navigator = navigator
     chromeClient.state = state
 
-    if (webViewViewModel.displayedDevice == null || webViewViewModel.displayedDevice != device) {
+    if (webViewViewModel.displayedDevice == null || webViewViewModel.displayedDevice?.address != device.address) {
         webViewViewModel.displayedDevice = device
         Log.i(TAG, "Device changed, resetting")
         webView.loadUrl("about:blank")

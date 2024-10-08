@@ -112,6 +112,7 @@ fun DeviceList(
     selectedDevice: Device?,
     isDiscovering: Boolean = false,
     onItemClick: (Device) -> Unit,
+    onItemEdit: (Device) -> Unit,
     onRefresh: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
@@ -185,6 +186,9 @@ fun DeviceList(
                             if (it == SwipeToDismissBoxValue.EndToStart) {
                                 confirmDeleteDevice.value = device
                                 return@rememberSwipeToDismissBoxState true
+                            } else if (it == SwipeToDismissBoxValue.StartToEnd) {
+                                onItemEdit(device)
+                                return@rememberSwipeToDismissBoxState false
                             }
                             true
                         },

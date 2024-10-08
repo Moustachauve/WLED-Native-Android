@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,6 +40,11 @@ class DeviceListDetailViewModel @Inject constructor(
             deviceDiscovered(it)
         }
     )
+
+    fun getDeviceByAddress(address: String): Flow<Device?> {
+        Log.d(TAG, "Getting device by address $address")
+        return repository.findLiveDeviceByAddress(address)
+    }
 
     fun startRefreshDevicesLoop() {
         if (isPolling) {
