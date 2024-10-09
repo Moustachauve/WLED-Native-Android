@@ -60,60 +60,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun DeviceListAppBar(
-    modifier: Modifier = Modifier,
-    canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
-    isDiscovering: Boolean = false,
-) {
-    CenterAlignedTopAppBar(
-        modifier = modifier,
-        title = {
-            Image(
-                painter = painterResource(id = R.drawable.wled_logo_akemi),
-                contentDescription = stringResource(R.string.app_logo)
-            )
-        },
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.Menu,
-                        contentDescription = stringResource(R.string.description_menu_button)
-                    )
-                }
-            }
-        },
-        actions = {
-            if (isDiscovering) {
-                Column(
-                    Modifier.padding(end = 16.dp),
-                    horizontalAlignment = CenterHorizontally
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(top = 6.dp),
-                        painter = painterResource(R.drawable.baseline_wifi_find_24),
-                        contentDescription = stringResource(R.string.discovering_devices),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .width(40.dp)
-                            .padding(top = 6.dp)
-                    )
-                }
-            }
-        }
-    )
-}
-
-@Composable
 fun DeviceList(
     selectedDevice: Device?,
     isDiscovering: Boolean = false,
     onItemClick: (Device) -> Unit,
     onItemEdit: (Device) -> Unit,
     onRefresh: () -> Unit,
+    openDrawer: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -144,9 +97,8 @@ fun DeviceList(
     Scaffold(
         topBar = {
             DeviceListAppBar(
-                canNavigateBack = false,
                 isDiscovering = isDiscovering,
-                navigateUp = { /* TODO: implement back navigation */ },
+                openDrawer = openDrawer,
             )
         },
         floatingActionButton = {
@@ -157,7 +109,8 @@ fun DeviceList(
                 },
                 icon = {
                     Icon(
-                        Icons.Filled.Add, contentDescription = stringResource(R.string.add_a_device)
+                        Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.add_a_device)
                     )
                 },
                 onClick = {
@@ -258,6 +211,51 @@ fun DeviceList(
         },
         onDismiss = {
             confirmDeleteDevice.value = null
+        }
+    )
+}
+
+@Composable
+fun DeviceListAppBar(
+    modifier: Modifier = Modifier,
+    openDrawer: () -> Unit,
+    isDiscovering: Boolean = false,
+) {
+    CenterAlignedTopAppBar(
+        modifier = modifier,
+        title = {
+            Image(
+                painter = painterResource(id = R.drawable.wled_logo_akemi),
+                contentDescription = stringResource(R.string.app_logo)
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = stringResource(R.string.description_menu_button)
+                )
+            }
+        },
+        actions = {
+            if (isDiscovering) {
+                Column(
+                    Modifier.padding(end = 16.dp),
+                    horizontalAlignment = CenterHorizontally
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(top = 6.dp),
+                        painter = painterResource(R.drawable.baseline_wifi_find_24),
+                        contentDescription = stringResource(R.string.discovering_devices),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .width(40.dp)
+                            .padding(top = 6.dp)
+                    )
+                }
+            }
         }
     )
 }

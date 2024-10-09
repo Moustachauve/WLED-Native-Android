@@ -1,8 +1,23 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -11,17 +26,24 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -38,13 +60,14 @@ fun DeviceListDetail(
     )
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val selectedDeviceAddress = navigator.currentDestination?.content as? String ?: ""
     val selectedDevice =
         viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsState(null)
 
     val startDiscovery = {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.IO) {
             viewModel.startDiscoveryService()
             delay(15000)
             viewModel.stopDiscoveryService()
@@ -71,58 +94,144 @@ fun DeviceListDetail(
         )
     }
 
-    Scaffold { innerPadding ->
-        NavigableListDetailPaneScaffold(
-            modifier = modifier
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding),
-            navigator = navigator,
-            defaultBackBehavior = BackNavigationBehavior.PopUntilScaffoldValueChange,
-            listPane = {
-                AnimatedPane {
-                    DeviceList(
-                        selectedDevice.value,
-                        onItemClick = navigateToDeviceDetail,
-                        onRefresh = {
-                            viewModel.refreshDevices(silent = false)
-                            startDiscovery()
-                        },
-                        onItemEdit = {
-                            navigateToDeviceDetail(it)
-                            navigateToDeviceEdit(it)
-                        },
-                        isDiscovering = viewModel.isDiscovering
-                    )
-                }
-            }, detailPane = {
-                AnimatedPane {
-                    // selectedDevice est static, pas dynamic de la database... Utiliser ID à la place
-                    selectedDevice.value?.let { device ->
-                        DeviceDetail(
-                            device = device,
-                            onItemEdit = {
-                                navigateToDeviceEdit(device)
-                            },
-                            canNavigateBack = navigator.canNavigateBack(),
-                            navigateUp = {
-                                navigator.navigateBack()
-                            }
-                        )
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                DrawerContent(
+                    openSettings = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
                     }
-                }
-            }, extraPane = {
-                AnimatedPane {
-                    selectedDevice.value?.let { device ->
-                        DeviceEdit(
-                            device = device,
-                            canNavigateBack = navigator.canNavigateBack(),
-                            navigateUp = {
-                                navigator.navigateBack()
-                            }
-                        )
-                    }
-                }
+                )
             }
+        }
+    ) {
+        Scaffold { innerPadding ->
+            NavigableListDetailPaneScaffold(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding),
+                navigator = navigator,
+                defaultBackBehavior = BackNavigationBehavior.PopUntilScaffoldValueChange,
+                listPane = {
+                    AnimatedPane {
+                        DeviceList(
+                            selectedDevice.value,
+                            isDiscovering = viewModel.isDiscovering,
+                            onItemClick = navigateToDeviceDetail,
+                            onRefresh = {
+                                viewModel.refreshDevices(silent = false)
+                                startDiscovery()
+                            },
+                            onItemEdit = {
+                                navigateToDeviceDetail(it)
+                                navigateToDeviceEdit(it)
+                            },
+                            openDrawer = {
+                                coroutineScope.launch {
+                                    drawerState.open()
+                                }
+                            }
+                        )
+                    }
+                }, detailPane = {
+                    AnimatedPane {
+                        // selectedDevice est static, pas dynamic de la database... Utiliser ID à la place
+                        selectedDevice.value?.let { device ->
+                            DeviceDetail(
+                                device = device,
+                                onItemEdit = {
+                                    navigateToDeviceEdit(device)
+                                },
+                                canNavigateBack = navigator.canNavigateBack(),
+                                navigateUp = {
+                                    navigator.navigateBack()
+                                }
+                            )
+                        }
+                    }
+                }, extraPane = {
+                    AnimatedPane {
+                        selectedDevice.value?.let { device ->
+                            DeviceEdit(
+                                device = device,
+                                canNavigateBack = navigator.canNavigateBack(),
+                                navigateUp = {
+                                    navigator.navigateBack()
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+
+        }
+    }
+}
+
+@Composable
+private fun DrawerContent(
+    openSettings: () -> Unit,
+) {
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+        horizontalArrangement = Arrangement.Center) {
+        Image(
+            painter = painterResource(id = R.drawable.wled_logo_akemi),
+            contentDescription = stringResource(R.string.app_logo)
         )
     }
+    NavigationDrawerItem(
+        label = { Text(text = stringResource(R.string.settings)) },
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = stringResource(R.string.settings)
+            )
+        },
+        selected = false,
+        onClick = {
+            Toast.makeText(context, "Coming soon...", Toast.LENGTH_SHORT).show()
+            openSettings()
+        },
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
+    HorizontalDivider(modifier = Modifier.padding(12.dp))
+
+    NavigationDrawerItem(
+        label = { Text(text = stringResource(R.string.help)) },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_help_24),
+                contentDescription = stringResource(R.string.help)
+            )
+        },
+        selected = false,
+        onClick = {
+            uriHandler.openUri("https://kno.wled.ge/")
+        },
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
+    NavigationDrawerItem(
+        label = { Text(text = stringResource(R.string.support_me)) },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_coffee_24),
+                contentDescription = stringResource(R.string.support_me)
+            )
+        },
+        selected = false,
+        onClick = {
+            uriHandler.openUri("https://github.com/sponsors/Moustachauve")
+        },
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
+    // ...other drawer items
 }
