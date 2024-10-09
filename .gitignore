@@ -90,3 +90,4 @@ lint/tmp/
 .idea/deploymentTargetSelector.xml
 .idea/inspectionProfiles/
 .idea/studiobot.xml
+/.idea/runConfigurations.xml
