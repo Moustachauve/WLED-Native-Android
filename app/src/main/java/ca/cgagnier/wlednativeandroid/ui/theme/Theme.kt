@@ -1,4 +1,6 @@
 package ca.cgagnier.wlednativeandroid.ui.theme
+
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -8,8 +10,18 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
+import com.materialkolor.DynamicMaterialTheme
+import com.materialkolor.PaletteStyle
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -253,25 +265,62 @@ val unspecified_scheme = ColorFamily(
 
 @Composable
 fun WLEDNativeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
+    themeViewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-          val context = LocalContext.current
-          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
+    val view = LocalView.current
+    val theme by themeViewModel.theme.collectAsStateWithLifecycle()
+    val darkTheme = when (theme) {
+        ThemeSettings.Auto -> isSystemInDarkTheme()
+        ThemeSettings.Dark -> true
+        else -> false
+    }
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+        darkTheme -> darkScheme
+        else -> lightScheme
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        content = content
+    )
+
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme // negate darkTheme
+        }
+    }
 }
 
+
+@Composable
+fun DeviceTheme(
+    device: Device,
+    themeViewModel: ThemeViewModel = hiltViewModel(),
+    content: @Composable () -> Unit
+) {
+    val theme by themeViewModel.theme.collectAsStateWithLifecycle()
+    val darkTheme = when (theme) {
+        ThemeSettings.Auto -> isSystemInDarkTheme()
+        ThemeSettings.Dark -> true
+        else -> false
+    }
+    DynamicMaterialTheme(
+        seedColor = Color(device.color),
+        style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,
+        animate = true,
+        isExtendedFidelity = false,
+        useDarkTheme = darkTheme
+    ) {
+        content()
+    }
+}

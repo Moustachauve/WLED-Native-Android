@@ -28,7 +28,7 @@ private const val TAG = "DeviceListViewModel"
 @HiltViewModel
 class DeviceListViewModel @Inject constructor(
     private val repository: DeviceRepository,
-    private val stateFactory: StateFactory
+    private val stateFactory: StateFactory,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(DeviceListUiState())
     val uiState: StateFlow<DeviceListUiState> = _uiState.asStateFlow()

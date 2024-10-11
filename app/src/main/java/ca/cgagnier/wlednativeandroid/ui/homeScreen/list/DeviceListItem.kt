@@ -39,14 +39,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
-import com.materialkolor.DynamicMaterialTheme
-import com.materialkolor.PaletteStyle
+import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -243,20 +241,5 @@ fun SelectableCard(
         ) {
             content()
         }
-    }
-}
-
-@Composable
-fun DeviceTheme(
-    device: Device,
-    content: @Composable () -> Unit
-) {
-    DynamicMaterialTheme(
-        seedColor = Color(device.color),
-        style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,
-        animate = true,
-        isExtendedFidelity = false,
-    ) {
-        content()
     }
 }

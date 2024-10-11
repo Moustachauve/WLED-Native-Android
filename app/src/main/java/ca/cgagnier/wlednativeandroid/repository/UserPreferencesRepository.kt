@@ -3,24 +3,9 @@ package ca.cgagnier.wlednativeandroid.repository
 import android.util.Log
 import androidx.datastore.core.DataStore
 import ca.cgagnier.wlednativeandroid.model.Device
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.io.IOException
 
 class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences>) {
-
-    private val userPreferencesFlow: Flow<UserPreferences> = dataStore.data
-        .catch { exception ->
-            // dataStore.data throws an IOException when an error is encountered when reading data
-            if (exception is IOException) {
-                Log.e(TAG, "Error reading sort order preferences.", exception)
-                emit(UserPreferences.getDefaultInstance())
-            } else {
-                throw exception
-            }
-        }
 
     val themeMode get() = dataStore.data.map { it.theme }
     val selectedDeviceAddress get() = dataStore.data.map { it.selectedDeviceAddress }
@@ -29,8 +14,6 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     val sendCrashData get() = dataStore.data.map { it.sendCrashData }
     val sendPerformanceData get() = dataStore.data.map { it.sendPerformanceData }
     val lastUpdateCheckDate get() = dataStore.data.map { it.lastUpdateCheckDate }
-
-    suspend fun fetchInitialPreferences() = userPreferencesFlow.first()
 
     suspend fun updateSelectedDevice(device: Device) {
         Log.d(TAG, "updateSelectedDevice")

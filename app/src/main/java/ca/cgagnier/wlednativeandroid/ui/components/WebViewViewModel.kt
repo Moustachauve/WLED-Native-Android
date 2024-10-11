@@ -1,4 +1,4 @@
-package ca.cgagnier.wlednativeandroid.viewmodel
+package ca.cgagnier.wlednativeandroid.ui.components
 
 import android.content.Context
 import android.webkit.WebView
