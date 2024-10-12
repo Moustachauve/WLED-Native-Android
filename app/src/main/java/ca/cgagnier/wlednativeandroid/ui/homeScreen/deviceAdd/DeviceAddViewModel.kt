@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +21,7 @@ class DeviceAddViewModel @Inject constructor(
     var name by mutableStateOf("")
     var isHidden by mutableStateOf(false)
 
-    fun createDevice() = viewModelScope.launch {
+    fun createDevice() = viewModelScope.launch(Dispatchers.IO) {
         val device = Device(
             address = address,
             name = name,

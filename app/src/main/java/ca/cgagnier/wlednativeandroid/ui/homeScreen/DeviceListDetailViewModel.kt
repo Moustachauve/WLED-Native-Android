@@ -160,12 +160,12 @@ class DeviceListDetailViewModel @Inject constructor(
         return repository.findDeviceByMacAddress(device.macAddress)
     }
 
-    fun insert(device: Device) = viewModelScope.launch {
+    fun insert(device: Device) = viewModelScope.launch(Dispatchers.IO) {
         Log.d(TAG, "Inserting device ${device.name} - ${device.address}")
         repository.insert(device)
     }
 
-    fun delete(device: Device) = viewModelScope.launch {
+    fun delete(device: Device) = viewModelScope.launch(Dispatchers.IO) {
         Log.d(TAG, "Deleting device ${device.name} - ${device.address}")
         repository.delete(device)
     }

@@ -4,6 +4,7 @@ import android.util.Log
 import ca.cgagnier.wlednativeandroid.service.device.api.request.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -28,7 +29,7 @@ class RequestsManager(
     }
 
     private fun processAllRequests() {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
             var canProcessMore = true
             while (requestQueue.isNotEmpty() && canProcessMore) {
                 canProcessMore = processRequests()
