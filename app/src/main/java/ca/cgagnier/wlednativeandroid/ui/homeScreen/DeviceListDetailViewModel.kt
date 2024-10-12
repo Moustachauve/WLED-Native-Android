@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,11 +56,14 @@ class DeviceListDetailViewModel @Inject constructor(
         job?.cancel()
         Log.i(TAG, "Starting refresh devices loop")
         job = viewModelScope.launch(Dispatchers.IO) {
-            while (isPolling) {
+            while (isPolling && isActive) {
                 Log.i(TAG, "Looping refreshes")
                 refreshDevices(silent = true)
                 delay(10000)
             }
+            // If we left the loop, the job either got cancelled or is not active anymore.
+            // Let's make sure the state is set correctly.
+            stopRefreshDevicesLoop()
         }
     }
 
@@ -92,11 +96,19 @@ class DeviceListDetailViewModel @Inject constructor(
     }
 
     fun startDiscoveryService() {
+        Log.i(TAG, "Start device discovery")
         isDiscovering = true
         discoveryService.start()
     }
 
+    fun startDiscoveryServiceTimed(timeMillis: Long = 15000) = viewModelScope.launch(Dispatchers.IO) {
+        startDiscoveryService()
+        delay(timeMillis)
+        stopDiscoveryService()
+    }
+
     fun stopDiscoveryService() {
+        Log.i(TAG, "Stop device discovery")
         isDiscovering = false
         discoveryService.stop()
     }

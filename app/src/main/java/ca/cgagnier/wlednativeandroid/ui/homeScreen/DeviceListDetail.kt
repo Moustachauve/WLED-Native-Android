@@ -29,7 +29,11 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -43,8 +47,6 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -53,6 +55,7 @@ fun DeviceListDetail(
     modifier: Modifier = Modifier,
     viewModel: DeviceListDetailViewModel = hiltViewModel(),
 ) {
+    var firstLoad by rememberSaveable { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
     val defaultScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val customScaffoldDirective = defaultScaffoldDirective.copy(
@@ -66,19 +69,12 @@ fun DeviceListDetail(
     val selectedDevice =
         viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
 
-    val startDiscovery = {
-        coroutineScope.launch(Dispatchers.IO) {
-            viewModel.startDiscoveryService()
-            delay(15000)
-            viewModel.stopDiscoveryService()
-        }
-    }
-
-    LaunchedEffect(viewModel.isPolling) {
-        viewModel.startRefreshDevicesLoop()
-    }
     LaunchedEffect("onStart-startDiscovery") {
-        startDiscovery()
+        if (firstLoad) {
+            firstLoad = false
+            viewModel.startDiscoveryServiceTimed(2000)
+            viewModel.startRefreshDevicesLoop()
+        }
     }
 
     val navigateToDeviceDetail = { device: Device ->
@@ -124,7 +120,7 @@ fun DeviceListDetail(
                             onItemClick = navigateToDeviceDetail,
                             onRefresh = {
                                 viewModel.refreshDevices(silent = false)
-                                startDiscovery()
+                                viewModel.startDiscoveryServiceTimed()
                             },
                             onItemEdit = {
                                 navigateToDeviceDetail(it)
