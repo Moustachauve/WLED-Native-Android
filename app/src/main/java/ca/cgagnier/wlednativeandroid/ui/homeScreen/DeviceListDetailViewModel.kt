@@ -75,7 +75,7 @@ class DeviceListDetailViewModel @Inject constructor(
             Log.i(TAG, "Refreshing devices")
             val devices = repository.getAllDevices()
             Log.d(TAG, "devices found: ${devices.size}")
-            devices.map { device ->
+            for (device in devices) {
                 refreshDevice(device, silent)
             }
         }
