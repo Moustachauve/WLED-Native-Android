@@ -12,8 +12,6 @@ import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.device.api.request.SoftwareUpdateRequest
 import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeRequest
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -189,7 +187,6 @@ class JsonApiRequestHandler @Inject constructor(
         device: Device, t: Throwable? = null
     ): Device {
         if (t != null) {
-            Firebase.crashlytics.recordException(t)
             Log.e(TAG, t.message!!)
         }
         val updatedDevice = device.copy(isOnline = false, isRefreshing = false)

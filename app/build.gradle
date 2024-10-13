@@ -4,8 +4,6 @@ plugins {
     id "com.google.protobuf"
     id 'kotlin-android'
     id 'androidx.navigation.safeargs.kotlin'
-    id 'com.google.firebase.crashlytics'
-    id 'com.google.firebase.firebase-perf'
     id 'com.google.devtools.ksp'
     id 'org.jetbrains.kotlin.kapt'
     id 'kotlin-parcelize'
@@ -138,9 +136,6 @@ dependencies {
 
     implementation "com.materialkolor:material-kolor:2.0.0"
 
-    // Can't update because of conflict with firebase
-    // https://github.com/firebase/firebase-android-sdk/issues/5997#issuecomment-2135743248
-    // noinspection GradleDependency
     implementation 'com.google.protobuf:protobuf-javalite:4.26.1'
 
     testImplementation "junit:junit:4.13.2"
@@ -160,11 +155,6 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
     implementation "com.google.dagger:hilt-android:2.51.1"
     kapt "com.google.dagger:hilt-compiler:2.51.1"
-
-    // Firebase stuff
-    implementation platform('com.google.firebase:firebase-bom:33.3.0')
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:19.1.0'
-    implementation 'com.google.firebase:firebase-perf-ktx:21.0.1'
 
     implementation 'com.vdurmont:semver4j:3.1.0'
     implementation "io.noties.markwon:core:4.6.2"
