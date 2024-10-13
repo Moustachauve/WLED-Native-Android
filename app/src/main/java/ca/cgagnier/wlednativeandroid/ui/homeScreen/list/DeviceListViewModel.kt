@@ -9,14 +9,18 @@ import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,10 +33,32 @@ private const val TAG = "DeviceListViewModel"
 class DeviceListViewModel @Inject constructor(
     private val repository: DeviceRepository,
     private val stateFactory: StateFactory,
+    preferencesRepository: UserPreferencesRepository
 ): ViewModel() {
+    private val showOfflineDevicesLast = preferencesRepository.showOfflineDevicesLast
+
     private val _uiState = MutableStateFlow(DeviceListUiState())
-    val uiState: StateFlow<DeviceListUiState> = _uiState.asStateFlow()
-    val devices = repository.allVisibleDevicesOfflineLast.stateIn(
+    val uiState: StateFlow<DeviceListUiState> = _uiState
+        .combine(showOfflineDevicesLast) { state, showOfflineDevicesLast ->
+            state.copy(showOfflineDevicesLast = showOfflineDevicesLast)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = WhileSubscribed(5000),
+            initialValue = DeviceListUiState()
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val devices = uiState.flatMapLatest { state ->
+        var devicesFlow =
+            if (state.showOfflineDevicesLast) repository.allDevicesOfflineLast else repository.allDevices
+        if (!state.showHiddenDevices) {
+            devicesFlow = devicesFlow.map { devices ->
+                devices.filter { device -> !device.isHidden }
+            }
+        }
+        devicesFlow
+    }.stateIn(
         scope = viewModelScope,
         started = WhileSubscribed(5000),
         initialValue = emptyList()
@@ -77,6 +103,8 @@ class DeviceListViewModel @Inject constructor(
 
 @Stable
 data class DeviceListUiState(
+    val showOfflineDevicesLast: Boolean = true,
+    val showHiddenDevices: Boolean = false,
     val isRefreshing: Boolean = false,
     val isFabExpanded: Boolean = true,
     val showBottomSheet: Boolean = false,

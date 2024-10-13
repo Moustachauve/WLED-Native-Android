@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     val allDevices: Flow<List<Device>> = deviceDao.getAlphabetizedDevices()
-    val allVisibleDevices: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevices()
-    val allVisibleDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedVisibleDevicesOfflineLast()
+    val allDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedDevicesOfflineLast()
 
     @WorkerThread
     fun getAllDevices(): List<Device> {
@@ -29,9 +28,6 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     fun findLiveDeviceByAddress(address: String): Flow<Device?> {
         return deviceDao.findLiveDeviceByAddress(address)
     }
-
-    @WorkerThread
-    fun findFirstLiveDevice(): Flow<Device?> = deviceDao.getFirstVisibleDeviceOfflineLast()
 
     @WorkerThread
     suspend fun findDeviceByMacAddress(address: String): Device? {
