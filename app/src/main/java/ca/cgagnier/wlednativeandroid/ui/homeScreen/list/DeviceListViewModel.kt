@@ -35,10 +35,14 @@ class DeviceListViewModel @Inject constructor(
     private val stateFactory: StateFactory,
     preferencesRepository: UserPreferencesRepository
 ): ViewModel() {
+    private val showHiddenDevices = preferencesRepository.showHiddenDevices
     private val showOfflineDevicesLast = preferencesRepository.showOfflineDevicesLast
 
     private val _uiState = MutableStateFlow(DeviceListUiState())
     val uiState: StateFlow<DeviceListUiState> = _uiState
+        .combine(showHiddenDevices) { state, showHiddenDevices ->
+            state.copy(showHiddenDevices = showHiddenDevices)
+        }
         .combine(showOfflineDevicesLast) { state, showOfflineDevicesLast ->
             state.copy(showOfflineDevicesLast = showOfflineDevicesLast)
         }

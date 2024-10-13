@@ -59,8 +59,12 @@ fun Settings(
                     .widthIn(0.dp, 1100.dp),
                 firstColumn = {
                     ListingOptions(
+                        showHiddenDevices = settingsState.showHiddenDevices,
                         isAutoDiscoveryEnabled = settingsState.isAutoDiscoveryEnabled,
                         showOfflineDevicesLast = settingsState.showOfflineLast,
+                        setShowHiddenDevices = {
+                            viewModel.setShowHiddenDevices(it)
+                        },
                         setAutoDiscover = {
                             viewModel.setAutoDiscover(it)
                         },
@@ -145,8 +149,10 @@ fun RadioRow(
 
 @Composable
 fun ListingOptions(
+    showHiddenDevices: Boolean,
     isAutoDiscoveryEnabled: Boolean,
     showOfflineDevicesLast: Boolean,
+    setShowHiddenDevices: (Boolean) -> Unit,
     setAutoDiscover: (Boolean) -> Unit,
     setShowOfflineDevicesLast: (Boolean) -> Unit,
 ) {
@@ -156,6 +162,11 @@ fun ListingOptions(
                 stringResource(R.string.listing_options),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary
+            )
+            SwitchRow(
+                label = stringResource(R.string.show_hidden_devices),
+                checked = showHiddenDevices,
+                onCheckedChange = setShowHiddenDevices
             )
             SwitchRow(
                 label = stringResource(R.string.automatically_discover_new_devices),

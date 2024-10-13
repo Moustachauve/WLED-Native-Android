@@ -49,6 +49,8 @@
     <string name="listing_options">Listing Options</string>
     <string name="discovering_devices">Discovering Devices</string>
     <string name="automatically_discover_new_devices">Automatically Discover New Devices</string>
+    <string name="show_hidden_devices">Show Hidden Devices</string>
+    <string name="hide_hidden_devices">Hide Hidden Devices</string>
     <string name="show_offline_devices_last">Show Offline Devices Last</string>
     <string name="description_brightness_slider">Brightness Slider</string>
     <string name="description_menu_button">Open Menu</string>

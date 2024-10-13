@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
@@ -17,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,12 +31,20 @@ class DeviceListDetailViewModel @Inject constructor(
     application: Application,
     private val repository: DeviceRepository,
     private val stateFactory: StateFactory,
+    private val preferencesRepository: UserPreferencesRepository
 ): AndroidViewModel(application) {
     var isPolling by mutableStateOf(false)
         private set
     var isDiscovering by mutableStateOf(false)
         private set
     private var job: Job? = null
+
+    val showHiddenDevices = preferencesRepository.showHiddenDevices
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
     private val discoveryService = DeviceDiscovery(
         context = getApplication<Application>().applicationContext,
@@ -168,5 +179,9 @@ class DeviceListDetailViewModel @Inject constructor(
     fun delete(device: Device) = viewModelScope.launch(Dispatchers.IO) {
         Log.d(TAG, "Deleting device ${device.name} - ${device.address}")
         repository.delete(device)
+    }
+
+    fun toggleShowHiddenDevices() = viewModelScope.launch(Dispatchers.IO) {
+        preferencesRepository.updateShowHiddenDevices(!showHiddenDevices.value)
     }
 }

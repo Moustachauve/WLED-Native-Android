@@ -11,6 +11,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     val selectedDeviceAddress get() = dataStore.data.map { it.selectedDeviceAddress }
     val autoDiscovery get() = dataStore.data.map { it.automaticDiscovery }
     val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
+    val showHiddenDevices get() = dataStore.data.map { it.showHiddenDevices }
     val sendCrashData get() = dataStore.data.map { it.sendCrashData }
     val sendPerformanceData get() = dataStore.data.map { it.sendPerformanceData }
     val lastUpdateCheckDate get() = dataStore.data.map { it.lastUpdateCheckDate }
@@ -60,6 +61,16 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         dataStore.updateData {
             it.toBuilder()
                 .setShowOfflineLast(showOfflineDeviceLast)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
+        }
+    }
+
+    suspend fun updateShowHiddenDevices(showHiddenDevices: Boolean) {
+        Log.d(TAG, "updateShowHiddenDevices")
+        dataStore.updateData {
+            it.toBuilder()
+                .setShowHiddenDevices(showHiddenDevices)
                 .setDateLastWritten(System.currentTimeMillis())
                 .build()
         }

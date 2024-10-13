@@ -34,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,6 +68,8 @@ fun DeviceListDetail(
     val selectedDevice =
         viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
 
+    val showHiddenDevices by viewModel.showHiddenDevices.collectAsStateWithLifecycle()
+
     LaunchedEffect("onStart-startDiscovery") {
         if (firstLoad) {
             firstLoad = false
@@ -96,6 +97,13 @@ fun DeviceListDetail(
         drawerContent = {
             ModalDrawerSheet {
                 DrawerContent(
+                    showHiddenDevices = showHiddenDevices,
+                    toggleShowHiddenDevices = {
+                        viewModel.toggleShowHiddenDevices()
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                    },
                     openSettings = {
                         openSettings()
                         coroutineScope.launch {
@@ -171,10 +179,11 @@ fun DeviceListDetail(
 
 @Composable
 private fun DrawerContent(
+    showHiddenDevices: Boolean,
+    toggleShowHiddenDevices: () -> Unit,
     openSettings: () -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
 
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -185,6 +194,26 @@ private fun DrawerContent(
             contentDescription = stringResource(R.string.app_logo)
         )
     }
+    val hiddenDeviceText = stringResource(
+        if (showHiddenDevices) R.string.hide_hidden_devices
+        else R.string.show_hidden_devices
+    )
+    val hiddenDeviceIcon = painterResource(
+        if (showHiddenDevices) R.drawable.ic_baseline_visibility_off_24
+        else R.drawable.baseline_visibility_24
+    )
+    NavigationDrawerItem(
+        label = { Text(text = hiddenDeviceText) },
+        icon = {
+            Icon(
+                painter = hiddenDeviceIcon,
+                contentDescription = stringResource(R.string.show_hidden_devices)
+            )
+        },
+        selected = false,
+        onClick = toggleShowHiddenDevices,
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
     NavigationDrawerItem(
         label = { Text(text = stringResource(R.string.settings)) },
         icon = {
