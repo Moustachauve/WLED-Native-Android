@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -53,6 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DeviceListDetail(
     modifier: Modifier = Modifier,
+    openSettings: () -> Unit,
     viewModel: DeviceListDetailViewModel = hiltViewModel(),
 ) {
     var firstLoad by rememberSaveable { mutableStateOf(true) }
@@ -97,6 +97,7 @@ fun DeviceListDetail(
             ModalDrawerSheet {
                 DrawerContent(
                     openSettings = {
+                        openSettings()
                         coroutineScope.launch {
                             drawerState.close()
                         }
@@ -193,10 +194,7 @@ private fun DrawerContent(
             )
         },
         selected = false,
-        onClick = {
-            Toast.makeText(context, "Coming soon...", Toast.LENGTH_SHORT).show()
-            openSettings()
-        },
+        onClick = openSettings,
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
     HorizontalDivider(modifier = Modifier.padding(12.dp))

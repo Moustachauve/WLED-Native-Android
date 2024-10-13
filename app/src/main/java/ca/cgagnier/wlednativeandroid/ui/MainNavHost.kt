@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.DeviceListDetail
+import ca.cgagnier.wlednativeandroid.ui.settingsScreen.Settings
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -14,13 +15,27 @@ fun MainNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = DeviceListDetail,
+        startDestination = DeviceListDetailScreen,
     ) {
-        composable<DeviceListDetail> {
-            DeviceListDetail()
+        composable<DeviceListDetailScreen> {
+            DeviceListDetail(
+                openSettings = {
+                    navController.navigate(SettingsScreen)
+                }
+            )
+        }
+        composable<SettingsScreen> {
+            Settings(
+                navigateUp = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }
 
 @Serializable
-object DeviceListDetail
+object DeviceListDetailScreen
+
+@Serializable
+object SettingsScreen
