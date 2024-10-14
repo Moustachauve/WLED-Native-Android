@@ -47,6 +47,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -132,7 +133,9 @@ fun DeviceList(
             LazyColumn(
                 state = listState,
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(horizontal = 6.dp)
+                    .clip(shape = MaterialTheme.shapes.large),
             ) {
                 itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
                     val swipeDismissState = rememberSwipeToDismissBoxState(

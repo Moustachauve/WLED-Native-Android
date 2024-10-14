@@ -2,15 +2,21 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,65 +72,84 @@ fun DeviceEdit(
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding).padding(8.dp)
+        Card(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 3.dp)
+                .fillMaxHeight()
+                .height(IntrinsicSize.Max),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
         ) {
-            OutlinedTextField(
-                value = device.address,
-                enabled = false,
-                onValueChange = {},
-                label = { Text(stringResource(R.string.ip_address_or_url)) },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            CustomNameTextField(device) {
-                viewModel.updateCustomName(device, it)
-            }
-            DeviceVisibleSwitch(
-                modifier = Modifier.padding(top = 4.dp),
-                isHidden = device.isHidden,
-                onCheckedChange = {
-                    viewModel.updateDeviceHidden(device, it)
+            Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(12.dp)) {
+                OutlinedTextField(
+                    value = device.address,
+                    enabled = false,
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.ip_address_or_url)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                CustomNameTextField(device) {
+                    viewModel.updateCustomName(device, it)
                 }
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.update_channel))
-                Spacer(Modifier.weight(1f))
-                SingleChoiceSegmentedButtonRow {
-                    options.forEachIndexed { index, option ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = options.size
-                            ),
-                            onClick = {
-                                viewModel.updateDeviceBranch(device, option.first)
-                                // TODO: trigger search for update thingy
-                            },
-                            selected = option.first == device.branch
-                        ) {
-                            Text(text = option.second)
+                DeviceVisibleSwitch(
+                    modifier = Modifier.padding(top = 4.dp),
+                    isHidden = device.isHidden,
+                    onCheckedChange = {
+                        viewModel.updateDeviceHidden(device, it)
+                    }
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.update_channel))
+                    Spacer(Modifier.weight(1f))
+                    SingleChoiceSegmentedButtonRow {
+                        options.forEachIndexed { index, option ->
+                            SegmentedButton(
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = options.size
+                                ),
+                                onClick = {
+                                    viewModel.updateDeviceBranch(device, option.first)
+                                    // TODO: trigger search for update thingy
+                                },
+                                selected = option.first == device.branch
+                            ) {
+                                Text(text = option.second)
+                            }
                         }
                     }
                 }
-            }
-            Card(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    if (device.hasUpdateAvailable()) {
-                        UpdateAvailable(
-                            device,
-                            seeUpdateDetails = {
-                                Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    } else {
-                        NoUpdateAvailable(
-                            device,
-                            checkForUpdate = {
-                                Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT).show()
-                            }
-                        )
+                Card(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        if (device.hasUpdateAvailable()) {
+                            UpdateAvailable(
+                                device,
+                                seeUpdateDetails = {
+                                    Toast.makeText(
+                                        context,
+                                        "Not implemented yet",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        } else {
+                            NoUpdateAvailable(
+                                device,
+                                checkForUpdate = {
+                                    Toast.makeText(
+                                        context,
+                                        "Not implemented yet",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -213,7 +238,9 @@ fun NoUpdateAvailable(device: Device, checkForUpdate: () -> Unit) {
 fun UpdateAvailable(device: Device, seeUpdateDetails: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            modifier = Modifier.padding(8.dp).padding(end = 10.dp),
+            modifier = Modifier
+                .padding(8.dp)
+                .padding(end = 10.dp),
             painter = painterResource(R.drawable.baseline_download_24),
             contentDescription = stringResource(R.string.update_available),
         )

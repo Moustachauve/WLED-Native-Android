@@ -66,7 +66,9 @@ fun DeviceDetail(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize().clip(shape = MaterialTheme.shapes.large),
+                .padding(horizontal = 3.dp)
+                .fillMaxSize()
+                .clip(shape = MaterialTheme.shapes.large),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

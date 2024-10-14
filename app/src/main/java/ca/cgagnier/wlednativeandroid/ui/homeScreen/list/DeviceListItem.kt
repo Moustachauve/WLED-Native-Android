@@ -71,11 +71,11 @@ fun DeviceListItem(
 
         SwipeBox(
             modifier = modifier,
+            device = device,
             swipeToDismissBoxState = swipeToDismissBoxState
         ) {
             SelectableCard(
                 modifier = Modifier
-                    .padding(horizontal = 6.dp)
                     .padding(bottom = 6.dp)
                     .clip(CardDefaults.shape),
                 isSelected = isSelected,
@@ -118,6 +118,7 @@ fun DeviceListItem(
 @Composable
 private fun SwipeBox(
     modifier: Modifier = Modifier,
+    device: Device,
     swipeToDismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
     content: @Composable () -> Unit
 ) {
@@ -135,21 +136,22 @@ private fun SwipeBox(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(6.dp)
+                    .padding(bottom = 6.dp)
                     .background(color, shape = CardDefaults.shape)
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                        val deleteIcon =
-                            if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.EndToStart) Icons.Filled.Delete else Icons.Outlined.Delete
+                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
+                        val penIcon =
+                            if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.StartToEnd) Icons.Filled.Edit else Icons.Outlined.Edit
                         Crossfade(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            targetState = deleteIcon,
-                            label = "delete icon"
+                            modifier = Modifier.padding(end = 16.dp),
+                            targetState = penIcon,
+                            label = "pen icon"
                         ) {
                             Icon(
                                 imageVector = it,
@@ -157,13 +159,17 @@ private fun SwipeBox(
                             )
                         }
                     }
-                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
-                        val penIcon =
-                            if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.StartToEnd) Icons.Filled.Edit else Icons.Outlined.Edit
+                    DeviceInfoTwoRows(
+                        modifier = Modifier.weight(1f),
+                        device = device
+                    )
+                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                        val deleteIcon =
+                            if (swipeToDismissBoxState.targetValue == SwipeToDismissBoxValue.EndToStart) Icons.Filled.Delete else Icons.Outlined.Delete
                         Crossfade(
-                            modifier = Modifier.align(Alignment.CenterStart),
-                            targetState = penIcon,
-                            label = "pen icon"
+                            modifier = Modifier.padding(start = 16.dp),
+                            targetState = deleteIcon,
+                            label = "delete icon"
                         ) {
                             Icon(
                                 imageVector = it,
