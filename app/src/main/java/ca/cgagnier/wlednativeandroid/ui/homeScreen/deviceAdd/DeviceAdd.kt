@@ -119,7 +119,7 @@ fun DeviceAdd(
             DeviceVisibleSwitch(
                 isHidden = viewModel.isHidden,
                 onCheckedChange = {
-                    viewModel.isHidden = !it
+                    viewModel.isHidden = it
                 }
             )
             Spacer(
