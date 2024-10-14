@@ -213,6 +213,21 @@ fun DeviceInfoTwoRows(
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
+            if (device.isHidden) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_baseline_visibility_off_24),
+                    contentDescription = stringResource(R.string.description_back_button),
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .height(16.dp)
+                )
+                Text(
+                    stringResource(R.string.hidden_status),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
         }
     }
 }
