@@ -5,8 +5,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -82,9 +83,12 @@ fun DeviceListItem(
                     Row(
                         modifier = Modifier, verticalAlignment = Alignment.CenterVertically
                     ) {
-                        DeviceInfoTwoRows(device = device)
-                        Spacer(Modifier.weight(1f))
+                        DeviceInfoTwoRows(
+                            device = device,
+                            modifier = Modifier.weight(1f)
+                        )
                         Switch(
+                            modifier = Modifier.padding(start = 10.dp),
                             checked = checked,
                             onCheckedChange = { isOn ->
                                 checked = isOn
@@ -173,11 +177,17 @@ private fun SwipeBox(
 @Composable
 fun DeviceInfoTwoRows(
     modifier: Modifier = Modifier,
-    device: Device
+    device: Device,
+    nameMaxLines: Int = 2,
 ) {
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(device.name, style = MaterialTheme.typography.titleLarge)
+            Text(
+                device.name,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = nameMaxLines,
+                overflow = TextOverflow.Ellipsis
+            )
             if (device.isRefreshing) {
                 val size =
                     (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
@@ -191,12 +201,15 @@ fun DeviceInfoTwoRows(
             }
         }
         Row(
-            modifier = Modifier.padding(bottom = 2.dp),
+            modifier = Modifier.padding(bottom = 2.dp).width(IntrinsicSize.Min),
             verticalAlignment = Alignment.Bottom
         ) {
             Text(
                 device.address,
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).width(IntrinsicSize.Max)
             )
             Icon(
                 painter = painterResource(R.drawable.twotone_signal_wifi_2_bar_24),

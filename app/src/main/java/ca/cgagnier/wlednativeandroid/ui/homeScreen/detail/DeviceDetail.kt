@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +33,7 @@ import ca.cgagnier.wlednativeandroid.ui.components.LoadingState
 import ca.cgagnier.wlednativeandroid.ui.components.WebViewState
 import ca.cgagnier.wlednativeandroid.ui.components.rememberSaveableWebViewState
 import ca.cgagnier.wlednativeandroid.ui.components.rememberWebViewNavigator
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceInfoTwoRows
 
 private const val TAG = "ui.DeviceDetail"
 
@@ -101,8 +101,7 @@ fun DeviceDetailAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column {
-                    Text(text = device.name)
-                    Text(text = device.address)
+                    DeviceInfoTwoRows(device = device, nameMaxLines = 1)
                 }
                 if (webViewState.loadingState is LoadingState.Loading) {
                     CircularProgressIndicator(

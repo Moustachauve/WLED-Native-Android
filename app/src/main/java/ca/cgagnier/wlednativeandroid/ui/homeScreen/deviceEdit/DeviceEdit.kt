@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
@@ -171,7 +172,11 @@ fun DeviceEditAppBar(
 ) {
     TopAppBar(
         title = {
-            Text(text = stringResource(R.string.edit_device_with_name, device.name))
+            Text(
+                text = stringResource(R.string.edit_device_with_name, device.name),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         },
         modifier = modifier,
         navigationIcon = {
