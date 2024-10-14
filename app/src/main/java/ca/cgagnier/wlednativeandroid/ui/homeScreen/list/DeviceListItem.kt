@@ -71,7 +71,8 @@ fun DeviceListItem(
         ) {
             SelectableCard(
                 modifier = Modifier
-                    .padding(6.dp)
+                    .padding(horizontal = 6.dp)
+                    .padding(bottom = 6.dp)
                     .clip(CardDefaults.shape),
                 isSelected = isSelected,
                 colors = CardDefaults.cardColors(
