@@ -23,13 +23,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -212,13 +216,25 @@ fun DeviceInfoTwoRows(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f).width(IntrinsicSize.Max)
             )
-            Icon(
-                painter = painterResource(R.drawable.twotone_signal_wifi_2_bar_24),
-                contentDescription = stringResource(R.string.description_back_button),
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .height(20.dp)
-            )
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { PlainTooltip {
+                    if (device.isOnline) {
+                        Text(stringResource(R.string.signal_strength, device.networkRssi))
+                    } else {
+                        Text(stringResource(R.string.signal_strength, stringResource(R.string.is_offline)))
+                    }
+                } },
+                state = rememberTooltipState()
+            ) {
+                Icon(
+                    painter = painterResource(device.getNetworkStrengthImage()),
+                    contentDescription = stringResource(R.string.network_status),
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .height(20.dp)
+                )
+            }
             if (!device.isOnline) {
                 Text(
                     stringResource(R.string.is_offline),
