@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.domain.use_case
 
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
 import org.junit.Before
 import org.junit.Test
 
