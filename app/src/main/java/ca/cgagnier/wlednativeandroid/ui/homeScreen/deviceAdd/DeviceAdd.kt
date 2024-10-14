@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -45,6 +46,18 @@ fun DeviceAdd(
     deviceAdded: () -> Unit,
     viewModel: DeviceAddViewModel = hiltViewModel(),
 ) {
+    val state = viewModel.state
+    val context = LocalContext.current
+
+    LaunchedEffect(context) {
+        viewModel.validationEvents.collect { event ->
+            when (event) {
+                is DeviceAddViewModel.ValidationEvent.Success -> {
+                    deviceAdded()
+                }
+            }
+        }
+    }
     LaunchedEffect("clearOnLaunch") {
         viewModel.clear()
     }
@@ -74,11 +87,17 @@ fun DeviceAdd(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             OutlinedTextField(
-                value = viewModel.address,
+                value = state.address,
                 onValueChange = {
-                    viewModel.address = it
+                    viewModel.onEvent(DeviceAddFormEvent.AddressChanged(it))
                 },
                 label = { Text(stringResource(R.string.ip_address_or_url)) },
+                isError = state.addressError != null,
+                supportingText = {
+                    if (state.addressError != null) {
+                        Text(stringResource(state.addressError))
+                    }
+                },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
@@ -95,9 +114,9 @@ fun DeviceAdd(
             )
             Spacer(Modifier.padding(4.dp))
             OutlinedTextField(
-                value = viewModel.name,
+                value = state.name,
                 onValueChange = {
-                    viewModel.name = it
+                    viewModel.onEvent(DeviceAddFormEvent.NameChanged(it))
                 },
                 label = { Text(stringResource(R.string.custom_name)) },
                 supportingText = { Text(stringResource(R.string.leave_this_empty_to_use_the_device_name)) },
@@ -107,8 +126,7 @@ fun DeviceAdd(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        viewModel.createDevice()
-                        deviceAdded()
+                        viewModel.onEvent(DeviceAddFormEvent.Submit)
                     }
                 ),
                 modifier = Modifier
@@ -117,9 +135,9 @@ fun DeviceAdd(
             Spacer(Modifier.padding(4.dp))
 
             DeviceVisibleSwitch(
-                isHidden = viewModel.isHidden,
+                isHidden = state.isHidden,
                 onCheckedChange = {
-                    viewModel.isHidden = it
+                    viewModel.onEvent(DeviceAddFormEvent.IsHiddenChanged(it))
                 }
             )
             Spacer(
@@ -129,8 +147,7 @@ fun DeviceAdd(
             )
             Button(
                 onClick = {
-                    viewModel.createDevice()
-                    deviceAdded()
+                    viewModel.onEvent(DeviceAddFormEvent.Submit)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
