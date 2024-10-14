@@ -57,6 +57,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.ui.MainActivity
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Finished
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Loading
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +68,7 @@ import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
+
 
 private const val TAG = "ui.components.DeviceWebView"
 
@@ -82,7 +84,8 @@ fun DeviceWebView(
     state: WebViewState,
     navigator: WebViewNavigator = rememberWebViewNavigator(),
     client: CustomWebViewClient = remember { CustomWebViewClient() },
-    chromeClient: CustomWebChromeClient = remember { CustomWebChromeClient() },
+    context: Context = LocalContext.current,
+    chromeClient: CustomWebChromeClient = remember { CustomWebChromeClient(context) },
 ) {
     Log.i(TAG, "composing webview")
     val webView = webViewViewModel.webView().observeAsState().value ?: return
@@ -238,7 +241,7 @@ class CustomWebViewClient: WebViewClient() {
     }
 }
 
-class CustomWebChromeClient: WebChromeClient() {
+class CustomWebChromeClient(private val appContext: Context): WebChromeClient() {
     lateinit var state: WebViewState
         internal set
 
@@ -255,12 +258,13 @@ class CustomWebChromeClient: WebChromeClient() {
 
     override fun onShowFileChooser(
         webView: WebView?,
-        filePathCallback: ValueCallback<Array<Uri>>?,
-        fileChooserParams: FileChooserParams?
+        filePathCallback: ValueCallback<Array<Uri>>,
+        fileChooserParams: FileChooserParams
     ): Boolean {
-        // TODO: Handle file upload
-        //uploadMessage = filePathCallback
-        //fileUpload.launch(123)
+        val activity = appContext as MainActivity
+        activity.uploadMessage = filePathCallback
+        activity.fileUpload.launch(123)
+
         return true
     }
 }
