@@ -112,7 +112,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14'
 
     // Compose
-    def composeBom = platform('androidx.compose:compose-bom:2024.09.02')
+    def composeBom = platform('androidx.compose:compose-bom:2024.09.03')
     implementation composeBom
     androidTestImplementation composeBom
 

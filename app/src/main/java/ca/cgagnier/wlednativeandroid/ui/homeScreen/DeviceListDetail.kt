@@ -94,6 +94,7 @@ fun DeviceListDetail(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             ModalDrawerSheet {
                 DrawerContent(
