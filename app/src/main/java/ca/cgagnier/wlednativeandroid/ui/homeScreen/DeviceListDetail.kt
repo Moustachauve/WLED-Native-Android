@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -126,7 +127,8 @@ fun DeviceListDetail(
             NavigableListDetailPaneScaffold(
                 modifier = modifier
                     .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding),
+                    .consumeWindowInsets(innerPadding)
+                    .imePadding(),
                 navigator = navigator,
                 defaultBackBehavior = BackNavigationBehavior.PopUntilScaffoldValueChange,
                 listPane = {
