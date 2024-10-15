@@ -12,7 +12,6 @@ buildscript {
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.1")
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.9.1")
         classpath(kotlin("gradle-plugin", version = kotlin_version))
-        classpath("com.google.gms:google-services:4.4.2")
     }
 }
 

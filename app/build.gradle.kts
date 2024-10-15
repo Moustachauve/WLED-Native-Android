@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
     id("com.google.protobuf")
     id("kotlin-android")
     id("androidx.navigation.safeargs.kotlin")
@@ -72,26 +71,17 @@ kapt {
 
 dependencies {
     val moshiVersion = "1.15.1"
-    val retrofit2_version = "2.11.0"
-    val okhttp3_version = "5.0.0-alpha.14"
-    val room_version = "2.6.1"
+    val retrofit2Version = "2.11.0"
+    val okhttp3Version = "5.0.0-alpha.14"
+    val roomVersion = "2.6.1"
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
-    implementation("androidx.navigation:navigation-compose:2.8.1")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
     //noinspection GradleDependency Version is tied to the kotlin version
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.activity:activity-ktx:1.9.2")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.slidingpanelayout:slidingpanelayout:1.2.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
     implementation("androidx.datastore:datastore:1.1.1")
     implementation("androidx.datastore:datastore-core:1.1.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
@@ -106,11 +96,11 @@ dependencies {
     implementation("com.squareup.moshi:moshi:$moshiVersion")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
-    implementation("com.squareup.retrofit2:retrofit:$retrofit2_version")
-    implementation("com.squareup.retrofit2:converter-moshi:$retrofit2_version")
+    implementation("com.squareup.retrofit2:retrofit:$retrofit2Version")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofit2Version")
     implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
-    implementation("com.squareup.okhttp3:okhttp:$okhttp3_version")
+    implementation("com.squareup.okhttp3:okhttp:$okhttp3Version")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14")
 
     // Compose
@@ -118,6 +108,8 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
+    implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.3")
     // Material Design 3
     implementation("androidx.compose.material3:material3")
     // Android Studio Preview support
@@ -144,14 +136,14 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
-    implementation("androidx.room:room-runtime:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     // To use Kotlin Symbol Processing (KSP)
-    ksp("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     // DI - hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
