@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.kapt")
     id("kotlin-parcelize")
 }

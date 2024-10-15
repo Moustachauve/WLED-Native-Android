@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0"
+agp = "8.7.1"
 composeBom = "2024.09.03"
 converterMoshi = "2.11.0"
 core = "4.6.2"
@@ -14,9 +14,9 @@ hiltNavigationCompose = "1.2.0"
 jsoup = "1.18.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
-kotlin = "1.9.24"
-kotlinxSerializationJson = "1.6.3"
-ksp = "1.9.24-1.0.20"
+kotlin = "2.0.20"
+kotlinxSerializationJson = "1.7.1"
+ksp = "2.0.20-1.0.24"
 legacySupportV4 = "1.0.0"
 lifecycleViewmodelKtx = "2.8.6"
 loggingInterceptor = "5.0.0-alpha.14"
@@ -93,6 +93,7 @@ semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationCompose" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
