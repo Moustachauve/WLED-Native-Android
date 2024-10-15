@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "ca.cgagnier.wlednativeandroid"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 33
         versionName = "4.1.1"
         resourceConfigurations += listOf("en", "fr")
