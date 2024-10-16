@@ -1,6 +1,11 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -9,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +23,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +57,7 @@ import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DeviceEdit(
@@ -82,7 +91,9 @@ fun DeviceEdit(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
         ) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(12.dp)) {
+            Column(modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(12.dp)) {
                 OutlinedTextField(
                     value = device.address,
                     enabled = false,
@@ -126,7 +137,9 @@ fun DeviceEdit(
                 Card(modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth()) {
                         if (device.hasUpdateAvailable()) {
                             UpdateAvailable(
                                 device,
@@ -219,6 +232,8 @@ fun DeviceEditAppBar(
 
 @Composable
 fun NoUpdateAvailable(device: Device, checkForUpdate: () -> Unit) {
+    val coroutineScope = rememberCoroutineScope()
+    var checkingUpdates by remember { mutableStateOf(false) }
     Text(
         stringResource(R.string.your_device_is_up_to_date),
         style = MaterialTheme.typography.titleMedium
@@ -228,9 +243,40 @@ fun NoUpdateAvailable(device: Device, checkForUpdate: () -> Unit) {
         style = MaterialTheme.typography.bodyMedium
     )
     OutlinedButton(
-        onClick = checkForUpdate
+        onClick = {
+            checkForUpdate()
+            coroutineScope.launch {
+                checkingUpdates = true
+                delay(2000)
+                checkingUpdates = false
+            }
+        },
     ) {
-        Text(stringResource(R.string.check_for_update))
+        val buttonText =
+            if (checkingUpdates) stringResource(R.string.checking_progress_update)
+            else stringResource(R.string.check_for_update)
+        AnimatedContent(
+            targetState = buttonText,
+            transitionSpec = {
+                scaleIn() togetherWith fadeOut()
+            },
+            label = ""
+        ) {
+            Text(it)
+        }
+
+        AnimatedVisibility(
+            visible = checkingUpdates
+        ) {
+            val size = (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .padding(bottom = 2.dp)
+                    .width(size.dp)
+                    .height(size.dp),
+            )
+        }
     }
 }
 
