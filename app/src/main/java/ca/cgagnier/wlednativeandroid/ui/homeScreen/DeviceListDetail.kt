@@ -278,7 +278,7 @@ fun SelectDeviceView() {
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = 24.dp),
+            modifier = Modifier.fillMaxSize().padding(top = 44.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(

@@ -27,6 +27,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -79,7 +80,7 @@ fun DeviceList(
         skipPartiallyExpanded = false
     )
     val listState = rememberLazyListState()
-    val expandedFab by remember { derivedStateOf { !listState.canScrollBackward } }
+    val isFabExpanded by remember { derivedStateOf { !listState.canScrollBackward } }
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
 
@@ -95,6 +96,9 @@ fun DeviceList(
             isRefreshing = false
         }
     }
+    val addDevice = {
+        viewModel.showBottomSheet()
+    }
 
     Scaffold(
         topBar = {
@@ -104,28 +108,18 @@ fun DeviceList(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                expanded = expandedFab,
-                text = {
-                    Text(text = stringResource(R.string.add_a_device))
-                },
-                icon = {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = stringResource(R.string.add_a_device)
-                    )
-                },
-                onClick = {
-                    viewModel.showBottomSheet()
-                }
-            )
+            if (devices.isNotEmpty()) {
+                FloatingActionButton(
+                    isFabExpanded = isFabExpanded,
+                    addDevice = addDevice
+                )
+            }
         },
         floatingActionButtonPosition = FabPosition.End,
 
         ) { innerPadding ->
         PullToRefreshBox(
-            modifier = Modifier
-                .padding(innerPadding),
+            modifier = Modifier.padding(innerPadding),
             state = pullToRefreshState,
             isRefreshing = isRefreshing,
             onRefresh = refresh,
@@ -137,74 +131,61 @@ fun DeviceList(
                     .padding(horizontal = 6.dp)
                     .clip(shape = MaterialTheme.shapes.large),
             ) {
-                itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
-                    val swipeDismissState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = {
-                            if (it == SwipeToDismissBoxValue.EndToStart) {
-                                confirmDeleteDevice.value = device
-                                return@rememberSwipeToDismissBoxState true
-                            } else if (it == SwipeToDismissBoxValue.StartToEnd) {
-                                onItemEdit(device)
-                                return@rememberSwipeToDismissBoxState false
-                            }
-                            true
-                        },
-                    )
-                    DeviceListItem(
-                        device = device,
-                        isSelected = device.address == selectedDevice?.address,
-                        onClick = { onItemClick(device) },
-                        swipeToDismissBoxState = swipeDismissState,
-                        onPowerSwitchToggle = { isOn ->
-                            viewModel.toggleDevicePower(device, isOn)
-                        },
-                        onBrightnessChanged = { brightness ->
-                            viewModel.setDeviceBrightness(device, brightness)
-                        },
-                        modifier = Modifier.animateItem()
-                    )
-                    when (confirmDeleteDevice.value) {
-                        null -> {
-                            if (swipeDismissState.currentValue != SwipeToDismissBoxValue.Settled) {
-                                LaunchedEffect(Unit) {
-                                    swipeDismissState.reset()
+                if (devices.isEmpty()) {
+                    item {
+                        NoDevicesItem(
+                            modifier = Modifier.fillParentMaxSize(), addDevice = addDevice
+                        )
+                    }
+                } else {
+                    itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
+                        val swipeDismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = {
+                                if (it == SwipeToDismissBoxValue.EndToStart) {
+                                    confirmDeleteDevice.value = device
+                                    return@rememberSwipeToDismissBoxState true
+                                } else if (it == SwipeToDismissBoxValue.StartToEnd) {
+                                    onItemEdit(device)
+                                    return@rememberSwipeToDismissBoxState false
+                                }
+                                true
+                            },
+                        )
+                        DeviceListItem(
+                            device = device,
+                            isSelected = device.address == selectedDevice?.address,
+                            onClick = { onItemClick(device) },
+                            swipeToDismissBoxState = swipeDismissState,
+                            onPowerSwitchToggle = { isOn ->
+                                viewModel.toggleDevicePower(device, isOn)
+                            },
+                            onBrightnessChanged = { brightness ->
+                                viewModel.setDeviceBrightness(device, brightness)
+                            },
+                            modifier = Modifier.animateItem()
+                        )
+                        when (confirmDeleteDevice.value) {
+                            null -> {
+                                if (swipeDismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+                                    LaunchedEffect(Unit) {
+                                        swipeDismissState.reset()
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                item {
-                    Spacer(Modifier.padding(42.dp))
-                }
-            }
-
-            if (uiState.showBottomSheet) {
-                if (isKeyboardOpen) {
-                    LaunchedEffect("keyboardOpen") {
-                        delay(300)
-                        sheetState.expand()
+                    item {
+                        Spacer(Modifier.padding(42.dp))
                     }
-                }
-                ModalBottomSheet(
-                    modifier = Modifier.fillMaxHeight(),
-                    sheetState = sheetState,
-                    onDismissRequest = {
-                        viewModel.hideBottomSheet()
-                    },
-                ) {
-                    DeviceAdd(
-                        deviceAdded = {
-                            coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    viewModel.hideBottomSheet()
-                                }
-                            }
-                        }
-                    )
                 }
             }
         }
     }
+
+    if (uiState.showBottomSheet) {
+        AddDeviceBottomSheet(isKeyboardOpen, sheetState, viewModel)
+    }
+
     ConfirmDeleteDialog(
         device = confirmDeleteDevice.value,
         onConfirm = {
@@ -217,6 +198,38 @@ fun DeviceList(
             confirmDeleteDevice.value = null
         }
     )
+}
+
+@Composable
+private fun AddDeviceBottomSheet(
+    isKeyboardOpen: Boolean,
+    sheetState: SheetState,
+    viewModel: DeviceListViewModel
+) {
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(isKeyboardOpen) {
+        if (isKeyboardOpen) {
+            delay(300)
+            sheetState.expand()
+        }
+    }
+    ModalBottomSheet(
+        modifier = Modifier.fillMaxHeight(),
+        sheetState = sheetState,
+        onDismissRequest = {
+            viewModel.hideBottomSheet()
+        },
+    ) {
+        DeviceAdd(
+            deviceAdded = {
+                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        viewModel.hideBottomSheet()
+                    }
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -261,6 +274,25 @@ fun DeviceListAppBar(
                 }
             }
         }
+    )
+}
+
+@Composable
+fun FloatingActionButton(
+    isFabExpanded: Boolean,
+    addDevice: () -> Unit,
+) {
+    ExtendedFloatingActionButton(
+        expanded = isFabExpanded,
+        text = {
+            Text(text = stringResource(R.string.add_a_device))
+        },
+        icon = {
+            Icon(
+                Icons.Filled.Add, contentDescription = stringResource(R.string.add_a_device)
+            )
+        },
+        onClick = addDevice
     )
 }
 
