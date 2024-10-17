@@ -201,38 +201,6 @@ fun DeviceList(
 }
 
 @Composable
-private fun AddDeviceBottomSheet(
-    isKeyboardOpen: Boolean,
-    sheetState: SheetState,
-    viewModel: DeviceListViewModel
-) {
-    val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(isKeyboardOpen) {
-        if (isKeyboardOpen) {
-            delay(300)
-            sheetState.expand()
-        }
-    }
-    ModalBottomSheet(
-        modifier = Modifier.fillMaxHeight(),
-        sheetState = sheetState,
-        onDismissRequest = {
-            viewModel.hideBottomSheet()
-        },
-    ) {
-        DeviceAdd(
-            deviceAdded = {
-                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        viewModel.hideBottomSheet()
-                    }
-                }
-            }
-        )
-    }
-}
-
-@Composable
 fun DeviceListAppBar(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
@@ -294,6 +262,39 @@ fun FloatingActionButton(
         },
         onClick = addDevice
     )
+}
+
+@Composable
+private fun AddDeviceBottomSheet(
+    isKeyboardOpen: Boolean,
+    sheetState: SheetState,
+    viewModel: DeviceListViewModel
+) {
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(isKeyboardOpen) {
+        if (isKeyboardOpen) {
+            delay(300)
+            sheetState.expand()
+        }
+    }
+    ModalBottomSheet(
+        modifier = Modifier.fillMaxHeight(),
+        sheetState = sheetState,
+        onDismissRequest = {
+            viewModel.hideBottomSheet()
+        },
+    ) {
+        DeviceAdd(
+            sheetState = sheetState,
+            deviceAdded = {
+                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        viewModel.hideBottomSheet()
+                    }
+                }
+            },
+        )
+    }
 }
 
 @Composable

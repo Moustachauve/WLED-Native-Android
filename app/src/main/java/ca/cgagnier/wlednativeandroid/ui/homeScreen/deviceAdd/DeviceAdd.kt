@@ -19,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +45,7 @@ import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 @Composable
 fun DeviceAdd(
     modifier: Modifier = Modifier,
+    sheetState: SheetState,
     deviceAdded: () -> Unit,
     viewModel: DeviceAddViewModel = hiltViewModel(),
 ) {
@@ -58,8 +61,10 @@ fun DeviceAdd(
             }
         }
     }
-    LaunchedEffect("clearOnLaunch") {
-        viewModel.clear()
+    LaunchedEffect(sheetState) {
+        if (!sheetState.isVisible || sheetState.targetValue == SheetValue.Hidden) {
+            viewModel.clear()
+        }
     }
     Column(
         modifier = modifier
@@ -70,9 +75,6 @@ fun DeviceAdd(
             .height(IntrinsicSize.Max),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-        ) {
             val focusRequester = remember {
                 FocusRequester()
             }
@@ -157,6 +159,5 @@ fun DeviceAdd(
                 )
                 Text(stringResource(R.string.add))
             }
-        }
     }
 }
