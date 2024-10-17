@@ -241,6 +241,15 @@ fun DeviceInfoTwoRows(
                         .height(20.dp)
                 )
             }
+            if (device.hasUpdateAvailable()) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_download_24),
+                    contentDescription = stringResource(R.string.network_status),
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .height(20.dp)
+                )
+            }
             if (!device.isOnline) {
                 Text(
                     stringResource(R.string.is_offline),
