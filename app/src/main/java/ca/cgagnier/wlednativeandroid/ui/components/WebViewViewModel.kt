@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModelProvider
 import ca.cgagnier.wlednativeandroid.WebViewLiveData
 import ca.cgagnier.wlednativeandroid.model.Device
 
-class WebViewViewModel(appContext: Context) : ViewModel() {
-    private val webView = WebViewLiveData(appContext)
+class WebViewViewModel(context: Context) : ViewModel() {
+    private val webView = WebViewLiveData(context)
     fun webView(): LiveData<WebView> = webView
 
     val backQueue = ArrayDeque<String>(5)
@@ -23,11 +23,11 @@ class WebViewViewModel(appContext: Context) : ViewModel() {
             webView.firstLoad = isFirstLoad
         }
 
-    class Factory(private val appContext: Context) : ViewModelProvider.Factory {
+    class Factory(private val context: Context) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(WebViewViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return WebViewViewModel(appContext) as T
+                return WebViewViewModel(context) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

@@ -78,7 +78,7 @@ fun DeviceWebView(
     device: Device,
     webViewViewModel: WebViewViewModel = viewModel(
         factory = WebViewViewModel.Factory(
-            appContext = LocalContext.current.applicationContext
+            context = LocalContext.current
         )
     ),
     state: WebViewState,
@@ -241,7 +241,7 @@ class CustomWebViewClient: WebViewClient() {
     }
 }
 
-class CustomWebChromeClient(private val appContext: Context): WebChromeClient() {
+class CustomWebChromeClient(private val context: Context): WebChromeClient() {
     lateinit var state: WebViewState
         internal set
 
@@ -261,7 +261,7 @@ class CustomWebChromeClient(private val appContext: Context): WebChromeClient() 
         filePathCallback: ValueCallback<Array<Uri>>,
         fileChooserParams: FileChooserParams
     ): Boolean {
-        val activity = appContext as MainActivity
+        val activity = context as MainActivity
         activity.uploadMessage = filePathCallback
         activity.fileUpload.launch(123)
 
