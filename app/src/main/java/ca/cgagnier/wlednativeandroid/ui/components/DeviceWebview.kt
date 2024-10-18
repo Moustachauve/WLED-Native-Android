@@ -55,6 +55,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.MainActivity
@@ -263,9 +264,23 @@ class CustomWebChromeClient(private val context: Context): WebChromeClient() {
     ): Boolean {
         val activity = context as MainActivity
         activity.uploadMessage = filePathCallback
+        //activity.fileUploadContract.type = fileChooserParams.acceptTypes[0]
+        val contract = activity.fileUpload.contract as FileUploadContract
+        contract.type = getMimeType(fileChooserParams.acceptTypes)
         activity.fileUpload.launch(123)
 
         return true
+    }
+
+    private fun getMimeType(acceptTypes: Array<String>): String {
+        for (type in acceptTypes) {
+            when (type) {
+                ".json" -> return "application/json"
+                ".css" -> return "text/css"
+                else -> continue
+            }
+        }
+        return "application/octet-stream"
     }
 }
 
