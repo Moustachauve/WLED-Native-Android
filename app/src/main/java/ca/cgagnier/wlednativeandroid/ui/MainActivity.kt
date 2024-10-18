@@ -60,7 +60,6 @@ class MainActivity : ComponentActivity() {
      * Checks for device updates once in a while
      */
     private fun updateDeviceVersionList() {
-
         lifecycleScope.launch(Dispatchers.IO) {
             userPreferencesRepository.lastUpdateCheckDate.collect {
                 val now = System.currentTimeMillis()

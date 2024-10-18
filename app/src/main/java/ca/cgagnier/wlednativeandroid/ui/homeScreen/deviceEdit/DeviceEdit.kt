@@ -56,6 +56,7 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetails
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -71,6 +72,7 @@ fun DeviceEdit(
         Pair(Branch.BETA, stringResource(R.string.beta)),
     )
     val context = LocalContext.current
+    var showUpdate by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -144,11 +146,7 @@ fun DeviceEdit(
                             UpdateAvailable(
                                 device,
                                 seeUpdateDetails = {
-                                    Toast.makeText(
-                                        context,
-                                        "Not implemented yet",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    showUpdate = true
                                 }
                             )
                         } else {
@@ -167,6 +165,15 @@ fun DeviceEdit(
                 }
             }
         }
+    }
+
+    if (showUpdate) {
+        UpdateDetails(
+            device = device,
+            onDismiss = {
+                showUpdate = false
+            }
+        )
     }
 }
 
@@ -296,8 +303,7 @@ fun UpdateAvailable(device: Device, seeUpdateDetails: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                // TODO: add new version number
-                stringResource(R.string.from_version_to_version, device.version, device.version),
+                stringResource(R.string.from_version_to_version, device.version, device.newUpdateVersionTagAvailable),
                 style = MaterialTheme.typography.bodyMedium
             )
             Button(

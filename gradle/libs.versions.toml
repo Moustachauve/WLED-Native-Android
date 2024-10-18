@@ -23,6 +23,7 @@ loggingInterceptor = "5.0.0-alpha.14"
 materialKolor = "2.0.0"
 moshiKotlinCodegen = "1.15.1"
 moshiVersion = "1.15.1"
+multiplatformmarkdownrenderer = "0.26.0"
 navigationCompose = "2.8.2"
 okhttp = "5.0.0-alpha.14"
 preferenceKtx = "1.2.1"
@@ -83,6 +84,8 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshiVersion" }
 moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
+multiplatformmarkdownrenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "multiplatformmarkdownrenderer" }
+multiplatformmarkdownrenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "multiplatformmarkdownrenderer" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }

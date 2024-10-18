@@ -115,6 +115,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.material.kolor)
     implementation(libs.moshi)
+    implementation(libs.multiplatformmarkdownrenderer)
+    implementation(libs.multiplatformmarkdownrenderer.m3)
     implementation(libs.okhttp)
     implementation(libs.protobuf.javalite)
     implementation(libs.retrofit)
