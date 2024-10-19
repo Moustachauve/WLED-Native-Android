@@ -55,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetails
 import kotlinx.coroutines.delay
@@ -218,7 +219,7 @@ fun DeviceEditAppBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.edit_device_with_name, device.name),
+                text = stringResource(R.string.edit_device_with_name, DeviceName(device)),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

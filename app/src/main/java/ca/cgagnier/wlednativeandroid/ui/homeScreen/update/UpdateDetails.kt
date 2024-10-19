@@ -32,6 +32,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
+import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
 
@@ -84,7 +85,7 @@ private fun TopHeader(device: Device) {
             )
             Row {
                 Text(
-                    device.name + " - " + device.address,
+                    DeviceName(device) + " - " + device.address,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
