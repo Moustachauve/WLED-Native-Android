@@ -5,9 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,8 +19,16 @@ const val TAG = "DeviceEditViewModel"
 
 @HiltViewModel
 class DeviceEditViewModel @Inject constructor(
-    private val repository: DeviceRepository
+    private val repository: DeviceRepository,
+    private val versionWithAssetsRepository: VersionWithAssetsRepository
 ) : ViewModel() {
+
+    private var _updateDetailsVersion: MutableStateFlow<VersionWithAssets?> = MutableStateFlow(null)
+    val updateDetailsVersion = _updateDetailsVersion.asStateFlow()
+
+    private var _updateInstallVersion: MutableStateFlow<VersionWithAssets?> = MutableStateFlow(null)
+    val updateInstallVersion = _updateInstallVersion.asStateFlow()
+
     fun updateCustomName(device: Device, name: String) = viewModelScope.launch(Dispatchers.IO) {
         val isCustomName = name != ""
         val updatedDevice = device.copy(
@@ -45,6 +57,23 @@ class DeviceEditViewModel @Inject constructor(
                 branch = branch
             )
         )
+    }
+
+    fun showUpdateDetails(device: Device) = viewModelScope.launch(Dispatchers.IO) {
+        val version = device.newUpdateVersionTagAvailable
+        _updateDetailsVersion.value = versionWithAssetsRepository.getVersionByTag(version)
+    }
+
+    fun hideUpdateDetails() {
+        _updateDetailsVersion.value = null
+    }
+
+    fun startUpdateInstall(version: VersionWithAssets) {
+        _updateInstallVersion.value = version
+    }
+
+    fun stopUpdateInstall() {
+        _updateInstallVersion.value = null
     }
 
 }

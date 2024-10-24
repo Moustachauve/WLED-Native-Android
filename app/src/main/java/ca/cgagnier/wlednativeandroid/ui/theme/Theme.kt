@@ -268,15 +268,29 @@ fun WLEDNativeTheme(
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     themeViewModel: ThemeViewModel = hiltViewModel(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
-    val view = LocalView.current
     val theme by themeViewModel.theme.collectAsStateWithLifecycle()
     val darkTheme = when (theme) {
         ThemeSettings.Auto -> isSystemInDarkTheme()
         ThemeSettings.Dark -> true
         else -> false
     }
+    WLEDNativeTheme(
+        darkTheme = darkTheme,
+        dynamicColor = dynamicColor,
+        content = content
+    )
+}
+
+@Composable
+fun WLEDNativeTheme(
+    darkTheme: Boolean,
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val view = LocalView.current
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

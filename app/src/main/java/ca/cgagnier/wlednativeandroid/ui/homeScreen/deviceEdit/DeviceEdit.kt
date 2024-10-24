@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +58,8 @@ import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
-import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetails
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateInstallingDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -73,7 +75,8 @@ fun DeviceEdit(
         Pair(Branch.BETA, stringResource(R.string.beta)),
     )
     val context = LocalContext.current
-    var showUpdate by remember { mutableStateOf(false) }
+    val updateDetailsVersion by viewModel.updateDetailsVersion.collectAsState()
+    val updateInstallVersion by viewModel.updateInstallVersion.collectAsState()
 
     Scaffold(
         topBar = {
@@ -147,7 +150,7 @@ fun DeviceEdit(
                             UpdateAvailable(
                                 device,
                                 seeUpdateDetails = {
-                                    showUpdate = true
+                                    viewModel.showUpdateDetails(device)
                                 }
                             )
                         } else {
@@ -168,12 +171,29 @@ fun DeviceEdit(
         }
     }
 
-    if (showUpdate) {
-        UpdateDetails(
+    updateDetailsVersion?.let { versionDetails ->
+        UpdateDetailsDialog(
             device = device,
+            version = versionDetails,
             onDismiss = {
-                showUpdate = false
+                viewModel.hideUpdateDetails()
+            },
+            onInstall = { versionInstall ->
+                viewModel.hideUpdateDetails()
+                viewModel.startUpdateInstall(versionInstall)
+            },
+            onSkip = {
+                viewModel.hideUpdateDetails()
             }
+        )
+    }
+    updateInstallVersion?.let { version ->
+        UpdateInstallingDialog(
+            device = device,
+            version = version,
+            onDismiss = {
+                viewModel.stopUpdateInstall()
+            },
         )
     }
 }

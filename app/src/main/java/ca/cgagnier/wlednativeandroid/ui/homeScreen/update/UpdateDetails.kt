@@ -17,8 +17,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -26,29 +24,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.model.Version
+import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
 
 @Composable
-fun UpdateDetails(
+fun UpdateDetailsDialog(
     device: Device,
+    version: VersionWithAssets,
     onDismiss: () -> Unit,
-    updateDetailsViewModel: UpdateDetailsViewModel = hiltViewModel()
+    onInstall: (VersionWithAssets) -> Unit,
+    onSkip: () -> Unit
 ) {
-    val state by updateDetailsViewModel.state.collectAsStateWithLifecycle()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val isLargeScreen = windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
 
-    LaunchedEffect(device) {
-        updateDetailsViewModel.setDevice(device)
-    }
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = isLargeScreen),
         onDismissRequest = onDismiss,
@@ -62,9 +56,15 @@ fun UpdateDetails(
                 TopHeader(device)
                 ReleaseNotes(
                     modifier = Modifier.weight(1f),
-                    version = state.version
+                    version = version
                 )
-                BottomNavigationBar(onDismiss)
+                BottomNavigationBar(
+                    onDismiss = onDismiss,
+                    onInstall = {
+                        onInstall(version)
+                    },
+                    onSkip = onSkip
+                )
             }
         }
     }
@@ -96,7 +96,7 @@ private fun TopHeader(device: Device) {
 @Composable
 private fun ReleaseNotes(
     modifier: Modifier = Modifier,
-    version: Version? = null
+    version: VersionWithAssets? = null
 ) {
     if (version != null) {
         Column(
@@ -107,7 +107,7 @@ private fun ReleaseNotes(
                 .padding(16.dp)
         ) {
             Markdown(
-                version.description.trimIndent(),
+                version.version.description.trimIndent(),
                 typography = markdownTypography(
                     h1 = MaterialTheme.typography.headlineLarge,
                     h2 = MaterialTheme.typography.headlineMedium,
@@ -121,7 +121,11 @@ private fun ReleaseNotes(
 }
 
 @Composable
-private fun BottomNavigationBar(onDismiss: () -> Unit) {
+private fun BottomNavigationBar(
+    onDismiss: () -> Unit,
+    onInstall: () -> Unit,
+    onSkip: () -> Unit,
+) {
     NavigationBar {
         NavigationBarItem(
             icon = {
@@ -134,7 +138,7 @@ private fun BottomNavigationBar(onDismiss: () -> Unit) {
                 Text(stringResource(R.string.install))
             },
             selected = true,
-            onClick = onDismiss
+            onClick = onInstall
         )
         NavigationBarItem(
             icon = {
@@ -160,7 +164,7 @@ private fun BottomNavigationBar(onDismiss: () -> Unit) {
                 Text(stringResource(R.string.skip_this_version))
             },
             selected = false,
-            onClick = onDismiss
+            onClick = onSkip
         )
 
     }

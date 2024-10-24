@@ -83,5 +83,15 @@ data class Device(
 
     companion object {
         const val UNKNOWN_VALUE = "__unknown__"
+
+        fun getPreviewDevice(): Device {
+            return Device(
+                "10.0.0.1",
+                "Preview Device",
+                isCustomName = false,
+                isHidden = false,
+                macAddress = "00:00:00:00:00:00"
+            )
+        }
     }
 }
