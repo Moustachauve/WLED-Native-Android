@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
-import android.content.Context
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
@@ -10,9 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 class DeviceUpdateService(
-    val context: Context,
     val device: Device,
-    val versionWithAssets: VersionWithAssets
+    private val versionWithAssets: VersionWithAssets,
+    private val cacheDir: File
 ) {
     private val supportedPlatforms = listOf(
         "esp01",
@@ -53,10 +52,6 @@ class DeviceUpdateService(
         return couldDetermineAsset
     }
 
-    fun getAsset(): Asset {
-        return asset
-    }
-
     fun isAssetFileCached(): Boolean {
         return getPathForAsset().exists()
     }
@@ -66,12 +61,12 @@ class DeviceUpdateService(
             throw Exception("Asset could not be determined for ${device.name}.")
         }
 
-        val githubApi = GithubApi(context)
+        val githubApi = GithubApi(cacheDir)
         return githubApi.downloadReleaseBinary(asset, getPathForAsset())
     }
 
     fun getPathForAsset(): File {
-        val cacheDirectory = File(context.cacheDir, versionWithAssets.version.tagName)
+        val cacheDirectory = File(cacheDir, versionWithAssets.version.tagName)
         cacheDirectory.mkdirs()
         return File(cacheDirectory, asset.name)
     }

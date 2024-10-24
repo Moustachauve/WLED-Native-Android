@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
-import android.content.Context
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Branch
@@ -11,6 +10,7 @@ import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import com.vdurmont.semver4j.Semver
+import java.io.File
 
 private const val TAG = "updateService"
 
@@ -60,8 +60,8 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         return versionWithAssetsRepository.getLatestStableVersionWithAssets()
     }
 
-    suspend fun refreshVersions(context: Context) {
-        val allVersions = GithubApi(context).getAllReleases()
+    suspend fun refreshVersions(cacheDir: File) {
+        val allVersions = GithubApi(cacheDir).getAllReleases()
 
         if (allVersions == null) {
             Log.w(TAG, "Did not find any version")

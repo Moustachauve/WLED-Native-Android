@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                     return@collect
                 }
                 val releaseService = ReleaseService(versionWithAssetsRepository)
-                releaseService.refreshVersions(applicationContext)
+                releaseService.refreshVersions(applicationContext.cacheDir)
                 // Set the next date to check in minimum 24 hours from now.
                 userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
             }

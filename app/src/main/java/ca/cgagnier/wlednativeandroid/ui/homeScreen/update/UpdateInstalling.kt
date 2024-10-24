@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.update
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,16 +47,23 @@ fun UpdateInstallingDialog(
     viewModel: UpdateInstallingViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
-    LaunchedEffect(device, version) {
-        viewModel.startUpdate(device, version)
+    LaunchedEffect(device.address) {
+        viewModel.startUpdate(device, version, context.cacheDir)
     }
 
     UpdateInstallingDialog(
         state = state,
         device = device,
         version = version,
-        onDismiss = onDismiss
+        onDismiss = {
+            viewModel.resetState()
+            onDismiss()
+        },
+        onToggleErrorMessage = {
+            viewModel.toggleErrorMessage()
+        },
     )
 }
 
@@ -64,6 +73,7 @@ fun UpdateInstallingDialog(
     device: Device,
     version: VersionWithAssets,
     onDismiss: () -> Unit,
+    onToggleErrorMessage: () -> Unit,
 ) {
     AlertDialog(
         title = {
@@ -92,7 +102,11 @@ fun UpdateInstallingDialog(
                 },
                 enabled = state.canDismiss
             ) {
-                Text(stringResource(R.string.cancel))
+                if (state.step is UpdateInstallingStep.Done || state.step is UpdateInstallingStep.Error) {
+                    Text(stringResource(R.string.done))
+                } else {
+                    Text(stringResource(R.string.cancel))
+                }
             }
         },
         dismissButton = {
@@ -100,7 +114,7 @@ fun UpdateInstallingDialog(
                 val text = if (state.step.showError) R.string.hide_error else R.string.show_error
                 TextButton(
                     onClick = {
-                        // TODO
+                        onToggleErrorMessage()
                     },
                 ) {
                     Text(stringResource(text))
@@ -134,7 +148,7 @@ fun UpdateDialogContent(
             modifier = Modifier.padding(top = 12.dp)
         )
         Text(version.version.tagName)
-        if (!state.canDismiss) {
+        AnimatedVisibility (!state.canDismiss) {
             Text(
                 stringResource(R.string.please_do_not_close_the_app_or_turn_off_the_device),
                 style = MaterialTheme.typography.titleSmall,
@@ -142,8 +156,12 @@ fun UpdateDialogContent(
                 modifier = Modifier.padding(top = 12.dp)
             )
         }
-        if (state.step is UpdateInstallingStep.Error && state.step.showError) {
-            ErrorMessageCard(state.step)
+        AnimatedVisibility(state.step is UpdateInstallingStep.NoCompatibleVersion) {
+            ErrorMessageCard(stringResource(R.string.no_compatible_version_found_details))
+        }
+        AnimatedVisibility(state.step is UpdateInstallingStep.Error && state.step.showError) {
+            val step = state.step as UpdateInstallingStep.Error
+            ErrorMessageCard(step.error)
         }
     }
 }
@@ -155,9 +173,12 @@ private fun UpdateInstallingStatus(
 ) {
     when (step) {
         is UpdateInstallingStep.Starting -> CircularProgressIndicator(modifier)
-        is UpdateInstallingStep.Downloading -> CircularProgressIndicator(modifier)
+        is UpdateInstallingStep.Downloading -> CircularProgressIndicator(
+            modifier = modifier,
+            progress = { step.progress / 100f }
+        )
         is UpdateInstallingStep.Installing -> CircularProgressIndicator(modifier)
-        is UpdateInstallingStep.Error -> Icon(
+        is UpdateInstallingStep.Error, is UpdateInstallingStep.NoCompatibleVersion -> Icon(
             modifier = modifier,
             painter = painterResource(R.drawable.baseline_error_outline_24),
             contentDescription = stringResource(R.string.update_failed),
@@ -180,13 +201,14 @@ private fun updateInstallingStatusMessage(
         is UpdateInstallingStep.Starting -> stringResource(R.string.starting_up)
         is UpdateInstallingStep.Downloading -> stringResource(R.string.downloading_version)
         is UpdateInstallingStep.Installing -> stringResource(R.string.installing_update)
+        is UpdateInstallingStep.NoCompatibleVersion -> stringResource(R.string.no_compatible_version_found)
         is UpdateInstallingStep.Error -> stringResource(R.string.update_failed)
         is UpdateInstallingStep.Done -> stringResource(R.string.update_completed)
     }
 }
 
 @Composable
-private fun ErrorMessageCard(step: UpdateInstallingStep.Error) {
+private fun ErrorMessageCard(errorMessage: String) {
     Card(
         modifier = Modifier
             .padding(top = 12.dp)
@@ -195,7 +217,7 @@ private fun ErrorMessageCard(step: UpdateInstallingStep.Error) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
         Text(
-            step.error,
+            errorMessage,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(8.dp)
@@ -212,7 +234,7 @@ class SampleStateStepProvider : PreviewParameterProvider<UpdateInstallingState> 
             canDismiss = true
         ),
         UpdateInstallingState(
-            step = UpdateInstallingStep.Downloading,
+            step = UpdateInstallingStep.Downloading(progress = 50),
             canDismiss = true
         ),
         UpdateInstallingState(
@@ -220,14 +242,16 @@ class SampleStateStepProvider : PreviewParameterProvider<UpdateInstallingState> 
             canDismiss = false
         ),
         UpdateInstallingState(
+            step = UpdateInstallingStep.NoCompatibleVersion,
+            canDismiss = true
+        ),
+        UpdateInstallingState(
             step = UpdateInstallingStep.Error("Something went wrong", showError = false),
             canDismiss = true
         ),
         UpdateInstallingState(
-            step = UpdateInstallingStep.Error(
-                "Something went wrong. This is the error message. It should be longer than one line preferably.",
-                showError = true
-            ), canDismiss = true
+            step = UpdateInstallingStep.Error("Something went wrong", showError = true),
+            canDismiss = true
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.Done,
@@ -250,6 +274,7 @@ fun UpdateInstallingDialogStepStartingPreview(
                 assets = listOf()
             ),
             onDismiss = {},
+            onToggleErrorMessage = {}
         )
     }
 }

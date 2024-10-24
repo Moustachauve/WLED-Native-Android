@@ -7,8 +7,9 @@ data class UpdateInstallingState(
 
 sealed class UpdateInstallingStep() {
     data object Starting : UpdateInstallingStep()
-    data object Downloading : UpdateInstallingStep()
+    data class Downloading(val progress: Int) : UpdateInstallingStep()
     data object Installing : UpdateInstallingStep()
+    data object NoCompatibleVersion : UpdateInstallingStep()
     data class Error(
         val error: String, val showError: Boolean = false
     ) : UpdateInstallingStep()
