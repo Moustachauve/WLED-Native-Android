@@ -77,6 +77,7 @@ fun DeviceListDetail(
         viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
 
     val showHiddenDevices by viewModel.showHiddenDevices.collectAsStateWithLifecycle()
+    val isWLEDCaptivePortal by viewModel.isWLEDCaptivePortal.collectAsStateWithLifecycle()
 
     LaunchedEffect("onStart-startDiscovery") {
         if (firstLoad) {
@@ -135,6 +136,7 @@ fun DeviceListDetail(
                     AnimatedPane {
                         DeviceList(
                             selectedDevice.value,
+                            isWLEDCaptivePortal = isWLEDCaptivePortal,
                             isDiscovering = viewModel.isDiscovering,
                             onItemClick = navigateToDeviceDetail,
                             onRefresh = {

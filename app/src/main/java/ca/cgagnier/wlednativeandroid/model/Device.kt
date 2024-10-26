@@ -81,8 +81,25 @@ data class Device(
         return newUpdateVersionTagAvailable != ""
     }
 
+    fun isAPMode(): Boolean {
+        return address == DEFAULT_WLED_AP_IP
+    }
+
     companion object {
         const val UNKNOWN_VALUE = "__unknown__"
+        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+
+        fun getDefaultAPDevice(): Device {
+            return Device(
+                address = DEFAULT_WLED_AP_IP,
+                name = "WLED AP Mode",
+                isCustomName = true,
+                isHidden = false,
+                isOnline = true,
+                networkRssi = 1,
+                macAddress = UNKNOWN_VALUE
+            )
+        }
 
         fun getPreviewDevice(): Device {
             return Device(

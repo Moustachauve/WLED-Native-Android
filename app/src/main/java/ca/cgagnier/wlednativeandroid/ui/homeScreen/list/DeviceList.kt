@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DeviceList(
     selectedDevice: Device?,
+    isWLEDCaptivePortal: Boolean = false,
     isDiscovering: Boolean = false,
     onItemClick: (Device) -> Unit,
     onItemEdit: (Device) -> Unit,
@@ -138,6 +139,16 @@ fun DeviceList(
                         )
                     }
                 } else {
+                    if (isWLEDCaptivePortal) {
+                        item {
+                            val device = Device.getDefaultAPDevice()
+                            DeviceAPListItem(
+                                isSelected = device.address == selectedDevice?.address,
+                                onClick = { onItemClick(device) },
+                                modifier = Modifier.animateItem()
+                            )
+                        }
+                    }
                     itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
                         val swipeDismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = {

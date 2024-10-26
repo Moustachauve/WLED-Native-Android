@@ -134,11 +134,13 @@ fun DeviceDetailAppBar(
                     contentDescription = stringResource(R.string.refresh_page)
                 )
             }
-            IconButton(onClick = editItem) {
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = stringResource(R.string.edit_device)
-                )
+            if (!device.isAPMode()) {
+                IconButton(onClick = editItem) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = stringResource(R.string.edit_device)
+                    )
+                }
             }
         }
     )

@@ -11,6 +11,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.NetworkConnectivityManager
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -31,8 +33,11 @@ class DeviceListDetailViewModel @Inject constructor(
     application: Application,
     private val repository: DeviceRepository,
     private val stateFactory: StateFactory,
-    private val preferencesRepository: UserPreferencesRepository
+    private val preferencesRepository: UserPreferencesRepository,
+    networkManager: NetworkConnectivityManager
 ): AndroidViewModel(application) {
+    val isWLEDCaptivePortal = networkManager.isWLEDCaptivePortal
+
     var isPolling by mutableStateOf(false)
         private set
     var isDiscovering by mutableStateOf(false)
@@ -55,6 +60,13 @@ class DeviceListDetailViewModel @Inject constructor(
 
     fun getDeviceByAddress(address: String): Flow<Device?> {
         Log.d(TAG, "Getting device by address $address")
+
+        if (address == Device.DEFAULT_WLED_AP_IP) {
+            return flow {
+                emit(Device.getDefaultAPDevice())
+            }
+        }
+
         return repository.findLiveDeviceByAddress(address)
     }
 
