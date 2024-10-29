@@ -35,6 +35,12 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             return ""
         }
 
+        // If we're on a beta branch but looking for a stable branch, always offer to "update" to
+        // the stable branch.
+        if (branch == Branch.STABLE && versionName.contains("-b")) {
+            return latestVersion.version.tagName
+        }
+
         try {
             return if (Semver(
                     latestVersion.version.tagName.drop(1),
