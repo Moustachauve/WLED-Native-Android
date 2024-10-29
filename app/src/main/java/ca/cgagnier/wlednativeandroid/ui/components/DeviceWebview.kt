@@ -93,7 +93,6 @@ fun DeviceWebView(
     navigator.backQueue = webViewViewModel.backQueue
 
     BackHandler(navigator.canGoBack) {
-        // TODO: Investigate why back is not working when opening a 2nd device
         Log.i(TAG, "back handler triggered")
         navigator.goBackLogic()
     }
