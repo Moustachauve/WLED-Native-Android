@@ -147,7 +147,7 @@ fun DeviceWebView(
     }
 
     AndroidView(
-        factory = { context ->
+        factory = { currentContext ->
             webView.apply {
                 clipToOutline = true
                 layoutParams = ViewGroup.LayoutParams(
@@ -167,7 +167,7 @@ fun DeviceWebView(
                 settings.domStorageEnabled = true
 
                 setDownloadListener { url, _, contentDisposition, mimetype, _ ->
-                    downloadListener(device, url, contentDisposition, mimetype, context)
+                    downloadListener(device, url, contentDisposition, mimetype, currentContext)
                 }
             }
         },
@@ -273,9 +273,9 @@ class CustomWebChromeClient(private val context: Context): WebChromeClient() {
 
     private fun getMimeType(acceptTypes: Array<String>): String {
         for (type in acceptTypes) {
-            when (type) {
-                ".json" -> return "application/json"
-                ".css" -> return "text/css"
+            return when (type) {
+                ".json" -> "application/json"
+                ".css" -> "text/css"
                 else -> continue
             }
         }
@@ -320,17 +320,7 @@ sealed class WebContent {
         }
     }
 
-    @Deprecated("Use state.lastLoadedUrl instead")
-    fun getCurrentUrl(): String? {
-        return when (this) {
-            is Url -> url
-            is Data -> baseUrl
-            is Post -> url
-            is NavigatorOnly -> throw IllegalStateException("Unsupported")
-        }
-    }
-
-    object NavigatorOnly : WebContent()
+    data object NavigatorOnly : WebContent()
 }
 
 internal fun WebContent.withUrl(url: String) = when (this) {
@@ -346,7 +336,7 @@ sealed class LoadingState {
     /**
      * Describes a WebView that has not yet loaded for the first time.
      */
-    object Initializing : LoadingState()
+    data object Initializing : LoadingState()
 
     /**
      * Describes a webview between `onPageStarted` and `onPageFinished` events, contains a
@@ -357,7 +347,7 @@ sealed class LoadingState {
     /**
      * Describes a webview that has finished loading content.
      */
-    object Finished : LoadingState()
+    data object Finished : LoadingState()
 }
 
 /**
@@ -481,10 +471,10 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
         }
 
     private sealed interface NavigationEvent {
-        object Back : NavigationEvent
-        object Forward : NavigationEvent
-        object Reload : NavigationEvent
-        object StopLoading : NavigationEvent
+        data object Back : NavigationEvent
+        data object Forward : NavigationEvent
+        data object Reload : NavigationEvent
+        data object StopLoading : NavigationEvent
 
         data class LoadUrl(
             val url: String,

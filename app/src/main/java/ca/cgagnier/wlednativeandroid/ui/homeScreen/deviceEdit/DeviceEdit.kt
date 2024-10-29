@@ -54,8 +54,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
+import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDisclaimerDialog
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateInstallingDialog
@@ -246,7 +246,7 @@ fun DeviceEditAppBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.edit_device_with_name, DeviceName(device)),
+                text = stringResource(R.string.edit_device_with_name, deviceName(device)),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

@@ -58,7 +58,7 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         return ""
     }
 
-    suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
+    private suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
         if (branch == Branch.BETA) {
             return versionWithAssetsRepository.getLatestBetaVersionWithAssets()
         }

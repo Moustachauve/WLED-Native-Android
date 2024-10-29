@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +40,6 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DeviceAdd(
     modifier: Modifier = Modifier,

@@ -36,7 +36,7 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
-import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
+import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 
 @Composable
@@ -80,7 +80,7 @@ fun UpdateInstallingDialog(
             Text(
                 stringResource(
                     R.string.updating,
-                    DeviceName(device)
+                    deviceName(device)
                 )
             )
         },
@@ -147,6 +147,7 @@ fun UpdateDialogContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 12.dp)
         )
+        // TODO: use getVersionWithPlatformName
         Text(version.version.tagName)
         AnimatedVisibility (!state.canDismiss) {
             Text(

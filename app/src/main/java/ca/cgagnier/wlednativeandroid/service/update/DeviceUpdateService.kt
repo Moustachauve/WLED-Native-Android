@@ -70,8 +70,4 @@ class DeviceUpdateService(
         cacheDirectory.mkdirs()
         return File(cacheDirectory, asset.name)
     }
-
-    companion object {
-
-    }
 }

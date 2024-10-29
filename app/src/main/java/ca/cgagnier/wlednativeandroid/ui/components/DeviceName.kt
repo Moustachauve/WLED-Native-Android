@@ -8,7 +8,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 
 @Composable
 @ReadOnlyComposable
-fun DeviceName(device: Device): String {
+fun deviceName(device: Device): String {
     if (device.name.isNotBlank()) {
         return device.name
     }

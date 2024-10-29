@@ -15,16 +15,6 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     }
 
     @WorkerThread
-    fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>> {
-        return deviceDao.findDevicesWithAddresses(addresses)
-    }
-
-    @WorkerThread
-    suspend fun findDeviceByAddress(address: String): Device? {
-        return deviceDao.findDeviceByAddress(address)
-    }
-
-    @WorkerThread
     fun findLiveDeviceByAddress(address: String): Flow<Device?> {
         return deviceDao.findLiveDeviceByAddress(address)
     }
@@ -37,11 +27,6 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     @WorkerThread
     suspend fun insert(device: Device) {
         deviceDao.insert(device)
-    }
-
-    @WorkerThread
-    suspend fun insertMany(devices: List<Device>) {
-        deviceDao.insertMany(devices)
     }
 
     @WorkerThread

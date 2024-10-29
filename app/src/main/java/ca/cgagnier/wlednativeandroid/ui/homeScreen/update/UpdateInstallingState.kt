@@ -5,7 +5,7 @@ data class UpdateInstallingState(
     val step: UpdateInstallingStep = UpdateInstallingStep.Installing,
 )
 
-sealed class UpdateInstallingStep() {
+sealed class UpdateInstallingStep {
     data object Starting : UpdateInstallingStep()
     data class Downloading(val progress: Int) : UpdateInstallingStep()
     data object Installing : UpdateInstallingStep()

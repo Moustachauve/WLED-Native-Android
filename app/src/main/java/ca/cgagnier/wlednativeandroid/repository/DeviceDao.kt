@@ -16,9 +16,6 @@ interface DeviceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(device: Device)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMany(device: List<Device>)
-
     @Update
     suspend fun update(device: Device)
 
@@ -36,9 +33,6 @@ interface DeviceDao {
 
     @Query("SELECT * FROM device WHERE macAddress != '' AND macAddress = :address")
     suspend fun findDeviceByMacAddress(address: String): Device?
-
-    @Query("SELECT * FROM device WHERE address IN (:addresses)")
-    fun findDevicesWithAddresses(addresses: List<String>): Flow<List<Device>>
 
     @Query("SELECT COUNT() FROM device WHERE address = :address")
     fun count(address: String): Int

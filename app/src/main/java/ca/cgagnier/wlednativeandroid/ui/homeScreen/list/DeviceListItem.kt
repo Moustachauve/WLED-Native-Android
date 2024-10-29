@@ -49,7 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
+import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlin.math.roundToInt
 
@@ -195,7 +195,7 @@ fun DeviceInfoTwoRows(
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                DeviceName(device),
+                deviceName(device),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = nameMaxLines,
                 overflow = TextOverflow.Ellipsis
