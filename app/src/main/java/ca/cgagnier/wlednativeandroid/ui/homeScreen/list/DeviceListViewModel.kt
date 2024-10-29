@@ -15,15 +15,18 @@ import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeReque
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -54,6 +57,16 @@ class DeviceListViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val devices = uiState.flatMapLatest { state ->
+        getDevicesFlow(state)
+    }.stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000),
+        initialValue = runBlocking {
+            getDevicesFlow(uiState.first()).first()
+        }
+    )
+
+    private fun getDevicesFlow(state: DeviceListUiState) : Flow<List<Device>> {
         var devicesFlow =
             if (state.showOfflineDevicesLast) repository.allDevicesOfflineLast else repository.allDevices
         if (!state.showHiddenDevices) {
@@ -61,12 +74,8 @@ class DeviceListViewModel @Inject constructor(
                 devices.filter { device -> !device.isHidden }
             }
         }
-        devicesFlow
-    }.stateIn(
-        scope = viewModelScope,
-        started = WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+        return devicesFlow
+    }
 
     fun showBottomSheet() {
         _uiState.update { currentState ->
