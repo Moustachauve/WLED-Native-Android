@@ -5,10 +5,9 @@ import androidx.room.Transaction
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import javax.inject.Inject
 
-class VersionWithAssetsRepository(deviceDatabase: DevicesDatabase) {
-    private val versionDao = deviceDatabase.versionDao()
-    private val assetDao = deviceDatabase.assetDao()
+class VersionWithAssetsRepository @Inject constructor(private val versionDao: VersionDao, private val assetDao: AssetDao) {
 
     @WorkerThread
     @Transaction

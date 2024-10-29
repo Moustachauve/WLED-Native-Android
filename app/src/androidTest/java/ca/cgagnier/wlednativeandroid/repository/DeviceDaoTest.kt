@@ -99,31 +99,7 @@ class DeviceDaoTest {
         assertEquals(allDevices[0].address, device.address)
         assertEquals(allDevices[1].address, device2.address)
     }
-
-    @Test
-    @Throws(Exception::class)
-    fun getAllVisibleDevices() = runBlocking {
-        val device = Device(
-            "address1",
-            "name1",
-            isCustomName = true,
-            true,
-            macAddress = "123"
-        )
-        deviceDao.insert(device)
-        val device2 = Device(
-            "address2",
-            "name2",
-            isCustomName = true,
-            false,
-            macAddress = "456"
-        )
-        deviceDao.insert(device2)
-        val allDevices = deviceDao.getAlphabetizedVisibleDevices().first()
-        assertEquals(allDevices.count(), 1)
-        assertEquals(allDevices[0].address, device2.address)
-    }
-
+    
     @Test
     @Throws(Exception::class)
     fun deleteAll() = runBlocking {

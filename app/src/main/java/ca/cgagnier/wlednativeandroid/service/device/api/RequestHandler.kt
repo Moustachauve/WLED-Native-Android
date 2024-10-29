@@ -1,12 +1,11 @@
 package ca.cgagnier.wlednativeandroid.service.device.api
 
-import ca.cgagnier.wlednativeandroid.DevicesApplication
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.device.api.request.Request
 import ca.cgagnier.wlednativeandroid.service.device.api.request.SoftwareUpdateRequest
 import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeRequest
 
-abstract class RequestHandler(val application: DevicesApplication) {
+abstract class RequestHandler {
 
     suspend fun processRequest(request: Request) {
         when(request) {

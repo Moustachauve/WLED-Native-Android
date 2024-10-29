@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
-import android.content.Context
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
@@ -9,10 +8,15 @@ import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
+fun getVersionWithPlatformName(device: Device, versionWithAssets: VersionWithAssets): String {
+    val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
+    return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}${ethernetVariant}"
+}
+
 class DeviceUpdateService(
-    val context: Context,
     val device: Device,
-    val versionWithAssets: VersionWithAssets
+    private val versionWithAssets: VersionWithAssets,
+    private val cacheDir: File
 ) {
     private val supportedPlatforms = listOf(
         "esp01",
@@ -28,17 +32,12 @@ class DeviceUpdateService(
         determineAsset()
     }
 
-    fun getVersionWithPlatformName(): String {
-        val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
-        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}${ethernetVariant}"
-    }
-
     private fun determineAsset() {
         if (!supportedPlatforms.contains(device.platformName)) {
             return
         }
 
-        val versionWithPlatform = getVersionWithPlatformName().drop(1)
+        val versionWithPlatform = getVersionWithPlatformName(device, versionWithAssets).drop(1)
         val assetName = "WLED_${versionWithPlatform}.bin"
         for (asset in versionWithAssets.assets) {
             if (asset.name == assetName) {
@@ -53,10 +52,6 @@ class DeviceUpdateService(
         return couldDetermineAsset
     }
 
-    fun getAsset(): Asset {
-        return asset
-    }
-
     fun isAssetFileCached(): Boolean {
         return getPathForAsset().exists()
     }
@@ -66,17 +61,13 @@ class DeviceUpdateService(
             throw Exception("Asset could not be determined for ${device.name}.")
         }
 
-        val githubApi = GithubApi(context)
+        val githubApi = GithubApi(cacheDir)
         return githubApi.downloadReleaseBinary(asset, getPathForAsset())
     }
 
     fun getPathForAsset(): File {
-        val cacheDirectory = File(context.cacheDir, versionWithAssets.version.tagName)
+        val cacheDirectory = File(cacheDir, versionWithAssets.version.tagName)
         cacheDirectory.mkdirs()
         return File(cacheDirectory, asset.name)
-    }
-
-    companion object {
-
     }
 }

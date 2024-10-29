@@ -1,8 +1,6 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
-import android.content.Context
 import android.util.Log
-import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Branch
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -11,10 +9,10 @@ import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import com.vdurmont.semver4j.Semver
+import java.io.File
 
+private const val TAG = "updateService"
 
 class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
 
@@ -37,6 +35,12 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             return ""
         }
 
+        // If we're on a beta branch but looking for a stable branch, always offer to "update" to
+        // the stable branch.
+        if (branch == Branch.STABLE && versionName.contains("-b")) {
+            return latestVersion.version.tagName
+        }
+
         try {
             return if (Semver(
                     latestVersion.version.tagName.drop(1),
@@ -48,14 +52,13 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
                 ""
             }
         } catch (e: Exception) {
-            Log.e(DeviceListFragment.TAG, "Error in getNewerReleaseTag: " + e.message, e)
-            Firebase.crashlytics.recordException(e)
+            Log.e(TAG, "Error in getNewerReleaseTag: " + e.message, e)
         }
 
         return ""
     }
 
-    suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
+    private suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
         if (branch == Branch.BETA) {
             return versionWithAssetsRepository.getLatestBetaVersionWithAssets()
         }
@@ -63,8 +66,8 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         return versionWithAssetsRepository.getLatestStableVersionWithAssets()
     }
 
-    suspend fun refreshVersions(context: Context) {
-        val allVersions = GithubApi(context).getAllReleases()
+    suspend fun refreshVersions(cacheDir: File) {
+        val allVersions = GithubApi(cacheDir).getAllReleases()
 
         if (allVersions == null) {
             Log.w(TAG, "Did not find any version")
@@ -113,9 +116,5 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             )
         }
         return assetsModels
-    }
-
-    companion object {
-        const val TAG = "updateService"
     }
 }
