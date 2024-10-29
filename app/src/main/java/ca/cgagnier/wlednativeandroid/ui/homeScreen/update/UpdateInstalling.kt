@@ -150,7 +150,6 @@ fun UpdateDialogContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 12.dp)
         )
-        // TODO: use getVersionWithPlatformName
         Text(getVersionWithPlatformName(device, version))
         AnimatedVisibility (!state.canDismiss) {
             Text(
