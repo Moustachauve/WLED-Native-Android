@@ -8,6 +8,11 @@ import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
+fun getVersionWithPlatformName(device: Device, versionWithAssets: VersionWithAssets): String {
+    val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
+    return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}${ethernetVariant}"
+}
+
 class DeviceUpdateService(
     val device: Device,
     private val versionWithAssets: VersionWithAssets,
@@ -27,17 +32,12 @@ class DeviceUpdateService(
         determineAsset()
     }
 
-    fun getVersionWithPlatformName(): String {
-        val ethernetVariant = if (device.isEthernet) "_Ethernet" else ""
-        return "${versionWithAssets.version.tagName}_${device.platformName.uppercase()}${ethernetVariant}"
-    }
-
     private fun determineAsset() {
         if (!supportedPlatforms.contains(device.platformName)) {
             return
         }
 
-        val versionWithPlatform = getVersionWithPlatformName().drop(1)
+        val versionWithPlatform = getVersionWithPlatformName(device, versionWithAssets).drop(1)
         val assetName = "WLED_${versionWithPlatform}.bin"
         for (asset in versionWithAssets.assets) {
             if (asset.name == assetName) {

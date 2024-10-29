@@ -36,6 +36,7 @@ import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import ca.cgagnier.wlednativeandroid.service.update.getVersionWithPlatformName
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 
@@ -86,6 +87,7 @@ fun UpdateInstallingDialog(
         },
         text = {
             UpdateDialogContent(
+                device = device,
                 version = version,
                 state = state
             )
@@ -127,6 +129,7 @@ fun UpdateInstallingDialog(
 
 @Composable
 fun UpdateDialogContent(
+    device: Device,
     version: VersionWithAssets,
     state: UpdateInstallingState
 ) {
@@ -148,7 +151,7 @@ fun UpdateDialogContent(
             modifier = Modifier.padding(top = 12.dp)
         )
         // TODO: use getVersionWithPlatformName
-        Text(version.version.tagName)
+        Text(getVersionWithPlatformName(device, version))
         AnimatedVisibility (!state.canDismiss) {
             Text(
                 stringResource(R.string.please_do_not_close_the_app_or_turn_off_the_device),
