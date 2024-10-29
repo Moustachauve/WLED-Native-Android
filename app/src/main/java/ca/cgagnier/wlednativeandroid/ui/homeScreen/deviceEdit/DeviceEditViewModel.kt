@@ -31,6 +31,9 @@ class DeviceEditViewModel @Inject constructor(
     private var _updateDetailsVersion: MutableStateFlow<VersionWithAssets?> = MutableStateFlow(null)
     val updateDetailsVersion = _updateDetailsVersion.asStateFlow()
 
+    private var _updateDisclaimerVersion: MutableStateFlow<VersionWithAssets?> = MutableStateFlow(null)
+    val updateDisclaimerVersion = _updateDisclaimerVersion.asStateFlow()
+
     private var _updateInstallVersion: MutableStateFlow<VersionWithAssets?> = MutableStateFlow(null)
     val updateInstallVersion = _updateInstallVersion.asStateFlow()
 
@@ -84,6 +87,14 @@ class DeviceEditViewModel @Inject constructor(
         )
         repository.update(updatedDevice)
         _updateDetailsVersion.value = null
+    }
+
+    fun showUpdateDisclaimer(version: VersionWithAssets) {
+        _updateDisclaimerVersion.value = version
+    }
+
+    fun hideUpdateDisclaimer() {
+        _updateDisclaimerVersion.value = null
     }
 
     fun startUpdateInstall(version: VersionWithAssets) {

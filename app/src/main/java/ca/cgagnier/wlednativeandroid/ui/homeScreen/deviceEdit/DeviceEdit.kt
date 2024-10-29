@@ -57,6 +57,7 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceName
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDisclaimerDialog
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateInstallingDialog
 import kotlinx.coroutines.delay
 
@@ -73,6 +74,7 @@ fun DeviceEdit(
     )
     val context = LocalContext.current
     val updateDetailsVersion by viewModel.updateDetailsVersion.collectAsState()
+    val updateDisclaimerVersion by viewModel.updateDisclaimerVersion.collectAsState()
     val updateInstallVersion by viewModel.updateInstallVersion.collectAsState()
     val isCheckingUpdates by viewModel.isCheckingUpdates.collectAsState()
 
@@ -174,10 +176,21 @@ fun DeviceEdit(
             },
             onInstall = { versionInstall ->
                 viewModel.hideUpdateDetails()
-                viewModel.startUpdateInstall(versionInstall)
+                viewModel.showUpdateDisclaimer(versionInstall)
             },
             onSkip = {
                 viewModel.skipUpdate(device, versionDetails)
+            }
+        )
+    }
+    updateDisclaimerVersion?.let { versionDisclaimer ->
+        UpdateDisclaimerDialog(
+            onDismiss = {
+                viewModel.hideUpdateDisclaimer()
+            },
+            onAccept = {
+                viewModel.hideUpdateDisclaimer()
+                viewModel.startUpdateInstall(versionDisclaimer)
             }
         )
     }
