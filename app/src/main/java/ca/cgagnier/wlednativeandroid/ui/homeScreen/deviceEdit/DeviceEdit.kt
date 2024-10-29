@@ -177,7 +177,7 @@ fun DeviceEdit(
                 viewModel.startUpdateInstall(versionInstall)
             },
             onSkip = {
-                viewModel.hideUpdateDetails()
+                viewModel.skipUpdate(device, versionDetails)
             }
         )
     }

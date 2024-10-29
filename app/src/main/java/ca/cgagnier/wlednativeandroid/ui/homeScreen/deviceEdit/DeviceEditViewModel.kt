@@ -76,6 +76,16 @@ class DeviceEditViewModel @Inject constructor(
         _updateDetailsVersion.value = null
     }
 
+    fun skipUpdate(device: Device, version: VersionWithAssets) = viewModelScope.launch(Dispatchers.IO) {
+        Log.d(TAG, "Saving skipUpdateTag")
+        val updatedDevice = device.copy(
+            newUpdateVersionTagAvailable = "",
+            skipUpdateTag = version.version.tagName
+        )
+        repository.update(updatedDevice)
+        _updateDetailsVersion.value = null
+    }
+
     fun startUpdateInstall(version: VersionWithAssets) {
         _updateInstallVersion.value = version
     }
