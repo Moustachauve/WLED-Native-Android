@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
@@ -41,7 +40,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +59,6 @@ import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateInstallingDialog
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun DeviceEdit(
@@ -77,6 +74,7 @@ fun DeviceEdit(
     val context = LocalContext.current
     val updateDetailsVersion by viewModel.updateDetailsVersion.collectAsState()
     val updateInstallVersion by viewModel.updateInstallVersion.collectAsState()
+    val isCheckingUpdates by viewModel.isCheckingUpdates.collectAsState()
 
     Scaffold(
         topBar = {
@@ -130,8 +128,7 @@ fun DeviceEdit(
                                     count = options.size
                                 ),
                                 onClick = {
-                                    viewModel.updateDeviceBranch(device, option.first)
-                                    // TODO: trigger search for update thingy
+                                    viewModel.updateDeviceBranch(device, option.first, context)
                                 },
                                 selected = option.first == device.branch
                             ) {
@@ -156,12 +153,9 @@ fun DeviceEdit(
                         } else {
                             NoUpdateAvailable(
                                 device,
+                                isCheckingUpdates,
                                 checkForUpdate = {
-                                    Toast.makeText(
-                                        context,
-                                        "Not implemented yet",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    viewModel.checkForUpdates(device, context)
                                 }
                             )
                         }
@@ -259,9 +253,7 @@ fun DeviceEditAppBar(
 }
 
 @Composable
-fun NoUpdateAvailable(device: Device, checkForUpdate: () -> Unit) {
-    val coroutineScope = rememberCoroutineScope()
-    var checkingUpdates by remember { mutableStateOf(false) }
+fun NoUpdateAvailable(device: Device, isCheckingUpdates: Boolean, checkForUpdate: () -> Unit) {
     Text(
         stringResource(R.string.your_device_is_up_to_date),
         style = MaterialTheme.typography.titleMedium
@@ -270,18 +262,9 @@ fun NoUpdateAvailable(device: Device, checkForUpdate: () -> Unit) {
         stringResource(R.string.version_v_num, device.version),
         style = MaterialTheme.typography.bodyMedium
     )
-    OutlinedButton(
-        onClick = {
-            checkForUpdate()
-            coroutineScope.launch {
-                checkingUpdates = true
-                delay(2000)
-                checkingUpdates = false
-            }
-        },
-    ) {
+    OutlinedButton(onClick = checkForUpdate) {
         val buttonText =
-            if (checkingUpdates) stringResource(R.string.checking_progress_update)
+            if (isCheckingUpdates) stringResource(R.string.checking_progress_update)
             else stringResource(R.string.check_for_update)
         AnimatedContent(
             targetState = buttonText,
@@ -294,7 +277,7 @@ fun NoUpdateAvailable(device: Device, checkForUpdate: () -> Unit) {
         }
 
         AnimatedVisibility(
-            visible = checkingUpdates
+            visible = isCheckingUpdates
         ) {
             val size = (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
             CircularProgressIndicator(
