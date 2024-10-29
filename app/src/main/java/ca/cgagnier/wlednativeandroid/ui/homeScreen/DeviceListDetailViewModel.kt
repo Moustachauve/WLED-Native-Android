@@ -38,8 +38,8 @@ class DeviceListDetailViewModel @Inject constructor(
 ): AndroidViewModel(application) {
     val isWLEDCaptivePortal = networkManager.isWLEDCaptivePortal
 
-    var isPolling by mutableStateOf(false)
-        private set
+    private var isPolling by mutableStateOf(false)
+
     var isDiscovering by mutableStateOf(false)
         private set
     private var job: Job? = null
@@ -118,13 +118,14 @@ class DeviceListDetailViewModel @Inject constructor(
         )
     }
 
-    fun startDiscoveryService() {
+    private fun startDiscoveryService() {
         Log.i(TAG, "Start device discovery")
         isDiscovering = true
         discoveryService.start()
     }
 
-    fun startDiscoveryServiceTimed(timeMillis: Long = 15000) = viewModelScope.launch(Dispatchers.IO) {
+    fun startDiscoveryServiceTimed(timeMillis: Long = 10000) = viewModelScope.launch(Dispatchers.IO) {
+        Log.i(TAG, "Start device discovery")
         startDiscoveryService()
         delay(timeMillis)
         stopDiscoveryService()
