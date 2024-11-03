@@ -1,5 +1,6 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -57,6 +58,8 @@ import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+private const val TAG = "screen_DeviceList"
 
 @Composable
 fun DeviceList(
@@ -147,6 +150,7 @@ fun DeviceList(
                         val swipeDismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = {
                                 if (it == SwipeToDismissBoxValue.EndToStart) {
+                                    Log.d(TAG, "asking confirm delete device")
                                     confirmDeleteDevice.value = device
                                     return@rememberSwipeToDismissBoxState true
                                 } else if (it == SwipeToDismissBoxValue.StartToEnd) {
@@ -173,6 +177,7 @@ fun DeviceList(
                             null -> {
                                 if (swipeDismissState.currentValue != SwipeToDismissBoxValue.Settled) {
                                     LaunchedEffect(Unit) {
+                                        Log.d(TAG, "delete swipe reset")
                                         swipeDismissState.reset()
                                     }
                                 }
@@ -194,9 +199,17 @@ fun DeviceList(
     ConfirmDeleteDialog(
         device = confirmDeleteDevice.value,
         onConfirm = {
+            Log.d(TAG, "Confirm deleting device")
             confirmDeleteDevice.value?.let {
-                viewModel.deleteDevice(it)
-                confirmDeleteDevice.value = null
+                coroutineScope.launch {
+                    viewModel.deleteDevice(it)
+                    // Without this delay, the delete confirmation dialog would sometime show up
+                    // twice, mostly on tablets. This ensures that the dialog is hidden after the
+                    // device item has been removed from the list, otherwise a badly timed
+                    // recomposition would cause the double dialog.
+                    delay(1)
+                    confirmDeleteDevice.value = null
+                }
             }
         },
         onDismiss = {
@@ -288,6 +301,7 @@ fun ConfirmDeleteDialog(
     onDismiss: () -> Unit,
 ) {
     device?.let {
+        Log.d(TAG, "Composing confirm delete dialog, device: ${device.name}")
         AlertDialog(
             title = {
                 Text(text = stringResource(R.string.deleting_device))
