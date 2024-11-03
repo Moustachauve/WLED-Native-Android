@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -150,7 +149,6 @@ fun DeviceList(
                         val swipeDismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = {
                                 if (it == SwipeToDismissBoxValue.EndToStart) {
-                                    Log.d(TAG, "asking confirm delete device")
                                     confirmDeleteDevice.value = device
                                     return@rememberSwipeToDismissBoxState true
                                 } else if (it == SwipeToDismissBoxValue.StartToEnd) {
@@ -177,7 +175,6 @@ fun DeviceList(
                             null -> {
                                 if (swipeDismissState.currentValue != SwipeToDismissBoxValue.Settled) {
                                     LaunchedEffect(Unit) {
-                                        Log.d(TAG, "delete swipe reset")
                                         swipeDismissState.reset()
                                     }
                                 }
@@ -199,7 +196,6 @@ fun DeviceList(
     ConfirmDeleteDialog(
         device = confirmDeleteDevice.value,
         onConfirm = {
-            Log.d(TAG, "Confirm deleting device")
             confirmDeleteDevice.value?.let {
                 coroutineScope.launch {
                     viewModel.deleteDevice(it)
@@ -301,7 +297,6 @@ fun ConfirmDeleteDialog(
     onDismiss: () -> Unit,
 ) {
     device?.let {
-        Log.d(TAG, "Composing confirm delete dialog, device: ${device.name}")
         AlertDialog(
             title = {
                 Text(text = stringResource(R.string.deleting_device))
