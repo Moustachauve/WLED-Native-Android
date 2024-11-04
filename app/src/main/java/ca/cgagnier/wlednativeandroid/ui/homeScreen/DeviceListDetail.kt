@@ -152,7 +152,6 @@ fun DeviceListDetail(
                         DeviceList(
                             selectedDevice.value,
                             isWLEDCaptivePortal = isWLEDCaptivePortal,
-                            isDiscovering = viewModel.isDiscovering,
                             onItemClick = navigateToDeviceDetail,
                             onRefresh = {
                                 viewModel.refreshDevices(silent = false)

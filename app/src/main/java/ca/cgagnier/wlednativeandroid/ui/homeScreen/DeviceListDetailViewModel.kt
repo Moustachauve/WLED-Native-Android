@@ -40,8 +40,6 @@ class DeviceListDetailViewModel @Inject constructor(
 
     private var isPolling by mutableStateOf(false)
 
-    var isDiscovering by mutableStateOf(false)
-        private set
     private var job: Job? = null
 
     val showHiddenDevices = preferencesRepository.showHiddenDevices
@@ -120,7 +118,6 @@ class DeviceListDetailViewModel @Inject constructor(
 
     private fun startDiscoveryService() {
         Log.i(TAG, "Start device discovery")
-        isDiscovering = true
         discoveryService.start()
     }
 
@@ -133,7 +130,6 @@ class DeviceListDetailViewModel @Inject constructor(
 
     fun stopDiscoveryService() {
         Log.i(TAG, "Stop device discovery")
-        isDiscovering = false
         discoveryService.stop()
     }
 

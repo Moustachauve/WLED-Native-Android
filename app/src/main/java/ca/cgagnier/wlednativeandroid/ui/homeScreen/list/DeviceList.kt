@@ -1,7 +1,6 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,7 +21,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -46,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
@@ -62,11 +58,12 @@ import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private const val TAG = "screen_DeviceList"
+
 @Composable
 fun DeviceList(
     selectedDevice: Device?,
     isWLEDCaptivePortal: Boolean = false,
-    isDiscovering: Boolean = false,
     onItemClick: (Device) -> Unit,
     onItemEdit: (Device) -> Unit,
     onRefresh: () -> Unit,
@@ -93,7 +90,7 @@ fun DeviceList(
         isRefreshing = true
         onRefresh()
         coroutineScope.launch {
-            delay(4000)
+            delay(1800)
             isRefreshing = false
         }
     }
@@ -104,7 +101,6 @@ fun DeviceList(
     Scaffold(
         topBar = {
             DeviceListAppBar(
-                isDiscovering = isDiscovering,
                 openDrawer = openDrawer,
             )
         },
@@ -201,8 +197,15 @@ fun DeviceList(
         device = confirmDeleteDevice.value,
         onConfirm = {
             confirmDeleteDevice.value?.let {
-                viewModel.deleteDevice(it)
-                confirmDeleteDevice.value = null
+                coroutineScope.launch {
+                    viewModel.deleteDevice(it)
+                    // Without this delay, the delete confirmation dialog would sometime show up
+                    // twice, mostly on tablets. This ensures that the dialog is hidden after the
+                    // device item has been removed from the list, otherwise a badly timed
+                    // recomposition would cause the double dialog.
+                    delay(1)
+                    confirmDeleteDevice.value = null
+                }
             }
         },
         onDismiss = {
@@ -215,7 +218,6 @@ fun DeviceList(
 fun DeviceListAppBar(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
-    isDiscovering: Boolean = false,
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -233,26 +235,6 @@ fun DeviceListAppBar(
                 )
             }
         },
-        actions = {
-            if (isDiscovering) {
-                Column(
-                    Modifier.padding(end = 16.dp),
-                    horizontalAlignment = CenterHorizontally
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(top = 6.dp),
-                        painter = painterResource(R.drawable.baseline_wifi_find_24),
-                        contentDescription = stringResource(R.string.discovering_devices),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .width(40.dp)
-                            .padding(top = 6.dp)
-                    )
-                }
-            }
-        }
     )
 }
 
