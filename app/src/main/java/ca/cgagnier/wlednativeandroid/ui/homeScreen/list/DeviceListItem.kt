@@ -1,7 +1,11 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
+import SliderWithlabel
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -63,7 +66,6 @@ fun DeviceListItem(
     onPowerSwitchToggle: (isOn: Boolean) -> Unit = {},
     onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
-    var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
     var checked by remember(device.isPoweredOn) { mutableStateOf(device.isPoweredOn) }
 
     DeviceTheme(device) {
@@ -102,18 +104,33 @@ fun DeviceListItem(
                             }
                         )
                     }
-                    Slider(
-                        value = sliderPosition,
-                        onValueChange = { sliderPosition = it },
-                        valueRange = 0f..255f,
-                        onValueChangeFinished = {
-                            onBrightnessChanged(sliderPosition.roundToInt())
-                        },
-                    )
+                    BrightnessSlider(device, onBrightnessChanged)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun BrightnessSlider(
+    device: Device,
+    onBrightnessChanged: (brightness: Int) -> Unit
+) {
+    var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
+    val animatedSliderPosition by animateFloatAsState(
+        targetValue = sliderPosition,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy
+        ), label = "animatedValue"
+    )
+    SliderWithlabel(
+        value = animatedSliderPosition,
+        onValueChange = { sliderPosition = it },
+        valueRange = 1f..255f,
+        onValueChangeFinished = {
+            onBrightnessChanged(sliderPosition.roundToInt())
+        },
+    )
 }
 
 @Composable
@@ -213,7 +230,9 @@ fun DeviceInfoTwoRows(
             }
         }
         Row(
-            modifier = Modifier.padding(bottom = 2.dp).width(IntrinsicSize.Min),
+            modifier = Modifier
+                .padding(bottom = 2.dp)
+                .width(IntrinsicSize.Min),
             verticalAlignment = Alignment.Bottom
         ) {
             Text(
@@ -221,7 +240,9 @@ fun DeviceInfoTwoRows(
                 style = MaterialTheme.typography.labelMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f).width(IntrinsicSize.Max)
+                modifier = Modifier
+                    .weight(1f)
+                    .width(IntrinsicSize.Max)
             )
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
