@@ -90,7 +90,7 @@ fun DeviceList(
         isRefreshing = true
         onRefresh()
         coroutineScope.launch {
-            delay(4000)
+            delay(1800)
             isRefreshing = false
         }
     }
