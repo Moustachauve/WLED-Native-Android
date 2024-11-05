@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
 import SliderWithlabel
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -35,9 +36,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,7 +65,7 @@ fun DeviceListItem(
     device: Device,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
-    swipeToDismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
+    swipeToDismissBoxState: SwipeToDismissBoxState,
     onPowerSwitchToggle: (isOn: Boolean) -> Unit = {},
     onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
@@ -137,9 +140,18 @@ private fun BrightnessSlider(
 private fun SwipeBox(
     modifier: Modifier = Modifier,
     device: Device,
-    swipeToDismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
+    swipeToDismissBoxState: SwipeToDismissBoxState,
     content: @Composable () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
+    LaunchedEffect(key1 = swipeToDismissBoxState.targetValue, block = {
+        Log.i("SwipeBox", "swipeToDismissBoxState.currentValue = ${swipeToDismissBoxState.targetValue}")
+        if (swipeToDismissBoxState.progress in 0.01..0.99) {
+            Log.i("SwipeBox", "swipeToDismissBoxState.progress = ${swipeToDismissBoxState.progress}")
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+    })
+
     SwipeToDismissBox(
         modifier = modifier,
         state = swipeToDismissBoxState,

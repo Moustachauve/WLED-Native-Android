@@ -147,6 +147,7 @@ fun DeviceList(
                     }
                     itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
                         val swipeDismissState = rememberSwipeToDismissBoxState(
+                            positionalThreshold = { distance -> distance * 0.3f },
                             confirmValueChange = {
                                 if (it == SwipeToDismissBoxValue.EndToStart) {
                                     confirmDeleteDevice.value = device
