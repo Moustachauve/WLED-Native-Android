@@ -1,12 +1,8 @@
 package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
-import SliderWithlabel
-import android.util.Log
+import SliderWithLabel
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,6 +66,7 @@ fun DeviceListItem(
     onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
     var checked by remember(device.isPoweredOn) { mutableStateOf(device.isPoweredOn) }
+    val haptic = LocalHapticFeedback.current
 
     DeviceTheme(device) {
         val cardColor =
@@ -102,6 +99,7 @@ fun DeviceListItem(
                             modifier = Modifier.padding(start = 10.dp),
                             checked = checked,
                             onCheckedChange = { isOn ->
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 checked = isOn
                                 onPowerSwitchToggle(isOn)
                             }
@@ -119,16 +117,16 @@ private fun BrightnessSlider(
     device: Device,
     onBrightnessChanged: (brightness: Int) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
-    val animatedSliderPosition by animateFloatAsState(
-        targetValue = sliderPosition,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy
-        ), label = "animatedValue"
-    )
-    SliderWithlabel(
-        value = animatedSliderPosition,
-        onValueChange = { sliderPosition = it },
+    SliderWithLabel(
+        value = sliderPosition,
+        onValueChange = {
+            if (it.roundToInt() != sliderPosition.roundToInt()) {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+            sliderPosition = it
+        },
         valueRange = 1f..255f,
         onValueChangeFinished = {
             onBrightnessChanged(sliderPosition.roundToInt())
@@ -145,9 +143,7 @@ private fun SwipeBox(
 ) {
     val haptic = LocalHapticFeedback.current
     LaunchedEffect(key1 = swipeToDismissBoxState.targetValue, block = {
-        Log.i("SwipeBox", "swipeToDismissBoxState.currentValue = ${swipeToDismissBoxState.targetValue}")
         if (swipeToDismissBoxState.progress in 0.01..0.99) {
-            Log.i("SwipeBox", "swipeToDismissBoxState.progress = ${swipeToDismissBoxState.progress}")
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
     })
