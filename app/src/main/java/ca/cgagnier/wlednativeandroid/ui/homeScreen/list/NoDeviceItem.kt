@@ -28,7 +28,7 @@ import ca.cgagnier.wlednativeandroid.R
 @Composable
 fun NoDevicesItem(
     modifier: Modifier = Modifier,
-    addDevice: () -> Unit,
+    onAddDevice: () -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -54,7 +54,7 @@ fun NoDevicesItem(
             Button(
                 modifier = Modifier.padding(top = 16.dp),
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                onClick = addDevice,
+                onClick = onAddDevice,
             ) {
                 Icon(
                     Icons.Filled.Add,

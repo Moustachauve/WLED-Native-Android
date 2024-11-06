@@ -3,40 +3,31 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -66,19 +56,13 @@ fun DeviceList(
     isWLEDCaptivePortal: Boolean = false,
     onItemClick: (Device) -> Unit,
     onItemEdit: (Device) -> Unit,
+    onAddDevice: () -> Unit,
     onRefresh: () -> Unit,
     openDrawer: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val devices by viewModel.devices.collectAsStateWithLifecycle()
 
-    val isKeyboardOpen by keyboardAsState()
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false
-    )
-    val listState = rememberLazyListState()
-    val isFabExpanded by remember { derivedStateOf { !listState.canScrollBackward } }
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
 
@@ -94,9 +78,6 @@ fun DeviceList(
             isRefreshing = false
         }
     }
-    val addDevice = {
-        viewModel.showBottomSheet()
-    }
 
     Scaffold(
         topBar = {
@@ -104,16 +85,6 @@ fun DeviceList(
                 openDrawer = openDrawer,
             )
         },
-        floatingActionButton = {
-            if (devices.isNotEmpty()) {
-                FloatingActionButton(
-                    isFabExpanded = isFabExpanded,
-                    addDevice = addDevice
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-
         ) { innerPadding ->
         PullToRefreshBox(
             modifier = Modifier.padding(innerPadding),
@@ -122,7 +93,6 @@ fun DeviceList(
             onRefresh = refresh,
         ) {
             LazyColumn(
-                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 6.dp)
@@ -131,7 +101,7 @@ fun DeviceList(
                 if (devices.isEmpty()) {
                     item {
                         NoDevicesItem(
-                            modifier = Modifier.fillParentMaxSize(), addDevice = addDevice
+                            modifier = Modifier.fillParentMaxSize(), onAddDevice = onAddDevice
                         )
                     }
                 } else {
@@ -190,10 +160,6 @@ fun DeviceList(
         }
     }
 
-    if (uiState.showBottomSheet) {
-        AddDeviceBottomSheet(isKeyboardOpen, sheetState, viewModel)
-    }
-
     ConfirmDeleteDialog(
         device = confirmDeleteDevice.value,
         onConfirm = {
@@ -237,58 +203,6 @@ fun DeviceListAppBar(
             }
         },
     )
-}
-
-@Composable
-fun FloatingActionButton(
-    isFabExpanded: Boolean,
-    addDevice: () -> Unit,
-) {
-    ExtendedFloatingActionButton(
-        expanded = isFabExpanded,
-        text = {
-            Text(text = stringResource(R.string.add_a_device))
-        },
-        icon = {
-            Icon(
-                Icons.Filled.Add, contentDescription = stringResource(R.string.add_a_device)
-            )
-        },
-        onClick = addDevice
-    )
-}
-
-@Composable
-private fun AddDeviceBottomSheet(
-    isKeyboardOpen: Boolean,
-    sheetState: SheetState,
-    viewModel: DeviceListViewModel
-) {
-    val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(isKeyboardOpen) {
-        if (isKeyboardOpen) {
-            delay(300)
-            sheetState.expand()
-        }
-    }
-    ModalBottomSheet(
-        modifier = Modifier.fillMaxHeight(),
-        sheetState = sheetState,
-        onDismissRequest = {
-            viewModel.hideBottomSheet()
-        },
-    ) {
-        DeviceAdd(
-            sheetState = sheetState,
-            deviceAdded = {
-                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        viewModel.hideBottomSheet()
-                    }
-                }
-            },
-        )
-    }
 }
 
 @Composable

@@ -2,7 +2,6 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.list
 
 import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -77,17 +75,6 @@ class DeviceListViewModel @Inject constructor(
         return devicesFlow
     }
 
-    fun showBottomSheet() {
-        _uiState.update { currentState ->
-            currentState.copy(showBottomSheet = true)
-        }
-    }
-    fun hideBottomSheet() {
-        _uiState.update { currentState ->
-            currentState.copy(showBottomSheet = false)
-        }
-    }
-
     fun toggleDevicePower(device: Device, isOn: Boolean) {
         val deviceSetPost = JsonPost(isOn = isOn)
         viewModelScope.launch(Dispatchers.IO) {
@@ -118,9 +105,5 @@ class DeviceListViewModel @Inject constructor(
 data class DeviceListUiState(
     val showOfflineDevicesLast: Boolean = true,
     val showHiddenDevices: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val isFabExpanded: Boolean = true,
-    val showBottomSheet: Boolean = false,
     val listState: LazyListState = LazyListState(),
-    val pullToRefreshState: PullToRefreshState = PullToRefreshState()
 )

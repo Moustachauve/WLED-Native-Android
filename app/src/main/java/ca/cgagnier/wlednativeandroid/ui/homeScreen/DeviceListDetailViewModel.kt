@@ -19,9 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,7 +42,6 @@ class DeviceListDetailViewModel @Inject constructor(
     val isWLEDCaptivePortal = networkManager.isWLEDCaptivePortal
 
     private var isPolling by mutableStateOf(false)
-
     private var job: Job? = null
 
     val showHiddenDevices = preferencesRepository.showHiddenDevices
@@ -55,6 +57,9 @@ class DeviceListDetailViewModel @Inject constructor(
             deviceDiscovered(it)
         }
     )
+
+    private val _isAddDeviceBottomSheetVisible = MutableStateFlow(false)
+    val isAddDeviceBottomSheetVisible: StateFlow<Boolean> = _isAddDeviceBottomSheetVisible
 
     fun getDeviceByAddress(address: String): Flow<Device?> {
         Log.d(TAG, "Getting device by address $address")
@@ -192,5 +197,16 @@ class DeviceListDetailViewModel @Inject constructor(
 
     fun toggleShowHiddenDevices() = viewModelScope.launch(Dispatchers.IO) {
         preferencesRepository.updateShowHiddenDevices(!showHiddenDevices.value)
+    }
+
+    fun showAddDeviceBottomSheet() {
+        _isAddDeviceBottomSheetVisible.update {
+            true
+        }
+    }
+    fun hideAddDeviceBottomSheet() {
+        _isAddDeviceBottomSheetVisible.update {
+            false
+        }
     }
 }
