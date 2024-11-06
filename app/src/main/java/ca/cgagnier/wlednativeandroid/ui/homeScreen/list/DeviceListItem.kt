@@ -120,7 +120,8 @@ private fun BrightnessSlider(
     val haptic = LocalHapticFeedback.current
     var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
     SliderWithLabel(
-        value = sliderPosition,
+        value = if (device.isOnline) sliderPosition else 0f,
+        enabled = device.isOnline,
         onValueChange = {
             if (it.roundToInt() != sliderPosition.roundToInt()) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)

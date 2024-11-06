@@ -27,6 +27,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SliderWithLabel(
     value: Float,
+    enabled: Boolean = true,
     valueRange: ClosedFloatingPointRange<Float>,
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)? = null,
@@ -42,6 +43,7 @@ fun SliderWithLabel(
     val isDragging by interactionSource.collectIsDraggedAsState()
     Slider(
         value = if (isDragging) value else animatedSliderPosition,
+        enabled = enabled,
         onValueChange = onValueChange,
         valueRange = valueRange,
         onValueChangeFinished = onValueChangeFinished,
