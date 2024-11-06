@@ -149,7 +149,7 @@ fun DeviceAdd(
                 onClick = {
                     viewModel.onEvent(DeviceAddFormEvent.Submit)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
