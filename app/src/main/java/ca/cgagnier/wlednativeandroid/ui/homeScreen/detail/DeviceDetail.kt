@@ -2,6 +2,7 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.detail
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -118,7 +119,7 @@ fun DeviceDetailAppBar(
         },
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack) {
+            AnimatedVisibility(visible = canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,

@@ -253,7 +253,7 @@ fun DeviceEditAppBar(
         },
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack) {
+            AnimatedVisibility(visible = canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.Close,

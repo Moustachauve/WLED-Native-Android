@@ -170,7 +170,6 @@ fun DeviceListDetail(
                     }
                 }, detailPane = {
                     AnimatedPane {
-                        // selectedDevice est static, pas dynamic de la database... Utiliser ID à la place
                         selectedDevice.value?.let { device ->
                             DeviceDetail(
                                 device = device,
@@ -294,7 +293,9 @@ fun SelectDeviceView() {
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = 44.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 44.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
