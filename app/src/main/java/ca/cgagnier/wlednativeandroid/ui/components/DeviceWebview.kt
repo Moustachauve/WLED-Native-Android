@@ -204,7 +204,7 @@ class CustomWebViewClient: WebViewClient() {
         super.doUpdateVisitedHistory(view, url, isReload)
         Log.i(TAG, "doUpdateVisitedHistory $url, isReload: $isReload")
 
-        if (url != null && !isReload) {
+        if (url != null && !isReload && !url.startsWith("file:///")) {
             if (navigator.isGoingBack) {
                 navigator.isGoingBack = false
             } else if (!state.lastLoadedUrl.isNullOrEmpty() && state.lastLoadedUrl != "about:blank") {
@@ -558,7 +558,7 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
         internal set
 
     fun goBackLogic(): Boolean {
-        if (canGoBack) {
+        if (canGoBack && backQueue.isNotEmpty()) {
             val backUrl = backQueue.removeLast()
             loadUrl(backUrl)
             isGoingBack = true
