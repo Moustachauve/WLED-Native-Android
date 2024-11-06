@@ -22,7 +22,7 @@
     <string name="device_is_visible">Device is visible</string>
     <string name="device_is_hidden">Device is Hidden</string>
     <string name="hidden_status">(Hidden)</string>
-    <string name="you_dont_have_any_devices_yet">You don\'t have any devices yet</string>
+    <string name="you_dont_have_any_visible_devices">You don\'t have any visible devices</string>
     <string name="awkward_akemi_character">Awkward Akemi character</string>
     <string name="settings">Settings</string>
     <string name="theme">Theme</string>

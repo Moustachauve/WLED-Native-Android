@@ -22,7 +22,7 @@
     <string name="device_is_visible">L\'appareil est visible</string>
     <string name="device_is_hidden">L\'appareil est caché</string>
     <string name="hidden_status">(Caché)</string>
-    <string name="you_dont_have_any_devices_yet">Il n\'y a aucun appareil pour le moment</string>
+    <string name="you_dont_have_any_visible_devices">Il n\'y a pas d\'appareil visible</string>
     <string name="awkward_akemi_character">Mascotte Akemi gênée</string>
     <string name="settings">Paramètres</string>
     <string name="theme">Thème</string>

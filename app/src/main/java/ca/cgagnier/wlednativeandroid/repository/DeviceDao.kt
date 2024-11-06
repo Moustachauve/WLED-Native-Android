@@ -48,4 +48,7 @@ interface DeviceDao {
 
     @Query("SELECT * FROM Device ORDER BY isOnline DESC, LOWER(name) ASC, LOWER(address) ASC")
     fun getAlphabetizedDevicesOfflineLast(): Flow<List<Device>>
+
+    @Query("SELECT COUNT() FROM device WHERE isHidden = 1")
+    suspend fun countHiddenDevices(): Int
 }

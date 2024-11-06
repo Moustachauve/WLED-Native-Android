@@ -173,6 +173,9 @@ fun DeviceListDetail(
                             isWLEDCaptivePortal = isWLEDCaptivePortal,
                             onItemClick = navigateToDeviceDetail,
                             onAddDevice = addDevice,
+                            onShowHiddenDevices = {
+                                viewModel.toggleShowHiddenDevices()
+                            },
                             onRefresh = {
                                 viewModel.refreshDevices(silent = false)
                                 viewModel.startDiscoveryServiceTimed()

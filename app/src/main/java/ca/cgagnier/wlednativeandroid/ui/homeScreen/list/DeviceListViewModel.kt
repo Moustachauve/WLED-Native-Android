@@ -54,7 +54,7 @@ class DeviceListViewModel @Inject constructor(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val devices = uiState.flatMapLatest { state ->
+    val devices: StateFlow<List<Device>> = uiState.flatMapLatest { state ->
         getDevicesFlow(state)
     }.stateIn(
         scope = viewModelScope,
@@ -63,6 +63,19 @@ class DeviceListViewModel @Inject constructor(
             getDevicesFlow(uiState.first()).first()
         }
     )
+
+    val shouldShowDevicesAreHidden =
+        devices.combine(showHiddenDevices) { devices, showHiddenDevices ->
+            if (devices.isEmpty() && !showHiddenDevices) {
+                repository.hasHiddenDevices()
+            } else {
+                false
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = WhileSubscribed(5000),
+            initialValue = false
+        )
 
     private fun getDevicesFlow(state: DeviceListUiState) : Flow<List<Device>> {
         var devicesFlow =
