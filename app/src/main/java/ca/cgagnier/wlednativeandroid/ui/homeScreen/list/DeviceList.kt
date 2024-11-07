@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -54,7 +55,7 @@ fun DeviceList(
     onAddDevice: () -> Unit,
     onShowHiddenDevices: () -> Unit,
     onRefresh: () -> Unit,
-    openDrawer: () -> Unit,
+    onOpenDrawer: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
     val devices by viewModel.devices.collectAsStateWithLifecycle()
@@ -79,7 +80,8 @@ fun DeviceList(
     Scaffold(
         topBar = {
             DeviceListAppBar(
-                openDrawer = openDrawer,
+                onOpenDrawer = onOpenDrawer,
+                onAddDevice = onAddDevice,
             )
         },
         ) { innerPadding ->
@@ -184,7 +186,8 @@ fun DeviceList(
 @Composable
 fun DeviceListAppBar(
     modifier: Modifier = Modifier,
-    openDrawer: () -> Unit,
+    onOpenDrawer: () -> Unit,
+    onAddDevice: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -195,13 +198,21 @@ fun DeviceListAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = openDrawer) {
+            IconButton(onClick = onOpenDrawer) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = stringResource(R.string.description_menu_button)
                 )
             }
         },
+        actions = {
+            IconButton(onClick = onAddDevice) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.add_a_device)
+                )
+            }
+        }
     )
 }
 
