@@ -7,7 +7,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -52,17 +51,19 @@ fun DeviceVisibleSwitch(
             transitionSpec = {
                 fadeIn() togetherWith fadeOut()
             },
-            label = ""
+            label = "isVisibleTextAnimation",
+            modifier = Modifier.weight(1f)
         ) {
             Text(
                 it,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
+                    .weight(1f)
                     .padding(vertical = 16.dp)
-                    .padding(end = 16.dp)
+                    .padding(end = 16.dp),
+                maxLines = 2,
             )
         }
-        Spacer(Modifier.weight(1f))
         Switch(
             checked = !isHidden,
             onCheckedChange = {

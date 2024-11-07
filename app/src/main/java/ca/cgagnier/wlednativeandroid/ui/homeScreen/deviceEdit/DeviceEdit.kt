@@ -8,7 +8,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -120,8 +119,12 @@ fun DeviceEdit(
                     }
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.update_channel))
-                    Spacer(Modifier.weight(1f))
+                    Text(
+                        stringResource(R.string.update_channel),
+                        maxLines = 2,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
                     SingleChoiceSegmentedButtonRow {
                         options.forEachIndexed { index, option ->
                             SegmentedButton(
