@@ -41,7 +41,7 @@
     <string name="device_ap_mode_detected_click">Appuyez ici pour ouvrir</string>
     <string name="install">Installer</string>
     <string name="later">Plus tard</string>
-    <string name="skip_this_version">Sauter cette version</string>
+    <string name="skip_this_version">Ignorer</string>
     <string name="check_for_update">Chercher une mise à jour</string>
     <string name="from_version_to_version">De %1$s à %2$s</string>
     <string name="see_update_details">Installer</string>

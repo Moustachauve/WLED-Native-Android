@@ -41,7 +41,7 @@
     <string name="device_ap_mode_detected_click">Click here to open Device</string>
     <string name="install">Install</string>
     <string name="later">Later</string>
-    <string name="skip_this_version">Skip this Version</string>
+    <string name="skip_this_version">Skip</string>
     <string name="check_for_update">Check for Update</string>
     <string name="from_version_to_version">
         From <xliff:g example="v0.13.0" id="old_version">%1$s</xliff:g> To <xliff:g example="v0.14.0" id="new_version">%2$s</xliff:g>
