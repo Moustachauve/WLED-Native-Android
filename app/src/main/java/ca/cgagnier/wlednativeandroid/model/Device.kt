@@ -49,6 +49,8 @@ data class Device(
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val productName: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val release: String = UNKNOWN_VALUE,
 ): Parcelable {
     @Ignore
     @IgnoredOnParcel
