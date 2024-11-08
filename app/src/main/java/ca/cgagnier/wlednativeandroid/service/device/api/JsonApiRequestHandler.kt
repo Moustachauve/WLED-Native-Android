@@ -125,7 +125,7 @@ class JsonApiRequestHandler @Inject constructor(
         )
 
         val updatedDevice = device.copy(
-            macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
+            macAddress = deviceStateInfo.info.macAddress ?: Device.UNKNOWN_VALUE,
             isOnline = true,
             name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
             brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,

@@ -9,5 +9,6 @@ data class Wifi (
 	@Json(name = "bssid") val bssid : String? = null,
 	@Json(name = "rssi") val rssi : Int? = null,
 	@Json(name = "signal") val signal : Int? = null,
-	@Json(name = "channel") val channel : Int? = null
+	@Json(name = "channel") val channel : Int? = null,
+	@Json(name = "ap") val isApMode : Boolean? = null,
 )
