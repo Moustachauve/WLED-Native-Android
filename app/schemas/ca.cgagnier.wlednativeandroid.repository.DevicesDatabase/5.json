@@ -152,20 +152,6 @@
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'__unknown__'"
-          },
-          {
-            "fieldPath": "batteryPercentage",
-            "columnName": "batteryPercentage",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "hasBattery",
-            "columnName": "hasBattery",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
           }
         ],
         "primaryKey": {

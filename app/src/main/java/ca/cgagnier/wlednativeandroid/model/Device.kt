@@ -50,8 +50,8 @@ data class Device(
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val productName: String = UNKNOWN_VALUE,
-    @ColumnInfo(defaultValue = "0")
-    val batteryPercentage: Int = 0,
+    @ColumnInfo(defaultValue = "0.0")
+    val batteryPercentage: Double = 0.0,
     @ColumnInfo(defaultValue = "0")
     val hasBattery: Boolean = false,
 ): Parcelable {
