@@ -184,7 +184,7 @@ fun DeviceListDetail(
                                 navigateToDeviceDetail(it)
                                 navigateToDeviceEdit(it)
                             },
-                            openDrawer = {
+                            onOpenDrawer = {
                                 coroutineScope.launch {
                                     drawerState.open()
                                 }

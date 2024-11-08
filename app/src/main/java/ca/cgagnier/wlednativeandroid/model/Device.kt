@@ -1,7 +1,6 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
-import android.health.connect.datatypes.units.Percentage
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -50,6 +49,8 @@ data class Device(
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val productName: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val release: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = "0.0")
     val batteryPercentage: Double = 0.0,
     @ColumnInfo(defaultValue = "0")

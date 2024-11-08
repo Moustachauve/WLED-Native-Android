@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "7c66e58d95c1568cfad553d2a355b0e8",
+    "identityHash": "a85a40e826ed8319c6a1affbc28800c1",
     "entities": [
       {
         "tableName": "Device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkBssid` TEXT NOT NULL DEFAULT '__unknown__', `networkRssi` INTEGER NOT NULL DEFAULT __unknown__, `networkSignal` INTEGER NOT NULL DEFAULT 0, `networkChannel` INTEGER NOT NULL DEFAULT 0, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', `branch` TEXT NOT NULL DEFAULT 'UNKNOWN', `brand` TEXT NOT NULL DEFAULT '__unknown__', `productName` TEXT NOT NULL DEFAULT '__unknown__', `batteryPercentage` REAL NOT NULL DEFAULT 0.0, `hasBattery` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `name` TEXT NOT NULL, `isCustomName` INTEGER NOT NULL, `isHidden` INTEGER NOT NULL, `macAddress` TEXT NOT NULL DEFAULT '__unknown__', `brightness` INTEGER NOT NULL, `color` INTEGER NOT NULL, `isPoweredOn` INTEGER NOT NULL, `isOnline` INTEGER NOT NULL, `isRefreshing` INTEGER NOT NULL, `networkBssid` TEXT NOT NULL DEFAULT '__unknown__', `networkRssi` INTEGER NOT NULL DEFAULT __unknown__, `networkSignal` INTEGER NOT NULL DEFAULT 0, `networkChannel` INTEGER NOT NULL DEFAULT 0, `isEthernet` INTEGER NOT NULL DEFAULT 0, `platformName` TEXT NOT NULL DEFAULT '__unknown__', `version` TEXT NOT NULL DEFAULT '__unknown__', `newUpdateVersionTagAvailable` TEXT NOT NULL DEFAULT '', `skipUpdateTag` TEXT NOT NULL DEFAULT '', `branch` TEXT NOT NULL DEFAULT 'UNKNOWN', `brand` TEXT NOT NULL DEFAULT '__unknown__', `productName` TEXT NOT NULL DEFAULT '__unknown__', `release` TEXT NOT NULL DEFAULT '__unknown__', PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -154,18 +154,11 @@
             "defaultValue": "'__unknown__'"
           },
           {
-            "fieldPath": "batteryPercentage",
-            "columnName": "batteryPercentage",
-            "affinity": "REAL",
+            "fieldPath": "release",
+            "columnName": "release",
+            "affinity": "TEXT",
             "notNull": true,
-            "defaultValue": "0.0"
-          },
-          {
-            "fieldPath": "hasBattery",
-            "columnName": "hasBattery",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
+            "defaultValue": "'__unknown__'"
           }
         ],
         "primaryKey": {
@@ -299,7 +292,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c66e58d95c1568cfad553d2a355b0e8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a85a40e826ed8319c6a1affbc28800c1')"
     ]
   }
 }
