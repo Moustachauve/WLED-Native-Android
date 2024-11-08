@@ -29,5 +29,6 @@ data class Info (
     @Json(name = "opt") val opt : Int? = null,
     @Json(name = "brand") val brand : String? = null,
     @Json(name = "product") val product : String? = null,
-    @Json(name = "mac") val mac : String? = null
+    @Json(name = "mac") val mac : String? = null,
+    @Json(name = "u") val usermods : Usermods
 )

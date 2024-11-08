@@ -1,6 +1,7 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
+import android.health.connect.datatypes.units.Percentage
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -49,6 +50,10 @@ data class Device(
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val productName: String = UNKNOWN_VALUE,
+    @ColumnInfo(defaultValue = "0")
+    val batteryPercentage: Int = 0,
+    @ColumnInfo(defaultValue = "0")
+    val hasBattery: Boolean = false,
 ): Parcelable {
     @Ignore
     @IgnoredOnParcel
@@ -75,6 +80,18 @@ data class Device(
             return R.drawable.twotone_signal_wifi_1_bar_24
         }
         return R.drawable.twotone_signal_wifi_0_bar_24
+    }
+    fun getBatteryPercentageImage(): Int {
+        return when {
+            batteryPercentage <= 10 -> R.drawable.baseline_battery_0_bar_24
+            batteryPercentage <= 20 -> R.drawable.baseline_battery_1_bar_24
+            batteryPercentage <= 40 -> R.drawable.baseline_battery_2_bar_24
+            batteryPercentage <= 60 -> R.drawable.baseline_battery_3_bar_24
+            batteryPercentage <= 70 -> R.drawable.baseline_battery_4_bar_24
+            batteryPercentage <= 80 -> R.drawable.baseline_battery_5_bar_24
+            batteryPercentage <= 90 -> R.drawable.baseline_battery_6_bar_24
+            else -> R.drawable.baseline_battery_full_24
+        }
     }
 
     fun hasUpdateAvailable(): Boolean {

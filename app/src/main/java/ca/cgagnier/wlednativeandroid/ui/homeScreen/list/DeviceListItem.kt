@@ -272,6 +272,18 @@ fun DeviceInfoTwoRows(
                         .height(20.dp)
                 )
             }
+
+            if(device.hasBattery){
+                Icon(
+                    painter = painterResource(device.getBatteryPercentageImage()),
+                    contentDescription = stringResource(R.string.battery_percentage),
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .height(20.dp)
+                )
+            }
+
+
             if (device.hasUpdateAvailable()) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_download_24),
@@ -304,6 +316,7 @@ fun DeviceInfoTwoRows(
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
+
         }
     }
 }

@@ -124,7 +124,7 @@ class JsonApiRequestHandler @Inject constructor(
             deviceVersion, branch, device.skipUpdateTag
         )
 
-        val updatedDevice = device.copy(
+         val updatedDevice = device.copy(
             macAddress = deviceStateInfo.info.mac ?: Device.UNKNOWN_VALUE,
             isOnline = true,
             name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
@@ -140,8 +140,10 @@ class JsonApiRequestHandler @Inject constructor(
             branch = branch,
             brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
             productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
-        )
+            batteryPercentage = (deviceStateInfo.info.usermods.batLevel?.get(0) as? Int) ?: 0,
+            hasBattery = (deviceStateInfo.info.usermods.batLevel != null),
 
+        )
         if (saveChanges && updatedDevice != device) {
             Log.d(TAG, "[${updatedDevice.address}] Saving update of device from API")
             deviceRepository.update(updatedDevice)
