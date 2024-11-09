@@ -119,9 +119,8 @@ class JsonApiRequestHandler @Inject constructor(
             branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
         }
 
-        val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
         val updateVersionTagAvailable = releaseService.getNewerReleaseTag(
-            deviceVersion, branch, device.skipUpdateTag
+            deviceStateInfo.info, branch, device.skipUpdateTag
         )
 
         val updatedDevice = device.copy(
@@ -135,7 +134,7 @@ class JsonApiRequestHandler @Inject constructor(
             networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
             isEthernet = false,
             platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
-            version = deviceVersion,
+            version = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE,
             newUpdateVersionTagAvailable = updateVersionTagAvailable,
             branch = branch,
             brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
