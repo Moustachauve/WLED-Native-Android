@@ -37,6 +37,11 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             return ""
         }
 
+        // The options bitmask at 0x01 being 0 means OTA is disabled on the device.
+        if (deviceInfo.options?.and(0x01) == 0) {
+            return ""
+        }
+
         val latestVersion = getLatestVersionWithAssets(branch) ?: return ""
         if (latestVersion.version.tagName == ignoreVersion) {
             return ""
