@@ -29,23 +29,44 @@ class DeviceUpdateService(
     private lateinit var asset: Asset
 
     init {
-        determineAsset()
+        // Try to use the release variable, but fallback to the legacy platform method for
+        // compatibility with WLED older than 0.15.0
+        if (!determineAssetByRelease()) {
+            determineAssetByPlatform()
+        }
     }
 
-    private fun determineAsset() {
+    // Preferred method, only available since WLED 0.15.0
+    private fun determineAssetByRelease(): Boolean {
+        if (device.release.isEmpty() || device.release == Device.UNKNOWN_VALUE) {
+            return false
+        }
+
+        val versionWithRelease = "${versionWithAssets.version.tagName}_${device.release}".drop(1)
+        val assetName = "WLED_${versionWithRelease}.bin"
+        return findAsset(assetName)
+    }
+
+    // Legacy method for backwards compatibility with WLED older than 0.15.0
+    private fun determineAssetByPlatform(): Boolean {
         if (!supportedPlatforms.contains(device.platformName)) {
-            return
+            return false
         }
 
         val versionWithPlatform = getVersionWithPlatformName(device, versionWithAssets).drop(1)
         val assetName = "WLED_${versionWithPlatform}.bin"
+        return findAsset(assetName)
+    }
+
+    private fun findAsset(assetName: String): Boolean {
         for (asset in versionWithAssets.assets) {
             if (asset.name == assetName) {
                 this.asset = asset
                 couldDetermineAsset = true
-                return
+                return true
             }
         }
+        return false
     }
 
     fun couldDetermineAsset(): Boolean {
