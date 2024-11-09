@@ -25,6 +25,7 @@ class DeviceUpdateService(
         "esp8266"
     )
 
+    private var assetName: String = ""
     private var couldDetermineAsset: Boolean = false
     private lateinit var asset: Asset
 
@@ -43,7 +44,7 @@ class DeviceUpdateService(
         }
 
         val versionWithRelease = "${versionWithAssets.version.tagName}_${device.release}".drop(1)
-        val assetName = "WLED_${versionWithRelease}.bin"
+        assetName = "WLED_${versionWithRelease}.bin"
         return findAsset(assetName)
     }
 
@@ -54,7 +55,7 @@ class DeviceUpdateService(
         }
 
         val versionWithPlatform = getVersionWithPlatformName(device, versionWithAssets).drop(1)
-        val assetName = "WLED_${versionWithPlatform}.bin"
+        assetName = "WLED_${versionWithPlatform}.bin"
         return findAsset(assetName)
     }
 
@@ -67,6 +68,13 @@ class DeviceUpdateService(
             }
         }
         return false
+    }
+
+    /**
+     * Get the name of the asset to download.
+     */
+    fun getAssetName(): String {
+        return assetName
     }
 
     fun couldDetermineAsset(): Boolean {
