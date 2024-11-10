@@ -25,7 +25,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,8 +62,6 @@ fun DeviceList(
 
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
-
-    val confirmDeleteDevice: MutableState<Device?> = remember { mutableStateOf(null) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -118,11 +115,12 @@ fun DeviceList(
                         }
                     }
                     itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
+                        var isConfirmingDelete by remember { mutableStateOf(false) }
                         val swipeDismissState = rememberSwipeToDismissBoxState(
                             positionalThreshold = { distance -> distance * 0.3f },
                             confirmValueChange = {
                                 if (it == SwipeToDismissBoxValue.EndToStart) {
-                                    confirmDeleteDevice.value = device
+                                    isConfirmingDelete = true
                                     return@rememberSwipeToDismissBoxState true
                                 } else if (it == SwipeToDismissBoxValue.StartToEnd) {
                                     onItemEdit(device)
@@ -144,14 +142,26 @@ fun DeviceList(
                             },
                             modifier = Modifier.animateItem()
                         )
-                        when (confirmDeleteDevice.value) {
-                            null -> {
-                                if (swipeDismissState.currentValue != SwipeToDismissBoxValue.Settled) {
-                                    LaunchedEffect(Unit) {
+                        LaunchedEffect(isConfirmingDelete) {
+                            if (!isConfirmingDelete) {
+                                swipeDismissState.reset()
+                            }
+                        }
+
+                        if (isConfirmingDelete) {
+                            ConfirmDeleteDialog(
+                                device = device,
+                                onConfirm = {
+                                    viewModel.deleteDevice(device)
+                                    coroutineScope.launch {
+                                        isConfirmingDelete = false
                                         swipeDismissState.reset()
                                     }
+                                },
+                                onDismiss = {
+                                    isConfirmingDelete = false
                                 }
-                            }
+                            )
                         }
                     }
                     item {
@@ -161,26 +171,6 @@ fun DeviceList(
             }
         }
     }
-
-    ConfirmDeleteDialog(
-        device = confirmDeleteDevice.value,
-        onConfirm = {
-            confirmDeleteDevice.value?.let {
-                coroutineScope.launch {
-                    viewModel.deleteDevice(it)
-                    // Without this delay, the delete confirmation dialog would sometime show up
-                    // twice, mostly on tablets. This ensures that the dialog is hidden after the
-                    // device item has been removed from the list, otherwise a badly timed
-                    // recomposition would cause the double dialog.
-                    delay(1)
-                    confirmDeleteDevice.value = null
-                }
-            }
-        },
-        onDismiss = {
-            confirmDeleteDevice.value = null
-        }
-    )
 }
 
 @Composable
