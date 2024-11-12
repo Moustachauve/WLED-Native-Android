@@ -35,7 +35,7 @@
     <string name="awkward_akemi_character">Awkward Akemi Charakter</string>
     <string name="device_list">Meine Geräte</string>
     <string name="new_device_found">Neues Gerät erkannt</string>
-    <string name="device_view">Geräte Ansicht</string>
+    <string name="device_view">Geräteansicht</string>
     <string name="select_a_device">Wähle ein Gerät aus</string>
     <string name="settings">Einstellungen</string>
     <string name="theme">Thema</string>
@@ -48,12 +48,12 @@
     <string name="description_brightness_slider">Helligkeitsregler</string>
     <string name="description_menu_button">Öffne Menü</string>
     <string name="description_back_button">Gehe zurück</string>
-    <string name="description_list_of_discovered_devices">Liste an erkannten Geräten</string>
+    <string name="description_list_of_discovered_devices">Liste erkannter Geräte</string>
     <string name="privacy">Privatsphäre</string>
     <string name="send_crash_data_to_developer">Sende Absturzdaten an Entwickler</string>
     <string name="send_performance_data_to_developer">Sende Performancedaten an Entwickler</string>
-    <string name="device_ap_mode">WLED AP Modus</string>
-    <string name="device_ap_mode_detected">WLED AP Modus erkannt</string>
+    <string name="device_ap_mode">WLED AP-Modus</string>
+    <string name="device_ap_mode_detected">WLED AP-Modus erkannt</string>
     <string name="device_ap_mode_detected_click">Klicke hier um das Gerät zu öffnen</string>
     <string name="install">Installieren</string>
     <string name="later">Später</string>
@@ -64,7 +64,7 @@
         Von <xliff:g example="v0.13.0" id="old_version">%1$s</xliff:g> zu <xliff:g example="v0.14.0" id="new_version">%2$s</xliff:g>
     </string>
     <string name="see_update_details">Siehe Update</string>
-    <string name="checking_progress_update">Am überprüfen…</string>
+    <string name="checking_progress_update">Am Überprüfen…</string>
     <string name="updating">Update läuft %1$s</string>
     <string name="please_do_not_close_the_app_or_turn_off_the_device">Bitte schließe nicht die App und schalte nicht das Gerät aus.</string>
     <string name="starting_up">Am Hochfahren</string>
@@ -74,16 +74,16 @@
     <string name="done">Fertig</string>
     <string name="update_completed">Update vollständig!</string>
     <string name="are_you_sure">Bist du dir sicher?</string>
-    <string name="device_update_disclaimer_part1">Du bist dabei, eine neue Version von WLED zu installieren. Wenn du vorher eine angepasste Version installiert hattest, könnte es sein, dass du ein paar Funktionen verlierst (beispielsweise wenn du Usermods aktiviert hattest, könnten diese nicht mehr funktionieren).</string>
+    <string name="device_update_disclaimer_part1">Du bist dabei, eine neue Version von WLED zu installieren. Wenn du vorher eine angepasste Version installiert hattest, könnte es sein, dass du ein paar Funktionen verlierst (wenn du beispielsweise Usermods aktiviert hattest, könnten diese nicht mehr funktionieren).</string>
     <string name="device_update_disclaimer_part2">Wenn jemand dieses Gerät für dich installiert hat, solltest du diese Person vielleicht fragen, ob es in Ordnung ist, dieses Gerät auf eine neue Version zu updaten.</string>
     <string name="device_update_disclaimer_part3">WLED und WLED Native sind nicht dafür verantwortlich, wenn etwas wegen eines Updates schiefläuft.</string>
     <string name="install_update">Update wird installiert</string>
-    <string name="ota_install_failed_device_locked">Dein Gerät könnte durch eine PIN geschützt sein oder mit einer Passphrase verschlüsselt.</string>
+    <string name="ota_install_failed_device_locked">Dein Gerät könnte durch eine PIN geschützt oder mit einer Passphrase verschlüsselt sein.</string>
     <string name="no_compatible_version_found">Keine kompatible Version gefunden</string>
-    <string name="no_compatible_version_found_details">Es würde keine Version gefunden, die mit deinem Gerät kompatibel ist. Du musst dein Gerät manuell updaten.</string>
+    <string name="no_compatible_version_found_details">Es wurde keine Version gefunden, die mit deinem Gerät kompatibel ist. Du musst dein Gerät manuell updaten.</string>
     <string name="device_offline">Gerät Offline</string>
-    <string name="show_error">Zeige Fehler</string>
-    <string name="hide_error">Verberge Fehler</string>
+    <string name="show_error">Fehler anzeigen</string>
+    <string name="hide_error">Fehler verbergen</string>
     <string name="update_channel">Updatekanal</string>
     <string name="stable">Stable</string>
     <string name="beta">Beta</string>
