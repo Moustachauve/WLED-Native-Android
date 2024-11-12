@@ -47,5 +47,5 @@ data class Info (
     @Json(name = "product") val product : String? = null,
     @Json(name = "mac") val macAddress : String? = null,
     @Json(name = "ip") val ipAddress : String? = null,
-    @Json(name = "u") val usermods : Usermods? = null
+    @Json(name = "u") val userMods : UserMods? = null
 )

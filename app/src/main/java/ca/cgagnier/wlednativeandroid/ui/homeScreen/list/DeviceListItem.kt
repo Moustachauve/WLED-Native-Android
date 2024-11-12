@@ -273,7 +273,7 @@ fun DeviceInfoTwoRows(
                 )
             }
 
-            if(device.hasBattery){
+            if (device.hasBattery) {
                 Icon(
                     painter = painterResource(device.getBatteryPercentageImage()),
                     contentDescription = stringResource(R.string.battery_percentage),
