@@ -19,7 +19,7 @@ android {
         targetSdk 34
         versionCode 33
         versionName "4.1.1"
-        resourceConfigurations += ['en', 'fr']
+        resourceConfigurations += ['de', 'en', 'fr']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
