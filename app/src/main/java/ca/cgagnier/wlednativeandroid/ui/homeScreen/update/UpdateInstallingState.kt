@@ -3,6 +3,7 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.update
 data class UpdateInstallingState(
     val canDismiss: Boolean = false,
     val step: UpdateInstallingStep = UpdateInstallingStep.Installing,
+    val assetName: String = ""
 )
 
 sealed class UpdateInstallingStep {

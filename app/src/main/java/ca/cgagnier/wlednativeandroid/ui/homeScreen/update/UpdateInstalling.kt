@@ -34,9 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
-import ca.cgagnier.wlednativeandroid.service.update.getVersionWithPlatformName
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 
@@ -57,7 +55,6 @@ fun UpdateInstallingDialog(
     UpdateInstallingDialog(
         state = state,
         device = device,
-        version = version,
         onDismiss = {
             viewModel.resetState()
             onDismiss()
@@ -72,7 +69,6 @@ fun UpdateInstallingDialog(
 fun UpdateInstallingDialog(
     state: UpdateInstallingState,
     device: Device,
-    version: VersionWithAssets,
     onDismiss: () -> Unit,
     onToggleErrorMessage: () -> Unit,
 ) {
@@ -86,11 +82,7 @@ fun UpdateInstallingDialog(
             )
         },
         text = {
-            UpdateDialogContent(
-                device = device,
-                version = version,
-                state = state
-            )
+            UpdateDialogContent(state = state)
         },
         onDismissRequest = {
             if (state.canDismiss) {
@@ -128,11 +120,7 @@ fun UpdateInstallingDialog(
 }
 
 @Composable
-fun UpdateDialogContent(
-    device: Device,
-    version: VersionWithAssets,
-    state: UpdateInstallingState
-) {
+fun UpdateDialogContent(state: UpdateInstallingState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,7 +138,7 @@ fun UpdateDialogContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 12.dp)
         )
-        Text(getVersionWithPlatformName(device, version))
+        Text(state.assetName)
         AnimatedVisibility (!state.canDismiss) {
             Text(
                 stringResource(R.string.please_do_not_close_the_app_or_turn_off_the_device),
@@ -238,27 +226,33 @@ class SampleStateStepProvider : PreviewParameterProvider<UpdateInstallingState> 
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.Downloading(progress = 50),
-            canDismiss = true
+            canDismiss = true,
+            assetName = "WLED-1.2.3-WOW.bin"
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.Installing,
-            canDismiss = false
+            canDismiss = false,
+            assetName = "WLED-1.2.3-WOW.bin"
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.NoCompatibleVersion,
-            canDismiss = true
+            canDismiss = true,
+            assetName = "WLED-1.2.3-WOW.bin"
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.Error("Something went wrong", showError = false),
-            canDismiss = true
+            canDismiss = true,
+            assetName = "WLED-1.2.3-WOW.bin"
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.Error("Something went wrong", showError = true),
-            canDismiss = true
+            canDismiss = true,
+            assetName = "WLED-1.2.3-WOW.bin"
         ),
         UpdateInstallingState(
             step = UpdateInstallingStep.Done,
-            canDismiss = true
+            canDismiss = true,
+            assetName = "WLED-1.2.3-WOW.bin"
         ),
     )
 }
@@ -272,10 +266,6 @@ fun UpdateInstallingDialogStepStartingPreview(
         UpdateInstallingDialog(
             state = state,
             device = Device.getPreviewDevice(),
-            version = VersionWithAssets(
-                version = Version.getPreviewVersion(),
-                assets = listOf()
-            ),
             onDismiss = {},
             onToggleErrorMessage = {}
         )

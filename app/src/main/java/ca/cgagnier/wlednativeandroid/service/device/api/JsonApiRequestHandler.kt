@@ -14,19 +14,30 @@ import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeReque
 import ca.cgagnier.wlednativeandroid.service.update.ReleaseService
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
 
 class JsonApiRequestHandler @Inject constructor(
     private var deviceRepository: DeviceRepository,
     private var releaseService: ReleaseService
 ) : RequestHandler() {
-    private fun getJsonApi(device: Device): DeviceApi {
-        return Retrofit.Builder().baseUrl(device.getDeviceUrl())
-            .addConverterFactory(MoshiConverterFactory.create()).build()
+    private fun getJsonApi(device: Device, timeout: Long = 10): DeviceApi {
+        val okHttpClient = OkHttpClient().newBuilder()
+            .connectTimeout(timeout, TimeUnit.SECONDS)
+            .readTimeout(timeout, TimeUnit.SECONDS)
+            .writeTimeout(timeout, TimeUnit.SECONDS)
+            .build()
+        return Retrofit.Builder()
+            .baseUrl(device.getDeviceUrl())
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
             .create(DeviceApi::class.java)
     }
 
@@ -88,7 +99,7 @@ class JsonApiRequestHandler @Inject constructor(
         try {
             val reqFile =
                 request.binaryFile.asRequestBody("application/octet-stream".toMediaTypeOrNull())
-            val response = getJsonApi(request.device).updateDevice(
+            val response = getJsonApi(request.device, timeout = 120).updateDevice(
                 MultipartBody.Part.createFormData("file", "binary", reqFile)
             )
             request.callback?.invoke(response)
@@ -119,9 +130,8 @@ class JsonApiRequestHandler @Inject constructor(
             branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
         }
 
-        val deviceVersion = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE
         val updateVersionTagAvailable = releaseService.getNewerReleaseTag(
-            deviceVersion, branch, device.skipUpdateTag
+            deviceStateInfo.info, branch, device.skipUpdateTag
         )
 
         val updatedDevice = device.copy(
@@ -135,7 +145,7 @@ class JsonApiRequestHandler @Inject constructor(
             networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
             isEthernet = false,
             platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
-            version = deviceVersion,
+            version = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE,
             newUpdateVersionTagAvailable = updateVersionTagAvailable,
             branch = branch,
             brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
