@@ -16,6 +16,7 @@
     <string name="update_available">Mise à jour disponible</string>
     <string name="network_status">Statut du réseau</string>
     <string name="signal_strength">Force du signal: <xliff:g example="-62" id="strength">%1$s</xliff:g></string>
+    <string name="battery_percentage">État de la batterie:</string>
     <string name="refresh_page">Rafraîchir</string>
     <string name="edit_device">Modifier l\'appareil</string>
     <string name="edit_device_with_name">Modifier l\'appareil - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
