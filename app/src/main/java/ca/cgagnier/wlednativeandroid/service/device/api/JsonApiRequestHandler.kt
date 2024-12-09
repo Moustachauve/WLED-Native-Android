@@ -150,7 +150,9 @@ class JsonApiRequestHandler @Inject constructor(
             branch = branch,
             brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
             productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
-            release = deviceStateInfo.info.release ?: Device.UNKNOWN_VALUE
+            release = deviceStateInfo.info.release ?: Device.UNKNOWN_VALUE,
+            batteryPercentage = deviceStateInfo.info.userMods?.batteryLevel?.get(0) as? Double ?: 0.0,
+            hasBattery = (deviceStateInfo.info.userMods != null),
         )
 
         if (saveChanges && updatedDevice != device) {

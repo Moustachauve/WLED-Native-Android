@@ -16,6 +16,7 @@
     <string name="update_available">Update Available</string>
     <string name="network_status">Network Status</string>
     <string name="signal_strength">Signal strength: <xliff:g example="-62" id="strength">%1$s</xliff:g></string>
+    <string name="battery_percentage">Battery:</string>
     <string name="refresh_page">Refresh Page</string>
     <string name="edit_device">Edit Device</string>
     <string name="edit_device_with_name">Edit Device - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
