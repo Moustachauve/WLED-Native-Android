@@ -1,6 +1,5 @@
 package ca.cgagnier.wlednativeandroid.service.api.github
 
-import android.content.Context
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
@@ -20,7 +19,7 @@ import java.net.UnknownHostException
 
 
 abstract class GithubApi(
-    val context: Context,
+    protected val cacheDir: File,
     private val repoOwner: String,
     private val repoName: String
 ) {
@@ -47,7 +46,7 @@ abstract class GithubApi(
         return api.downloadReleaseBinary(repoOwner, repoName, asset.assetId).saveFile(targetFile)
     }
 
-    private suspend fun ResponseBody.saveFile(destinationFile: File): Flow<DownloadState> {
+    private fun ResponseBody.saveFile(destinationFile: File): Flow<DownloadState> {
         return flow {
             emit(DownloadState.Downloading(0))
 
@@ -84,14 +83,14 @@ abstract class GithubApi(
     }
 
     protected open fun getHttpOkClient(): OkHttpClient {
-        val cache = Cache(context.cacheDir, 10 * 1024 * 1024) // 10MB cache
+        val cache = Cache(cacheDir, 10 * 1024 * 1024) // 10MB cache
         return OkHttpClient.Builder()
             .cache(cache)
             .build()
     }
 
     companion object {
-        const val TAG = "github-release"
+        private const val TAG = "github-release"
         const val BASE_URL = "https://api.github.com"
     }
 }

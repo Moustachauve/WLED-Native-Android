@@ -1,8 +1,8 @@
 package ca.cgagnier.wlednativeandroid.service.api.github
 
-import android.content.Context
+import java.io.File
 
-class WledRepoApi(context: Context) : GithubApi(context, REPO_OWNER, REPO_NAME) {
+class WledRepoApi(cacheDir: File) : GithubApi(cacheDir, REPO_OWNER, REPO_NAME) {
 
     companion object {
         const val REPO_OWNER = "Aircoookie"

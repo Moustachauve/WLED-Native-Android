@@ -1,58 +1,76 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
-import android.content.Context
 import android.util.Log
-import ca.cgagnier.wlednativeandroid.fragment.DeviceListFragment
 import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Branch
-import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.Version
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.model.githubapi.Release
+import ca.cgagnier.wlednativeandroid.model.wledapi.Info
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.api.github.IllumidelRepoApi
 import com.vdurmont.semver4j.Semver
+import java.io.File
 
+private const val TAG = "updateService"
+private const val WLED_BRAND = "WLED"
+private const val WLED_PRODUCT = "FOSS"
 
 class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsRepository) {
 
     /**
      * If a new version is available, returns the version tag of it.
      *
-     * @param versionName Current version to check if a newer one exists
+     * @param deviceInfo Latest information about the device
      * @param branch Which branch to check for the update
      * @param ignoreVersion You can specify a version tag to be ignored as a new version. If this is
      *      set and match with the newest version, no version will be returned
      * @return The newest version if it is newer than versionName and different than ignoreVersion,
      *      otherwise an empty string.
      */
-    suspend fun getNewerReleaseTag(versionName: String, branch: Branch, ignoreVersion: String): String {
-        if (versionName == Device.UNKNOWN_VALUE) {
+    suspend fun getNewerReleaseTag(deviceInfo: Info, branch: Branch, ignoreVersion: String): String {
+        if (deviceInfo.version.isNullOrEmpty()) {
             return ""
         }
+        // This would need some major refactoring in order to support different sources for OTA.
+        if (deviceInfo.brand != WLED_BRAND || deviceInfo.product != WLED_PRODUCT) {
+            return ""
+        }
+
+        // The options bitmask at 0x01 being 0 means OTA is disabled on the device.
+        if (deviceInfo.options?.and(0x01) == 0) {
+            return ""
+        }
+
         val latestVersion = getLatestVersionWithAssets(branch) ?: return ""
         if (latestVersion.version.tagName == ignoreVersion) {
             return ""
+        }
+
+        // If we're on a beta branch but looking for a stable branch, always offer to "update" to
+        // the stable branch.
+        if (branch == Branch.STABLE && deviceInfo.version.contains("-b")) {
+            return latestVersion.version.tagName
         }
 
         try {
             return if (Semver(
                     latestVersion.version.tagName.drop(1),
                     Semver.SemverType.LOOSE
-                ).isGreaterThan(versionName)
+                ).isGreaterThan(deviceInfo.version)
             ) {
                 latestVersion.version.tagName
             } else {
                 ""
             }
         } catch (e: Exception) {
-            Log.e(DeviceListFragment.TAG, "Error in getNewerReleaseTag: " + e.message, e)
+            Log.e(TAG, "Error in getNewerReleaseTag: " + e.message, e)
         }
 
         return ""
     }
 
-    suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
+    private suspend fun getLatestVersionWithAssets(branch: Branch): VersionWithAssets? {
         if (branch == Branch.BETA) {
             return versionWithAssetsRepository.getLatestBetaVersionWithAssets()
         }
@@ -60,8 +78,8 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
         return versionWithAssetsRepository.getLatestStableVersionWithAssets()
     }
 
-    suspend fun refreshVersions(context: Context) {
-        val allVersions = IllumidelRepoApi(context).getAllReleases()
+    suspend fun refreshVersions(cacheDir: File) {
+        val allVersions = IllumidelRepoApi(cacheDir).getAllReleases()
 
         if (allVersions == null) {
             Log.w(TAG, "Did not find any version")
@@ -110,9 +128,5 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             )
         }
         return assetsModels
-    }
-
-    companion object {
-        const val TAG = "updateService"
     }
 }

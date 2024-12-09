@@ -1,13 +1,17 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import ca.cgagnier.wlednativeandroid.R
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 @Entity
+@Parcelize
 data class Device(
     @PrimaryKey
     val address: String,
@@ -45,8 +49,11 @@ data class Device(
     val brand: String = UNKNOWN_VALUE,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val productName: String = UNKNOWN_VALUE,
-) {
+    @ColumnInfo(defaultValue = UNKNOWN_VALUE)
+    val release: String = UNKNOWN_VALUE,
+): Parcelable {
     @Ignore
+    @IgnoredOnParcel
     var isSliding = false
 
     fun getDeviceUrl(): String {
@@ -76,7 +83,34 @@ data class Device(
         return newUpdateVersionTagAvailable != ""
     }
 
+    fun isAPMode(): Boolean {
+        return address == DEFAULT_WLED_AP_IP
+    }
+
     companion object {
         const val UNKNOWN_VALUE = "__unknown__"
+        const val DEFAULT_WLED_AP_IP = "4.3.2.1"
+
+        fun getDefaultAPDevice(): Device {
+            return Device(
+                address = DEFAULT_WLED_AP_IP,
+                name = "WLED AP Mode",
+                isCustomName = true,
+                isHidden = false,
+                isOnline = true,
+                networkRssi = 1,
+                macAddress = UNKNOWN_VALUE
+            )
+        }
+
+        fun getPreviewDevice(): Device {
+            return Device(
+                "10.0.0.1",
+                "Preview Device",
+                isCustomName = false,
+                isHidden = false,
+                macAddress = "00:00:00:00:00:00"
+            )
+        }
     }
 }
