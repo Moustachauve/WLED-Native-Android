@@ -47,9 +47,15 @@ class ReleaseService(private val versionWithAssetsRepository: VersionWithAssetsR
             return ""
         }
 
-        // If we're on a beta branch but looking for a stable branch, always offer to "update" to
-        // the stable branch.
-        if (branch == Branch.STABLE && deviceInfo.version.contains("-b")) {
+        val betaSuffixes = listOf("-a", "-b", "-rc")
+        Log.w(TAG, "Device ${deviceInfo.ipAddress}: ${deviceInfo.version} to ${latestVersion.version.tagName}")
+        if (branch == Branch.STABLE && betaSuffixes.any { deviceInfo.version.contains(it, ignoreCase = true)}) {
+            // If we're on a beta branch but looking for a stable branch, always offer to "update" to
+            // the stable branch.
+            return latestVersion.version.tagName
+        } else if (branch == Branch.BETA && betaSuffixes.none { deviceInfo.version.contains(it, ignoreCase = true)}) {
+            // Same if we are on a stable branch but looking for a beta branch, we should offer to
+            // "update" to the latest beta branch, even if its older.
             return latestVersion.version.tagName
         }
 
