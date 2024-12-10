@@ -47,7 +47,8 @@ fun Settings(
                 navigateUp = navigateUp,
             )
         },
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
         Column (
             modifier = Modifier

@@ -65,7 +65,8 @@ fun DeviceDetail(
                 },
             )
         },
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -121,7 +122,7 @@ fun DeviceDetailAppBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent,
         ),
         modifier = modifier,
         navigationIcon = {

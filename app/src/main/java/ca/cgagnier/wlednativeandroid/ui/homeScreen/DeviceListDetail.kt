@@ -160,7 +160,8 @@ fun DeviceListDetail(
         }
     ) {
         Scaffold(
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground
         ) { innerPadding ->
             NavigableListDetailPaneScaffold(
                 modifier = modifier

@@ -84,7 +84,8 @@ fun DeviceList(
                 onAddDevice = onAddDevice,
             )
         },
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
         PullToRefreshBox(
             modifier = Modifier.padding(innerPadding),

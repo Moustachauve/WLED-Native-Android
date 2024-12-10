@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -155,7 +156,7 @@ private fun SwipeBox(
         backgroundContent = {
             val color by animateColorAsState(
                 when (swipeToDismissBoxState.targetValue) {
-                    SwipeToDismissBoxValue.Settled -> MaterialTheme.colorScheme.surfaceDim
+                    SwipeToDismissBoxValue.Settled -> Color.Transparent
                     SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.tertiaryContainer
                     SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
                 }, label = "ColorAnimation"

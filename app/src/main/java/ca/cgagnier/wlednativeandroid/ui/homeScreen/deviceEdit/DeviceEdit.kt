@@ -87,7 +87,8 @@ fun DeviceEdit(
                 navigateUp = navigateUp,
             )
         },
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
         Card(
             modifier = Modifier
