@@ -67,6 +67,7 @@
     <string name="no_compatible_version_found_details">No version that is compatible with your device could be found. You will need to manually update your device.</string>
     <string name="show_error">Show Error</string>
     <string name="hide_error">Hide Error</string>
+    <string name="unknown_error">Unknown Error</string>
     <string name="update_channel">Update Channel</string>
     <string name="stable">Stable</string>
     <string name="beta">Beta</string>

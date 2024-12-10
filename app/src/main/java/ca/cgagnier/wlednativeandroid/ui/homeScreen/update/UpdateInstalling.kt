@@ -151,8 +151,8 @@ fun UpdateDialogContent(state: UpdateInstallingState) {
             ErrorMessageCard(stringResource(R.string.no_compatible_version_found_details))
         }
         AnimatedVisibility(state.step is UpdateInstallingStep.Error && state.step.showError) {
-            val step = state.step as UpdateInstallingStep.Error
-            ErrorMessageCard(step.error)
+            val step = state.step as? UpdateInstallingStep.Error
+            ErrorMessageCard(step?.error ?: "Unknown error")
         }
     }
 }
