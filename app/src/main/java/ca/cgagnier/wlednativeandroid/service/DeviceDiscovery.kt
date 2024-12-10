@@ -28,9 +28,13 @@ class DeviceDiscovery(
 
             override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
                 Log.e(TAG, "Discovery start failed: Error code:$errorCode")
+                stop()
                 try {
                     nsdManager.stopServiceDiscovery(this)
-                } finally {
+                } catch (e: Exception) {
+                    // Do nothing, exceptions here usually means we were not actually listening for
+                    // discovery. This is likely since we are stopping it just before.
+                    Log.e(TAG, "Failed to stop discovery: ${e.message}", e)
                 }
             }
 
@@ -38,7 +42,10 @@ class DeviceDiscovery(
                 Log.e(TAG, "Discovery stop failed: Error code:$errorCode")
                 try {
                     nsdManager.stopServiceDiscovery(this)
-                } finally {
+                } catch (e: Exception) {
+                    // Do nothing, exceptions here usually means we were not actually listening for
+                    // discovery.
+                    Log.e(TAG, "Failed to stop: ${e.message}", e)
                 }
             }
 

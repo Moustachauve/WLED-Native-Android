@@ -67,6 +67,7 @@
     <string name="no_compatible_version_found_details">No version that is compatible with your device could be found. Please contact Illumidel for help.</string>
     <string name="show_error">Show Error</string>
     <string name="hide_error">Hide Error</string>
+    <string name="unknown_error">Unknown Error</string>
     <string name="visit_website">Visit Illumidel.com</string>
     <string name="help">Help</string>
     <string name="update_channel">Update Channel</string>
