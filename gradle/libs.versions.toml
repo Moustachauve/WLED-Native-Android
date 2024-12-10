@@ -8,8 +8,10 @@ coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.1"
 espressoCore = "3.6.1"
 fragmentKtx = "1.8.5"
-hiltAndroid = "2.53.1"
-hiltCompiler = "2.53.1"
+# Version 2.53.1 causes issue with compiling
+# https://github.com/google/dagger/issues/4533
+hiltAndroid = "2.52"
+hiltCompiler = "2.52"
 hiltNavigationCompose = "1.2.0"
 jsoup = "1.18.3"
 junit = "4.13.2"
