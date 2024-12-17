@@ -42,7 +42,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -163,6 +166,7 @@ fun DeviceListDetail(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground
         ) { innerPadding ->
+            var forceWebViewRefresh by remember { mutableStateOf(false) }
             NavigableListDetailPaneScaffold(
                 modifier = modifier
                     .padding(innerPadding)
@@ -200,12 +204,16 @@ fun DeviceListDetail(
                         selectedDevice.value?.let { device ->
                             DeviceDetail(
                                 device = device,
+                                forceRefresh = forceWebViewRefresh,
+                                canNavigateBack = navigator.canNavigateBack(),
                                 onItemEdit = {
                                     navigateToDeviceEdit(device)
                                 },
-                                canNavigateBack = navigator.canNavigateBack(),
                                 navigateUp = {
                                     navigator.navigateBack()
+                                },
+                                onWebViewRefreshed = {
+                                    forceWebViewRefresh = false
                                 }
                             )
                         } ?: SelectDeviceView()
@@ -218,6 +226,9 @@ fun DeviceListDetail(
                                 canNavigateBack = navigator.canNavigateBack(),
                                 navigateUp = {
                                     navigator.navigateBack()
+                                },
+                                reloadWebView = {
+                                    forceWebViewRefresh = true
                                 }
                             )
                         }

@@ -125,9 +125,12 @@ class JsonApiRequestHandler @Inject constructor(
             }
         }
 
-        var branch = device.branch
-        if (branch == Branch.UNKNOWN) {
-            branch = if (device.version.contains("-b")) Branch.BETA else Branch.STABLE
+        val branch = if (device.productName.lowercase() == "en") {
+            // Beta is english
+            Branch.BETA
+        } else {
+            // Stable is french
+            Branch.STABLE
         }
 
         val updateVersionTagAvailable = releaseService.getNewerReleaseTag(

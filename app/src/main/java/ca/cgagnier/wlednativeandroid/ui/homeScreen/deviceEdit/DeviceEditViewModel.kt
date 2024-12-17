@@ -72,7 +72,6 @@ class DeviceEditViewModel @Inject constructor(
             val version =  versionWithAssetsRepository.getVersionByTag("v${device.version}")
             if (version != null) {
                 startUpdateInstall(version)
-                // TODO: Refresh the device page after installing an update
             }
         }
     }
@@ -111,6 +110,17 @@ class DeviceEditViewModel @Inject constructor(
     fun stopUpdateInstall() {
         _updateInstallVersion.value = null
     }
+
+    fun refreshDevice(device: Device) {
+        Log.d(TAG, "Refreshing device ${device.name} - ${device.address}")
+        stateFactory.getState(device).requestsManager.addRequest(
+            RefreshRequest(
+                device,
+                silentRefresh = true,
+            )
+        )
+    }
+
 
     fun checkForUpdates(device: Device, context: Context) = viewModelScope.launch(Dispatchers.IO) {
         _isCheckingUpdates.value = true

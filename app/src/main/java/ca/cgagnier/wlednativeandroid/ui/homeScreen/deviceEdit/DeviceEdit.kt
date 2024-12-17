@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,13 +61,16 @@ import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDisclaimerDialog
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateInstallingDialog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DeviceEdit(
     device: Device,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
+    reloadWebView: () -> Unit,
     viewModel: DeviceEditViewModel = hiltViewModel()
 ) {
     val options = listOf(
@@ -184,7 +188,7 @@ fun DeviceEdit(
             },
             onInstall = { versionInstall ->
                 viewModel.hideUpdateDetails()
-                viewModel.showUpdateDisclaimer(versionInstall)
+                viewModel.startUpdateInstall(versionInstall)
             },
             onSkip = {
                 viewModel.skipUpdate(device, versionDetails)
@@ -203,9 +207,17 @@ fun DeviceEdit(
         )
     }
     updateInstallVersion?.let { version ->
+        val coroutineScope = rememberCoroutineScope()
         UpdateInstallingDialog(
             device = device,
             version = version,
+            onInstallSuccessful = {
+                coroutineScope.launch(Dispatchers.Main) {
+                    delay(1000)
+                    reloadWebView()
+                    viewModel.refreshDevice(device)
+                }
+            },
             onDismiss = {
                 viewModel.stopUpdateInstall()
             },

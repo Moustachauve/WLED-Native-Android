@@ -44,12 +44,22 @@ private const val TAG = "ui.DeviceDetail"
 @Composable
 fun DeviceDetail(
     device: Device,
-    onItemEdit: (Device) -> Unit,
+    forceRefresh: Boolean = false,
     canNavigateBack: Boolean,
+    onItemEdit: (Device) -> Unit,
     navigateUp: () -> Unit,
+    onWebViewRefreshed: () -> Unit
 ) {
     val webViewState = rememberSaveableWebViewState()
     val navigator = rememberWebViewNavigator()
+
+    LaunchedEffect(forceRefresh) {
+        if (forceRefresh) {
+            navigator.reload()
+            onWebViewRefreshed()
+        }
+    }
+
     Scaffold(
         topBar = {
             DeviceDetailAppBar(

@@ -42,6 +42,7 @@ import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 fun UpdateInstallingDialog(
     device: Device,
     version: VersionWithAssets,
+    onInstallSuccessful: () -> Unit,
     onDismiss: () -> Unit,
     viewModel: UpdateInstallingViewModel = hiltViewModel()
 ) {
@@ -55,6 +56,7 @@ fun UpdateInstallingDialog(
     UpdateInstallingDialog(
         state = state,
         device = device,
+        onInstallSuccessful = onInstallSuccessful,
         onDismiss = {
             viewModel.resetState()
             onDismiss()
@@ -69,9 +71,16 @@ fun UpdateInstallingDialog(
 fun UpdateInstallingDialog(
     state: UpdateInstallingState,
     device: Device,
+    onInstallSuccessful: () -> Unit,
     onDismiss: () -> Unit,
     onToggleErrorMessage: () -> Unit,
 ) {
+    val installSuccessful = state.step is UpdateInstallingStep.Done
+    LaunchedEffect(installSuccessful) {
+        if (installSuccessful) {
+            onInstallSuccessful()
+        }
+    }
     AlertDialog(
         title = {
             Text(
@@ -266,6 +275,7 @@ fun UpdateInstallingDialogStepStartingPreview(
         UpdateInstallingDialog(
             state = state,
             device = Device.getPreviewDevice(),
+            onInstallSuccessful = {},
             onDismiss = {},
             onToggleErrorMessage = {}
         )
