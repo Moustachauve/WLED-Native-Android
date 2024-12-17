@@ -151,6 +151,10 @@ class DeviceListDetailViewModel @Inject constructor(
                 silentRefresh = true,
                 saveChanges = false
             ) { refreshedDevice ->
+                if (refreshedDevice.brand != "ILLUMIDEL") {
+                    Log.i(TAG, "Device is not Illumidel: ${device.address}")
+                    return@RefreshRequest
+                }
                 val existingDevice = findWithSameMacAddress(refreshedDevice)
                 if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
                     Log.i(
