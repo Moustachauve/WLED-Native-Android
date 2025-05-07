@@ -81,7 +81,7 @@ fun DeviceListDetail(
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    val selectedDeviceAddress = navigator.currentDestination?.content as? String ?: ""
+    val selectedDeviceAddress = navigator.currentDestination?.contentKey as? String ?: ""
     val selectedDevice =
         viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
 
@@ -115,17 +115,21 @@ fun DeviceListDetail(
         }
     }
 
-    val navigateToDeviceDetail = { device: Device ->
-        navigator.navigateTo(
-            pane = ListDetailPaneScaffoldRole.Detail,
-            content = device.address
-        )
+    val navigateToDeviceDetail: (Device) -> Unit = { device: Device ->
+        coroutineScope.launch {
+            navigator.navigateTo(
+                pane = ListDetailPaneScaffoldRole.Detail,
+                contentKey = device.address
+            )
+        }
     }
     val navigateToDeviceEdit = { device: Device ->
-        navigator.navigateTo(
-            pane = ListDetailPaneScaffoldRole.Extra,
-            content = device.address
-        )
+        coroutineScope.launch {
+            navigator.navigateTo(
+                pane = ListDetailPaneScaffoldRole.Extra,
+                contentKey = device.address
+            )
+        }
     }
 
 
@@ -201,7 +205,9 @@ fun DeviceListDetail(
                                 },
                                 canNavigateBack = navigator.canNavigateBack(),
                                 navigateUp = {
-                                    navigator.navigateBack()
+                                    coroutineScope.launch {
+                                        navigator.navigateBack()
+                                    }
                                 }
                             )
                         } ?: SelectDeviceView()
@@ -213,7 +219,9 @@ fun DeviceListDetail(
                                 device = device,
                                 canNavigateBack = navigator.canNavigateBack(),
                                 navigateUp = {
-                                    navigator.navigateBack()
+                                    coroutineScope.launch {
+                                        navigator.navigateBack()
+                                    }
                                 }
                             )
                         }
@@ -241,10 +249,12 @@ private fun DrawerContent(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-        horizontalArrangement = Arrangement.Center) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
         Image(
             painter = painterResource(id = R.drawable.wled_logo_akemi),
             contentDescription = stringResource(R.string.app_logo)
