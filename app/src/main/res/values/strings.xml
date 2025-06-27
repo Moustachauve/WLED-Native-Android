@@ -77,4 +77,6 @@
     <string name="downloading_file">Downloading File</string>
     <string name="help">WLED Help</string>
     <string name="support_me">Support Moustachauve</string>
+    <string name="device_controls_device_not_found">Device not found</string>
+    <string name="device_controls_control_button_action_description">Toggle</string>
 </resources>
