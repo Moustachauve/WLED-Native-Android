@@ -112,9 +112,9 @@ class DeviceControlsProviderService : ControlsProviderService() {
         if (device.isOnline) {
             // set status text based on state
             if (device.isPoweredOn) {
-                control.setStatusText("On")
+                control.setStatusText(applicationContext.getString(R.string.state_on))
             } else {
-                control.setStatusText("Off")
+                control.setStatusText(applicationContext.getString(R.string.state_off))
             }
 
             // and add controls
@@ -138,7 +138,7 @@ class DeviceControlsProviderService : ControlsProviderService() {
             )
         } else {
             // offline
-            control.setStatusText("Offline")
+            control.setStatusText(applicationContext.getString(R.string.state_offline))
             // set the template to toggle with forced value of off
             control.setControlTemplate(
                 ToggleTemplate(

@@ -79,4 +79,7 @@
     <string name="support_me">Support Moustachauve</string>
     <string name="device_controls_device_not_found">Device not found</string>
     <string name="device_controls_control_button_action_description">Toggle</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="state_offline">Offline</string>
 </resources>
