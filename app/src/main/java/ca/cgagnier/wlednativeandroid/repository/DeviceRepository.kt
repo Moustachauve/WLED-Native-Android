@@ -15,6 +15,11 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     }
 
     @WorkerThread
+    suspend fun findDeviceByAddress(address: String): Device? {
+        return deviceDao.findDeviceByAddress(address)
+    }
+
+    @WorkerThread
     fun findLiveDeviceByAddress(address: String): Flow<Device?> {
         return deviceDao.findLiveDeviceByAddress(address)
     }
