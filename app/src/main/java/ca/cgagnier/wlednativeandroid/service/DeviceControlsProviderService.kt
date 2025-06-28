@@ -191,24 +191,20 @@ class DeviceControlsProviderService : ControlsProviderService() {
         return action
     }
 
-    // copied from DeviceListViewModel
+    // (mostly) copied from DeviceListViewModel
     private fun toggleDevicePower(device: Device, isOn: Boolean) {
         val deviceSetPost = JsonPost(isOn = isOn)
-        scope.launch(Dispatchers.IO) {
-            stateFactory.getState(device).requestsManager.addRequest(
-                StateChangeRequest(device, deviceSetPost)
-            )
-        }
+        stateFactory.getState(device).requestsManager.addRequest(
+            StateChangeRequest(device, deviceSetPost)
+        )
     }
 
-    // copied from DeviceListViewModel
+    // (mostly) copied from DeviceListViewModel
     private fun setDeviceBrightness(device: Device, brightness: Int) {
         val deviceSetPost = JsonPost(brightness = brightness)
-        scope.launch(Dispatchers.IO) {
-            stateFactory.getState(device).requestsManager.addRequest(
-                StateChangeRequest(device, deviceSetPost)
-            )
-        }
+        stateFactory.getState(device).requestsManager.addRequest(
+            StateChangeRequest(device, deviceSetPost)
+        )
     }
 
     override fun onDestroy() {
