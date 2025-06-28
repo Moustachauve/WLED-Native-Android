@@ -81,16 +81,19 @@ class DeviceControlsProviderService : ControlsProviderService() {
     ) {
         scope.launch {
             // controlId is device address
-            val device = repository.findDeviceByAddress(controlId)
-            device?.let {
+            repository.findDeviceByAddress(controlId)?.let { device ->
                 when (action) {
-                    is BooleanAction -> toggleDevicePower(device, action.newState)
-                    is FloatAction -> setDeviceBrightness(device, action.newValue.toInt())
+                    is BooleanAction -> {
+                        toggleDevicePower(device, action.newState)
+                        consumer.accept(ControlAction.RESPONSE_OK)
+                    }
+                    is FloatAction -> {
+                        setDeviceBrightness(device, action.newValue.toInt())
+                        consumer.accept(ControlAction.RESPONSE_OK)
+                    }
 
                     else -> consumer.accept(ControlAction.RESPONSE_FAIL)
                 }
-
-                consumer.accept(ControlAction.RESPONSE_OK)
             } ?: consumer.accept(ControlAction.RESPONSE_FAIL)
         }
     }
