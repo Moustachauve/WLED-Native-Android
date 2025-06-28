@@ -80,7 +80,8 @@ class DeviceControlsProviderService : ControlsProviderService() {
         consumer: Consumer<Int>
     ) {
         scope.launch {
-            val device = getDeviceForControlId(controlId)
+            // controlId is device address
+            val device = repository.findDeviceByAddress(controlId)
             device?.let {
                 when (action) {
                     is BooleanAction -> toggleDevicePower(device, action.newState)
@@ -102,7 +103,7 @@ class DeviceControlsProviderService : ControlsProviderService() {
     }
 
     private fun createStatefulControl(device: Device): Control {
-        val control =  Control.StatefulBuilder(device.address, createAppIntentForDevice(device))
+        val control = Control.StatefulBuilder(device.address, createAppIntentForDevice(device))
             .setTitle(device.name)
             .setDeviceType(DeviceTypes.TYPE_LIGHT)
             .setStatus(Control.STATUS_OK)
@@ -168,18 +169,6 @@ class DeviceControlsProviderService : ControlsProviderService() {
     }
 
     /**
-     * Remove any known prefixes from controlIds and return a [Device] if it exists
-     *
-     * @param controlId String in a `(optionalPrefix_)IpAddress` format
-     */
-    private suspend fun getDeviceForControlId(controlId: String): Device? {
-        val deviceAddress = controlId.removePrefix(TOGGLE_PREFIX).removePrefix(RANGE_PREFIX)
-        val device = repository.findDeviceByAddress(deviceAddress)
-
-        return device
-    }
-
-    /**
      * Create [PendingIntent] that launches device specific screen in the app
      */
     private fun createAppIntentForDevice(device: Device): PendingIntent {
@@ -226,9 +215,6 @@ class DeviceControlsProviderService : ControlsProviderService() {
 
     companion object {
         private const val TAG = "DeviceControlsProviderService"
-
-        private const val TOGGLE_PREFIX = "toggle_"
-        private const val RANGE_PREFIX = "range_"
 
         const val EXTRA_DEVICE_MAC = "device_controls_device_mac"
     }
