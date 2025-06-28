@@ -12,6 +12,7 @@ import android.service.controls.actions.FloatAction
 import android.service.controls.templates.ControlButton
 import android.service.controls.templates.RangeTemplate
 import android.service.controls.templates.ToggleRangeTemplate
+import android.service.controls.templates.ToggleTemplate
 import androidx.annotation.RequiresApi
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
@@ -35,8 +36,6 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.Flow
 import java.util.function.Consumer
 import javax.inject.Inject
-
-// TODO: offline doesn't work
 
 @RequiresApi(Build.VERSION_CODES.R)
 @AndroidEntryPoint
@@ -103,11 +102,22 @@ class DeviceControlsProviderService : ControlsProviderService() {
     }
 
     private fun createStatefulControl(device: Device): Control {
-        return Control.StatefulBuilder(device.address, createAppIntentForDevice(device))
+        val control =  Control.StatefulBuilder(device.address, createAppIntentForDevice(device))
             .setTitle(device.name)
             .setDeviceType(DeviceTypes.TYPE_LIGHT)
             .setStatus(Control.STATUS_OK)
-            .setControlTemplate(
+
+        // set a proper message instead of the ones in Control.STATUS_*
+        if (device.isOnline) {
+            // set status text based on state
+            if (device.isPoweredOn) {
+                control.setStatusText("On")
+            } else {
+                control.setStatusText("Off")
+            }
+
+            // and add controls
+            control.setControlTemplate(
                 ToggleRangeTemplate(
                     device.address,
                     ControlButton(
@@ -125,7 +135,22 @@ class DeviceControlsProviderService : ControlsProviderService() {
                     )
                 )
             )
-            .build()
+        } else {
+            // offline
+            control.setStatusText("Offline")
+            // set the template to toggle with forced value of off
+            control.setControlTemplate(
+                ToggleTemplate(
+                    device.address,
+                    ControlButton(
+                        false,
+                        applicationContext.getString(R.string.device_controls_control_button_action_description)
+                    )
+                )
+            )
+        }
+
+        return control.build()
     }
 
     /**
