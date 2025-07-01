@@ -69,6 +69,7 @@ private const val TAG = "screen_DeviceListDetail"
 fun DeviceListDetail(
     modifier: Modifier = Modifier,
     openSettings: () -> Unit,
+    deviceMacAddress: String? = null,
     viewModel: DeviceListDetailViewModel = hiltViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -80,6 +81,22 @@ fun DeviceListDetail(
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    // Handle navigation to specific device if provided
+    DisposableEffect(deviceMacAddress) {
+        if (deviceMacAddress != null) {
+            coroutineScope.launch {
+                val device = viewModel.findDeviceByMacAddress(deviceMacAddress)
+                if (device != null) {
+                    navigator.navigateTo(
+                        pane = ListDetailPaneScaffoldRole.Detail,
+                        contentKey = device.address
+                    )
+                }
+            }
+        }
+        onDispose { }
+    }
 
     val selectedDeviceAddress = navigator.currentDestination?.contentKey as? String ?: ""
     val selectedDevice =

@@ -209,4 +209,7 @@ class DeviceListDetailViewModel @Inject constructor(
             false
         }
     }
+    suspend fun findDeviceByMacAddress(macAddress: String): Device? {
+        return repository.findDeviceByMacAddress(macAddress)
+    }
 }
