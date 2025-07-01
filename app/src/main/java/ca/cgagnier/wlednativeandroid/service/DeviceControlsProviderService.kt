@@ -88,7 +88,9 @@ class DeviceControlsProviderService : ControlsProviderService() {
                         consumer.accept(ControlAction.RESPONSE_OK)
                     }
                     is FloatAction -> {
-                        setDeviceBrightness(device, action.newValue.toInt())
+                        // map 0-100% UI range to 0-255 for API
+                        val integerBrightness = action.newValue.div(100).times(255).toInt()
+                        setDeviceBrightness(device, integerBrightness)
                         consumer.accept(ControlAction.RESPONSE_OK)
                     }
 
@@ -128,14 +130,14 @@ class DeviceControlsProviderService : ControlsProviderService() {
                         device.isPoweredOn,
                         applicationContext.getString(R.string.device_controls_control_button_action_description)
                     ),
-                    // TODO: not sure about the mapping here
                     RangeTemplate(
                         device.address,
+                        0f,
+                        100f,
+                        // map 0-255 range to 0-100% for UI
+                        device.brightness.toFloat().times(100).div(255),
                         1f,
-                        255f,
-                        device.brightness.toFloat(),
-                        1f,
-                        null
+                        "%.0f%%"
                     )
                 )
             )
