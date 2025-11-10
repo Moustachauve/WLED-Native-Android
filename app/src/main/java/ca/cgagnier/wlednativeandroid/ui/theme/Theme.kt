@@ -270,12 +270,14 @@ fun WLEDNativeTheme(
     themeViewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
-    val theme by themeViewModel.theme.collectAsStateWithLifecycle()
-    val darkTheme = when (theme) {
-        ThemeSettings.Auto -> isSystemInDarkTheme()
-        ThemeSettings.Dark -> true
-        else -> false
-    }
+    // Forced dark theme in Illumidel due to image loading issue #darkPainterIllumidel
+    val darkTheme = true
+//    val theme by themeViewModel.theme.collectAsStateWithLifecycle()
+//    val darkTheme = when (theme) {
+//        ThemeSettings.Auto -> isSystemInDarkTheme()
+//        ThemeSettings.Dark -> true
+//        else -> false
+//    }
     WLEDNativeTheme(
         darkTheme = darkTheme,
         dynamicColor = dynamicColor,
@@ -322,12 +324,14 @@ fun DeviceTheme(
     themeViewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
-    val theme by themeViewModel.theme.collectAsStateWithLifecycle()
-    val darkTheme = when (theme) {
-        ThemeSettings.Auto -> isSystemInDarkTheme()
-        ThemeSettings.Dark -> true
-        else -> false
-    }
+    // Forced dark theme in Illumidel due to image loading issue #darkPainterIllumidel
+    val darkTheme = true
+    // val theme by themeViewModel.theme.collectAsStateWithLifecycle()
+    // val darkTheme = when (theme) {
+    //     ThemeSettings.Auto -> isSystemInDarkTheme()
+    //     ThemeSettings.Dark -> true
+    //     else -> false
+    // }
     DynamicMaterialTheme(
         seedColor = Color(device.color),
         style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,

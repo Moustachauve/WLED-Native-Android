@@ -78,12 +78,14 @@ fun Settings(
                     )
                 },
                 secondColumn = {
-                    ThemeOptions(
-                        currentTheme = settingsState.theme,
-                        setTheme = {
-                            viewModel.setTheme(it)
-                        }
-                    )
+                    // Theme option is disabled for Illumidel, forced to always be dark theme.
+                    // #darkPainterIllumidel
+//                    ThemeOptions(
+//                        currentTheme = settingsState.theme,
+//                        setTheme = {
+//                            viewModel.setTheme(it)
+//                        }
+//                    )
                 }
             )
             //}
