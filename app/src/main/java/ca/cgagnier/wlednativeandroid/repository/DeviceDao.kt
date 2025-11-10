@@ -29,7 +29,7 @@ interface DeviceDao {
     suspend fun findDeviceByAddress(address: String): Device?
 
     @Query("SELECT * FROM device WHERE address = :address")
-    fun findLiveDeviceByAddress(address: String): Flow<Device>
+    fun findLiveDeviceByAddress(address: String): Flow<Device?>
 
     @Query("SELECT * FROM device WHERE macAddress != '' AND macAddress = :address")
     suspend fun findDeviceByMacAddress(address: String): Device?
