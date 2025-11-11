@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit2.kotlin.coroutines.adapter)
     implementation(libs.semver4j)
+    implementation(libs.compose.material.icons)
     kapt(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)

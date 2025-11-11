@@ -330,10 +330,9 @@ fun DeviceTheme(
     }
     DynamicMaterialTheme(
         seedColor = Color(device.color),
+        isDark = darkTheme,
         style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,
-        animate = true,
-        isExtendedFidelity = false,
-        useDarkTheme = darkTheme
+        animate = true
     ) {
         content()
     }

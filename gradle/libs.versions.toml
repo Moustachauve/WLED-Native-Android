@@ -1,6 +1,6 @@
 [versions]
 agp = "8.13.0"
-composeBom = "2025.04.01"
+composeBom = "2025.11.00"
 converterMoshi = "3.0.0"
 core = "4.6.2"
 coreKtx = "1.17.0"
@@ -22,7 +22,7 @@ ksp = "2.2.21-2.0.4"
 legacySupportV4 = "1.0.0"
 lifecycleViewmodelKtx = "2.9.4"
 loggingInterceptor = "5.3.0"
-materialKolor = "2.1.1"
+materialKolor = "4.0.3"
 moshiKotlinCodegen = "1.15.2"
 moshiVersion = "1.15.2"
 multiplatformmarkdownrenderer = "0.38.1"
@@ -93,6 +93,9 @@ protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlin-coroutines-adapter = { module = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter", version.ref = "retrofit2KotlinCoroutinesAdapter" }
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
+
+# TODO: Manually import the icons instead of importing this.
+compose-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
