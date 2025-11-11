@@ -12,12 +12,12 @@ plugins {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ca.cgagnier.wlednativeandroid"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 40
         versionName = "5.0.0"
         resourceConfigurations += listOf("en", "fr")
@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit2.kotlin.coroutines.adapter)
     implementation(libs.semver4j)
+    implementation(libs.compose.material.icons)
     kapt(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
@@ -133,7 +134,7 @@ protobuf {
     // Configures the Protobuf compilation and the protoc executable
     protoc {
         // Downloads from the repositories
-        artifact = "com.google.protobuf:protoc:3.14.0"
+        artifact = "com.google.protobuf:protoc:3.17.3"
     }
 
     // Generates the java Protobuf-lite code for the Protobufs in this project
