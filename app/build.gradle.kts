@@ -12,12 +12,12 @@ plugins {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ca.cgagnier.wlednativeandroid"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 40
         versionName = "5.0.0"
         resourceConfigurations += listOf("en", "fr")
