@@ -135,13 +135,13 @@ fun DeviceList(
 
                         val currentValue = swipeDismissState.currentValue
                         LaunchedEffect(currentValue) {
-                            if (currentValue == SwipeToDismissBoxValue.EndToStart) {
-                                isConfirmingDelete = true
-                            } else if (currentValue == SwipeToDismissBoxValue.StartToEnd) {
-                                onItemEdit(device)
-                                coroutineScope.launch {
+                            when (currentValue) {
+                                SwipeToDismissBoxValue.EndToStart -> isConfirmingDelete = true
+                                SwipeToDismissBoxValue.StartToEnd -> {
+                                    onItemEdit(device)
                                     swipeDismissState.reset()
                                 }
+                                else -> { /* No action needed for Settled state */ }
                             }
                         }
 
