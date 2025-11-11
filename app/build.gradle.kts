@@ -133,7 +133,7 @@ protobuf {
     // Configures the Protobuf compilation and the protoc executable
     protoc {
         // Downloads from the repositories
-        artifact = "com.google.protobuf:protoc:3.14.0"
+        artifact = "com.google.protobuf:protoc:3.17.3"
     }
 
     // Generates the java Protobuf-lite code for the Protobufs in this project
