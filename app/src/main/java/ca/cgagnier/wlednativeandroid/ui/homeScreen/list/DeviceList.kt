@@ -154,8 +154,8 @@ fun DeviceList(
                                 onConfirm = {
                                     coroutineScope.launch {
                                         swipeDismissState.reset()
-                                        viewModel.deleteDevice(device)
                                         isConfirmingDelete = false
+                                        viewModel.deleteDevice(device)
                                     }
                                 },
                                 onDismiss = {
