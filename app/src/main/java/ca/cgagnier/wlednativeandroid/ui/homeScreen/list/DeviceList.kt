@@ -118,22 +118,22 @@ fun DeviceList(
                         var isConfirmingDelete by remember { mutableStateOf(false) }
                         val swipeDismissState = rememberSwipeToDismissBoxState(
                             positionalThreshold = { distance -> distance * 0.3f },
-                            confirmValueChange = {
-                                if (it == SwipeToDismissBoxValue.EndToStart) {
-                                    isConfirmingDelete = true
-                                    return@rememberSwipeToDismissBoxState true
-                                } else if (it == SwipeToDismissBoxValue.StartToEnd) {
-                                    onItemEdit(device)
-                                    return@rememberSwipeToDismissBoxState false
-                                }
-                                true
-                            },
                         )
                         DeviceListItem(
                             device = device,
                             isSelected = device.address == selectedDevice?.address,
                             onClick = { onItemClick(device) },
                             swipeToDismissBoxState = swipeDismissState,
+                            onDismiss = { direction ->
+                                if (direction == SwipeToDismissBoxValue.EndToStart) {
+                                    isConfirmingDelete = true
+                                } else if (direction == SwipeToDismissBoxValue.StartToEnd) {
+                                    coroutineScope.launch {
+                                        swipeDismissState.reset()
+                                        onItemEdit(device)
+                                    }
+                                }
+                            },
                             onPowerSwitchToggle = { isOn ->
                                 viewModel.toggleDevicePower(device, isOn)
                             },
@@ -152,10 +152,10 @@ fun DeviceList(
                             ConfirmDeleteDialog(
                                 device = device,
                                 onConfirm = {
-                                    viewModel.deleteDevice(device)
                                     coroutineScope.launch {
-                                        isConfirmingDelete = false
                                         swipeDismissState.reset()
+                                        viewModel.deleteDevice(device)
+                                        isConfirmingDelete = false
                                     }
                                 },
                                 onDismiss = {
