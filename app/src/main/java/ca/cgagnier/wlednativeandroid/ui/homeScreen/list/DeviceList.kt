@@ -133,16 +133,17 @@ fun DeviceList(
                             modifier = Modifier.animateItem()
                         )
 
-                        val currentValue = swipeDismissState.currentValue
-                        LaunchedEffect(currentValue) {
-                            when (currentValue) {
-                                SwipeToDismissBoxValue.EndToStart -> isConfirmingDelete = true
-                                SwipeToDismissBoxValue.StartToEnd -> {
-                                    onItemEdit(device)
-                                    swipeDismissState.reset()
+                        LaunchedEffect(swipeDismissState) {
+                            snapshotFlow { swipeDismissState.currentValue }
+                                .distinctUntilChanged()
+                                .collect {
+                                    if (it == SwipeToDismissBoxValue.EndToStart) {
+                                        isConfirmingDelete = true
+                                    } else if (it == SwipeToDismissBoxValue.StartToEnd) {
+                                        onItemEdit(device)
+                                        swipeDismissState.reset()
+                                    }
                                 }
-                                else -> { /* No action needed for Settled state */ }
-                            }
                         }
 
                         LaunchedEffect(isConfirmingDelete) {
