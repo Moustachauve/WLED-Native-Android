@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.protobuf)
@@ -19,29 +21,27 @@ android {
         targetSdk = 36
         versionCode = 40
         versionName = "5.0.0"
-        resourceConfigurations += listOf("en", "fr")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-            arg("room.incremental", "true")
-        }
+    androidResources {
+        localeFilters += listOf("en", "fr")
     }
 
     buildFeatures {
         dataBinding = true
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             ndk {
                 debugSymbolLevel = "FULL"
             }
@@ -51,11 +51,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
+        }
     }
     namespace = "ca.cgagnier.wlednativeandroid"
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 dependencies {
@@ -112,7 +119,6 @@ dependencies {
     implementation(libs.semver4j)
     implementation(libs.compose.material.icons)
     ksp(libs.hilt.compiler)
-    ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     ksp(libs.moshi.kotlin.codegen)
     testImplementation(libs.junit)
