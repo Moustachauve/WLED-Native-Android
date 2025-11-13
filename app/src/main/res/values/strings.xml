@@ -1,5 +1,5 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name" translatable="false">WLED Native</string>
+    <string name="app_name" translatable="false">WLED</string>
     <string name="app_logo">WLED Logo</string>
     <string name="add_a_device">Add a New Device</string>
     <string name="add">Add</string>
@@ -60,7 +60,7 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="device_update_disclaimer_part1">You are about to install a new version of WLED on your device. If you had a custom version installed previously, you might lose some functionalities (for example, if you had some usermods enabled, they might not work anymore).</string>
     <string name="device_update_disclaimer_part2">If someone installed this device for you, you should maybe ask them if it is alright to update the device to a new version.</string>
-    <string name="device_update_disclaimer_part3">WLED and WLED Native are not responsible if something goes wrong due to an update.</string>
+    <string name="device_update_disclaimer_part3">WLED is not responsible if something goes wrong due to an update.</string>
     <string name="install_update">Install Update</string>
     <string name="ota_install_failed_device_locked">Your device might be PIN protected or locked with a passphrase.</string>
     <string name="no_compatible_version_found">No Compatible Version Found</string>
