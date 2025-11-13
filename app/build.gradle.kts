@@ -23,10 +23,10 @@ android {
         versionName = "5.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        androidResources {
-            localeFilters.addAll(listOf("en", "fr"))
-        }
+    androidResources {
+        localeFilters += listOf("en", "fr")
     }
 
     buildFeatures {
@@ -38,7 +38,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             ndk {
                 debugSymbolLevel = "FULL"
             }
