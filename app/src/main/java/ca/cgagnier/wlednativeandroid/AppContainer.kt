@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import ca.cgagnier.wlednativeandroid.repository.AssetDao
-import ca.cgagnier.wlednativeandroid.repository.DeviceDao
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.DevicesDatabase
+import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceDao
 import ca.cgagnier.wlednativeandroid.repository.UserPreferences
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesSerializer
@@ -48,8 +48,8 @@ object AppContainer {
 
     @Provides
     @Singleton
-    fun provideDeviceDao(appDatabase: DevicesDatabase): DeviceDao {
-        return appDatabase.deviceDao()
+    fun provideDeviceDao(appDatabase: DevicesDatabase): StatefulDeviceDao {
+        return appDatabase.statefulDeviceDao()
     }
 
     @Provides
@@ -66,7 +66,7 @@ object AppContainer {
 
     @Provides
     @Singleton
-    fun provideDeviceRepository(deviceDao: DeviceDao): DeviceRepository {
+    fun provideDeviceRepository(deviceDao: StatefulDeviceDao): DeviceRepository {
         return DeviceRepository(deviceDao)
     }
 

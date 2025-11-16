@@ -5,7 +5,7 @@ import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
+class DeviceRepository @Inject constructor(private val deviceDao: StatefulDeviceDao) {
     val allDevices: Flow<List<StatefulDevice>> = deviceDao.getAlphabetizedDevices()
     val allDevicesOfflineLast: Flow<List<StatefulDevice>> = deviceDao.getAlphabetizedDevicesOfflineLast()
 

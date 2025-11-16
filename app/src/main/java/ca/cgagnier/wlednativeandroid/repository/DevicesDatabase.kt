@@ -7,16 +7,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ca.cgagnier.wlednativeandroid.model.Asset
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.Version
 
 @Database(
     entities = [
         StatefulDevice::class,
+        Device::class,
         Version::class,
         Asset::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -25,10 +27,13 @@ import ca.cgagnier.wlednativeandroid.model.Version
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
     ]
 )
 @TypeConverters(Converters::class)
 abstract class DevicesDatabase : RoomDatabase() {
+    @Deprecated("Use deviceDao() instead")
+    abstract fun statefulDeviceDao(): StatefulDeviceDao
     abstract fun deviceDao(): DeviceDao
     abstract fun versionDao(): VersionDao
     abstract fun assetDao(): AssetDao

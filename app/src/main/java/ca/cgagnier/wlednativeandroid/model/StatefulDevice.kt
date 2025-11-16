@@ -10,6 +10,13 @@ import ca.cgagnier.wlednativeandroid.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Represents a WLED device and its current state
+ *
+ * Avoid using this version, it is being phased out
+ * to prefer using a stateless version, `Device`.
+ */
+@Deprecated("Prefer using the stateless `Device` class")
 @Entity(tableName = "Device")
 @Parcelize
 data class StatefulDevice(

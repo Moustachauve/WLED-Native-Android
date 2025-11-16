@@ -16,7 +16,7 @@ import java.io.IOException
 
 class DeviceDaoTest {
 
-    private lateinit var deviceDao: DeviceDao
+    private lateinit var deviceDao: StatefulDeviceDao
     private lateinit var db: DevicesDatabase
 
     @Before
@@ -28,7 +28,7 @@ class DeviceDaoTest {
         // Allowing main thread queries, just for testing.
             .allowMainThreadQueries()
                 .build()
-        deviceDao = db.deviceDao()
+        deviceDao = db.statefulDeviceDao()
     }
     @After
     @Throws(IOException::class)
