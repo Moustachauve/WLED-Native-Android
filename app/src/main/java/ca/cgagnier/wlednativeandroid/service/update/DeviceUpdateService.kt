@@ -1,7 +1,7 @@
 package ca.cgagnier.wlednativeandroid.service.update
 
 import ca.cgagnier.wlednativeandroid.model.Asset
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
 import ca.cgagnier.wlednativeandroid.service.api.github.GithubApi
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 class DeviceUpdateService(
-    val device: Device,
+    val device: StatefulDevice,
     private val versionWithAssets: VersionWithAssets,
     private val cacheDir: File
 ) {
@@ -34,7 +34,7 @@ class DeviceUpdateService(
 
     // Preferred method, only available since WLED 0.15.0
     private fun determineAssetByRelease(): Boolean {
-        if (device.release.isEmpty() || device.release == Device.UNKNOWN_VALUE) {
+        if (device.release.isEmpty() || device.release == StatefulDevice.UNKNOWN_VALUE) {
             return false
         }
 

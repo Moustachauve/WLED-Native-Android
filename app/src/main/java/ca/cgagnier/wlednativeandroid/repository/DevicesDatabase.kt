@@ -7,12 +7,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ca.cgagnier.wlednativeandroid.model.Asset
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.Version
 
 @Database(
     entities = [
-        Device::class,
+        StatefulDevice::class,
         Version::class,
         Asset::class,
     ],

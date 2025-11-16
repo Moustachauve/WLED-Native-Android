@@ -55,7 +55,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
@@ -115,7 +115,7 @@ fun DeviceListDetail(
         }
     }
 
-    val navigateToDeviceDetail: (Device) -> Unit = { device: Device ->
+    val navigateToDeviceDetail: (StatefulDevice) -> Unit = { device: StatefulDevice ->
         coroutineScope.launch {
             navigator.navigateTo(
                 pane = ListDetailPaneScaffoldRole.Detail,
@@ -123,7 +123,7 @@ fun DeviceListDetail(
             )
         }
     }
-    val navigateToDeviceEdit = { device: Device ->
+    val navigateToDeviceEdit = { device: StatefulDevice ->
         coroutineScope.launch {
             navigator.navigateTo(
                 pane = ListDetailPaneScaffoldRole.Extra,

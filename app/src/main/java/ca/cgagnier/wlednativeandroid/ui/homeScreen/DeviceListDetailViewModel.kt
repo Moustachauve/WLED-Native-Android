@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
@@ -61,12 +61,12 @@ class DeviceListDetailViewModel @Inject constructor(
     private val _isAddDeviceBottomSheetVisible = MutableStateFlow(false)
     val isAddDeviceBottomSheetVisible: StateFlow<Boolean> = _isAddDeviceBottomSheetVisible
 
-    fun getDeviceByAddress(address: String): Flow<Device?> {
+    fun getDeviceByAddress(address: String): Flow<StatefulDevice?> {
         Log.d(TAG, "Getting device by address $address")
 
-        if (address == Device.DEFAULT_WLED_AP_IP) {
+        if (address == StatefulDevice.DEFAULT_WLED_AP_IP) {
             return flow {
-                emit(Device.getDefaultAPDevice())
+                emit(StatefulDevice.getDefaultAPDevice())
             }
         }
 
@@ -111,7 +111,7 @@ class DeviceListDetailViewModel @Inject constructor(
         }
     }
 
-    private fun refreshDevice(device: Device, silent: Boolean) {
+    private fun refreshDevice(device: StatefulDevice, silent: Boolean) {
         Log.d(TAG, "Refreshing device ${device.name} - ${device.address}")
         stateFactory.getState(device).requestsManager.addRequest(
             RefreshRequest(
@@ -138,7 +138,7 @@ class DeviceListDetailViewModel @Inject constructor(
         discoveryService.stop()
     }
 
-    private fun deviceDiscovered(device: Device) {
+    private fun deviceDiscovered(device: StatefulDevice) {
         viewModelScope.launch(Dispatchers.IO) {
             if (repository.contains(device)) {
                 Log.i(TAG, "Device already exists")
@@ -152,7 +152,7 @@ class DeviceListDetailViewModel @Inject constructor(
                 saveChanges = false
             ) { refreshedDevice ->
                 val existingDevice = findWithSameMacAddress(refreshedDevice)
-                if (existingDevice != null && refreshedDevice.macAddress != Device.UNKNOWN_VALUE) {
+                if (existingDevice != null && refreshedDevice.macAddress != StatefulDevice.UNKNOWN_VALUE) {
                     Log.i(
                         TAG,
                         "Device ${existingDevice.address} already exists with the same mac address ${existingDevice.macAddress}"
@@ -181,16 +181,16 @@ class DeviceListDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun findWithSameMacAddress(device: Device): Device? {
+    private suspend fun findWithSameMacAddress(device: StatefulDevice): StatefulDevice? {
         return repository.findDeviceByMacAddress(device.macAddress)
     }
 
-    fun insert(device: Device) = viewModelScope.launch(Dispatchers.IO) {
+    fun insert(device: StatefulDevice) = viewModelScope.launch(Dispatchers.IO) {
         Log.d(TAG, "Inserting device ${device.name} - ${device.address}")
         repository.insert(device)
     }
 
-    fun delete(device: Device) = viewModelScope.launch(Dispatchers.IO) {
+    fun delete(device: StatefulDevice) = viewModelScope.launch(Dispatchers.IO) {
         Log.d(TAG, "Deleting device ${device.name} - ${device.address}")
         repository.delete(device)
     }

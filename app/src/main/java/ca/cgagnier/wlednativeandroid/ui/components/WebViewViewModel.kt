@@ -6,14 +6,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ca.cgagnier.wlednativeandroid.WebViewLiveData
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 
 class WebViewViewModel(context: Context) : ViewModel() {
     private val webView = WebViewLiveData(context)
     fun webView(): LiveData<WebView> = webView
 
     val backQueue = ArrayDeque<String>(5)
-    var displayedDevice: Device? = null
+    var displayedDevice: StatefulDevice? = null
 
     var firstLoad: Boolean
         get() {

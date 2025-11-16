@@ -6,12 +6,12 @@ import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
 import android.util.Log
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 
 
 class DeviceDiscovery(
     val context: Context,
-    val onDeviceDiscovered: (Device) -> Unit
+    val onDeviceDiscovered: (StatefulDevice) -> Unit
 ) {
 
     val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -80,12 +80,12 @@ class DeviceDiscovery(
         val deviceIp = serviceInfo.host.hostAddress!!
         val deviceName = serviceInfo.serviceName ?: ""
         onDeviceDiscovered(
-            Device(
+            StatefulDevice(
                 deviceIp,
                 deviceName,
                 isCustomName = false,
                 isHidden = false,
-                macAddress = Device.UNKNOWN_VALUE
+                macAddress = StatefulDevice.UNKNOWN_VALUE
             )
         )
     }

@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Branch
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
@@ -62,7 +62,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DeviceEdit(
-    device: Device,
+    device: StatefulDevice,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     viewModel: DeviceEditViewModel = hiltViewModel()
@@ -210,7 +210,7 @@ fun DeviceEdit(
 
 @Composable
 private fun CustomNameTextField(
-    device: Device,
+    device: StatefulDevice,
     onValueChange: (String) -> Unit
 ) {
     val deviceName = if (device.isCustomName) device.name else ""
@@ -242,7 +242,7 @@ private fun CustomNameTextField(
 @Composable
 fun DeviceEditAppBar(
     modifier: Modifier = Modifier,
-    device: Device,
+    device: StatefulDevice,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ) {
@@ -269,7 +269,7 @@ fun DeviceEditAppBar(
 }
 
 @Composable
-fun NoUpdateAvailable(device: Device, isCheckingUpdates: Boolean, checkForUpdate: () -> Unit) {
+fun NoUpdateAvailable(device: StatefulDevice, isCheckingUpdates: Boolean, checkForUpdate: () -> Unit) {
     Text(
         stringResource(R.string.your_device_is_up_to_date),
         style = MaterialTheme.typography.titleMedium
@@ -308,7 +308,7 @@ fun NoUpdateAvailable(device: Device, isCheckingUpdates: Boolean, checkForUpdate
 }
 
 @Composable
-fun UpdateAvailable(device: Device, seeUpdateDetails: () -> Unit) {
+fun UpdateAvailable(device: StatefulDevice, seeUpdateDetails: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             modifier = Modifier

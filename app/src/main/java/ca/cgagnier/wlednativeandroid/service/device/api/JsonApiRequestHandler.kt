@@ -3,7 +3,7 @@ package ca.cgagnier.wlednativeandroid.service.device.api
 import android.graphics.Color
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Branch
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.State
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
@@ -27,7 +27,7 @@ class JsonApiRequestHandler @Inject constructor(
     private var deviceRepository: DeviceRepository,
     private var releaseService: ReleaseService
 ) : RequestHandler() {
-    private fun getJsonApi(device: Device, timeout: Long = 10): DeviceApi {
+    private fun getJsonApi(device: StatefulDevice, timeout: Long = 10): DeviceApi {
         val okHttpClient = OkHttpClient().newBuilder()
             .connectTimeout(timeout, TimeUnit.SECONDS)
             .readTimeout(timeout, TimeUnit.SECONDS)
@@ -110,8 +110,8 @@ class JsonApiRequestHandler @Inject constructor(
 
     // TODO: device update logic should not be tied to the device API.
     private suspend fun updateDevice(
-        device: Device, response: Response<DeviceStateInfo>, saveChanges: Boolean
-    ): Device {
+        device: StatefulDevice, response: Response<DeviceStateInfo>, saveChanges: Boolean
+    ): StatefulDevice {
         val deviceStateInfo = response.body()!!
 
         var color = Color.WHITE
@@ -135,7 +135,7 @@ class JsonApiRequestHandler @Inject constructor(
         )
 
         val updatedDevice = device.copy(
-            macAddress = deviceStateInfo.info.macAddress ?: Device.UNKNOWN_VALUE,
+            macAddress = deviceStateInfo.info.macAddress ?: StatefulDevice.UNKNOWN_VALUE,
             isOnline = true,
             name = if (device.isCustomName) device.name else deviceStateInfo.info.name,
             brightness = if (device.isSliding) device.brightness else deviceStateInfo.state.brightness,
@@ -144,13 +144,13 @@ class JsonApiRequestHandler @Inject constructor(
             isRefreshing = false,
             networkRssi = deviceStateInfo.info.wifi.rssi ?: 0,
             isEthernet = false,
-            platformName = deviceStateInfo.info.platformName ?: Device.UNKNOWN_VALUE,
-            version = deviceStateInfo.info.version ?: Device.UNKNOWN_VALUE,
+            platformName = deviceStateInfo.info.platformName ?: StatefulDevice.UNKNOWN_VALUE,
+            version = deviceStateInfo.info.version ?: StatefulDevice.UNKNOWN_VALUE,
             newUpdateVersionTagAvailable = updateVersionTagAvailable,
             branch = branch,
-            brand = deviceStateInfo.info.brand ?: Device.UNKNOWN_VALUE,
-            productName = deviceStateInfo.info.product ?: Device.UNKNOWN_VALUE,
-            release = deviceStateInfo.info.release ?: Device.UNKNOWN_VALUE,
+            brand = deviceStateInfo.info.brand ?: StatefulDevice.UNKNOWN_VALUE,
+            productName = deviceStateInfo.info.product ?: StatefulDevice.UNKNOWN_VALUE,
+            release = deviceStateInfo.info.release ?: StatefulDevice.UNKNOWN_VALUE,
             batteryPercentage = deviceStateInfo.info.userMods?.batteryLevel?.get(0) as? Double ?: 0.0,
             hasBattery = (deviceStateInfo.info.userMods?.batteryLevel != null),
         )
@@ -165,8 +165,8 @@ class JsonApiRequestHandler @Inject constructor(
 
     @JvmName("updateDeviceFromState")
     private suspend fun updateDevice(
-        device: Device, response: Response<State>, saveChanges: Boolean
-    ): Device {
+        device: StatefulDevice, response: Response<State>, saveChanges: Boolean
+    ): StatefulDevice {
         val state = response.body()!!
 
         var color = Color.WHITE
@@ -197,8 +197,8 @@ class JsonApiRequestHandler @Inject constructor(
     }
 
     private suspend fun onFailure(
-        device: Device, t: Throwable? = null
-    ): Device {
+        device: StatefulDevice, t: Throwable? = null
+    ): StatefulDevice {
         if (t != null) {
             Log.e(TAG, t.message!!)
         }

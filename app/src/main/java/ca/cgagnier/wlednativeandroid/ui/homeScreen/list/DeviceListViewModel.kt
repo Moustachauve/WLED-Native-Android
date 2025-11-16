@@ -5,7 +5,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
@@ -54,7 +54,7 @@ class DeviceListViewModel @Inject constructor(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val devices: StateFlow<List<Device>> = uiState.flatMapLatest { state ->
+    val devices: StateFlow<List<StatefulDevice>> = uiState.flatMapLatest { state ->
         getDevicesFlow(state)
     }.stateIn(
         scope = viewModelScope,
@@ -77,7 +77,7 @@ class DeviceListViewModel @Inject constructor(
             initialValue = false
         )
 
-    private fun getDevicesFlow(state: DeviceListUiState) : Flow<List<Device>> {
+    private fun getDevicesFlow(state: DeviceListUiState) : Flow<List<StatefulDevice>> {
         var devicesFlow =
             if (state.showOfflineDevicesLast) repository.allDevicesOfflineLast else repository.allDevices
         if (!state.showHiddenDevices) {
@@ -88,7 +88,7 @@ class DeviceListViewModel @Inject constructor(
         return devicesFlow
     }
 
-    fun toggleDevicePower(device: Device, isOn: Boolean) {
+    fun toggleDevicePower(device: StatefulDevice, isOn: Boolean) {
         val deviceSetPost = JsonPost(isOn = isOn)
         viewModelScope.launch(Dispatchers.IO) {
             stateFactory.getState(device).requestsManager.addRequest(
@@ -97,7 +97,7 @@ class DeviceListViewModel @Inject constructor(
         }
     }
 
-    fun setDeviceBrightness(device: Device, brightness: Int) {
+    fun setDeviceBrightness(device: StatefulDevice, brightness: Int) {
         val deviceSetPost = JsonPost(brightness = brightness)
         viewModelScope.launch(Dispatchers.IO) {
             stateFactory.getState(device).requestsManager.addRequest(
@@ -106,7 +106,7 @@ class DeviceListViewModel @Inject constructor(
         }
     }
 
-    fun deleteDevice(device: Device) {
+    fun deleteDevice(device: StatefulDevice) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "Deleting device ${device.name} - ${device.address}")
             repository.delete(device)

@@ -50,7 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlin.math.roundToInt
@@ -58,7 +58,7 @@ import kotlin.math.roundToInt
 @Composable
 fun DeviceListItem(
     modifier: Modifier = Modifier,
-    device: Device,
+    device: StatefulDevice,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
     swipeToDismissBoxState: SwipeToDismissBoxState,
@@ -116,7 +116,7 @@ fun DeviceListItem(
 
 @Composable
 private fun BrightnessSlider(
-    device: Device,
+    device: StatefulDevice,
     onBrightnessChanged: (brightness: Int) -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
@@ -140,7 +140,7 @@ private fun BrightnessSlider(
 @Composable
 private fun SwipeBox(
     modifier: Modifier = Modifier,
-    device: Device,
+    device: StatefulDevice,
     swipeToDismissBoxState: SwipeToDismissBoxState,
     onDismiss: (SwipeToDismissBoxValue) -> Unit = {},
     content: @Composable () -> Unit
@@ -219,7 +219,7 @@ private fun SwipeBox(
 @Composable
 fun DeviceInfoTwoRows(
     modifier: Modifier = Modifier,
-    device: Device,
+    device: StatefulDevice,
     nameMaxLines: Int = 2,
 ) {
     Column(modifier = modifier) {

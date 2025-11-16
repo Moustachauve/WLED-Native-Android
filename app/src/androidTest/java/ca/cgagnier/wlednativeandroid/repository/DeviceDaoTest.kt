@@ -4,7 +4,7 @@ package ca.cgagnier.wlednativeandroid.repository
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -39,7 +39,7 @@ class DeviceDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertAndGetDevice() = runBlocking {
-        val device = Device(
+        val device = StatefulDevice(
             address = "address",
             name = "name",
             isCustomName = true,
@@ -54,7 +54,7 @@ class DeviceDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertAndGetDeviceByAddress() = runBlocking {
-        val device = Device(
+        val device = StatefulDevice(
             address = "address1",
             name = "name",
             isCustomName = true,
@@ -62,7 +62,7 @@ class DeviceDaoTest {
             macAddress = "123"
         )
         deviceDao.insert(device)
-        val device2 = Device(
+        val device2 = StatefulDevice(
             address = "address2",
             name = "name",
             isCustomName = true,
@@ -79,7 +79,7 @@ class DeviceDaoTest {
     @Test
     @Throws(Exception::class)
     fun getAllDevices() = runBlocking {
-        val device = Device(
+        val device = StatefulDevice(
             "address1",
             "name1",
             isCustomName = true,
@@ -87,7 +87,7 @@ class DeviceDaoTest {
             macAddress = "123"
         )
         deviceDao.insert(device)
-        val device2 = Device(
+        val device2 = StatefulDevice(
             "address2",
             "name2",
             isCustomName = true,
@@ -103,7 +103,7 @@ class DeviceDaoTest {
     @Test
     @Throws(Exception::class)
     fun deleteAll() = runBlocking {
-        val device = Device(
+        val device = StatefulDevice(
             address = "address10",
             name = "name10",
             isCustomName = true,
@@ -111,7 +111,7 @@ class DeviceDaoTest {
             macAddress = "123"
         )
         deviceDao.insert(device)
-        val device2 = Device(
+        val device2 = StatefulDevice(
             address = "address12",
             name = "name12",
             isCustomName = true,

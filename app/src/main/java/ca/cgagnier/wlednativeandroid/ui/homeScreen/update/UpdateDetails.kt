@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import com.mikepenz.markdown.m3.Markdown
@@ -31,7 +31,7 @@ import com.mikepenz.markdown.m3.markdownTypography
 
 @Composable
 fun UpdateDetailsDialog(
-    device: Device,
+    device: StatefulDevice,
     version: VersionWithAssets,
     onDismiss: () -> Unit,
     onInstall: (VersionWithAssets) -> Unit,
@@ -64,7 +64,7 @@ fun UpdateDetailsDialog(
 }
 
 @Composable
-private fun TopHeader(device: Device) {
+private fun TopHeader(device: StatefulDevice) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

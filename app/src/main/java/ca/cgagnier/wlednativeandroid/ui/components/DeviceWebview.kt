@@ -57,7 +57,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.ui.MainActivity
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Finished
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Loading
@@ -76,7 +76,7 @@ private const val TAG = "ui.components.DeviceWebView"
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DeviceWebView(
-    device: Device,
+    device: StatefulDevice,
     webViewViewModel: WebViewViewModel = viewModel(
         factory = WebViewViewModel.Factory(
             context = LocalContext.current
@@ -419,7 +419,7 @@ data class WebViewError(
 )
 
 fun downloadListener(
-    device: Device,
+    device: StatefulDevice,
     url: String,
     contentDisposition: String,
     mimetype: String,

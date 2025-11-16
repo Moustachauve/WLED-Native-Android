@@ -1,10 +1,10 @@
 package ca.cgagnier.wlednativeandroid.service.device.api.request
 
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 
 class RefreshRequest(
-    device: Device,
+    device: StatefulDevice,
     val silentRefresh: Boolean = false,
     val saveChanges: Boolean = true,
-    val callback: (suspend (Device) -> Unit)? = null
+    val callback: (suspend (StatefulDevice) -> Unit)? = null
 ) : Request(device)

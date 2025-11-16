@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.PaletteStyle
@@ -318,7 +318,7 @@ fun WLEDNativeTheme(
 
 @Composable
 fun DeviceTheme(
-    device: Device,
+    device: StatefulDevice,
     themeViewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {

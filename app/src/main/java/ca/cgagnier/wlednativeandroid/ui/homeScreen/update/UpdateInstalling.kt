@@ -33,14 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 
 @Composable
 fun UpdateInstallingDialog(
-    device: Device,
+    device: StatefulDevice,
     version: VersionWithAssets,
     onDismiss: () -> Unit,
     viewModel: UpdateInstallingViewModel = hiltViewModel()
@@ -68,7 +68,7 @@ fun UpdateInstallingDialog(
 @Composable
 fun UpdateInstallingDialog(
     state: UpdateInstallingState,
-    device: Device,
+    device: StatefulDevice,
     onDismiss: () -> Unit,
     onToggleErrorMessage: () -> Unit,
 ) {
@@ -265,7 +265,7 @@ fun UpdateInstallingDialogStepStartingPreview(
     WLEDNativeTheme(darkTheme = isSystemInDarkTheme()) {
         UpdateInstallingDialog(
             state = state,
-            device = Device.getPreviewDevice(),
+            device = StatefulDevice.getPreviewDevice(),
             onDismiss = {},
             onToggleErrorMessage = {}
         )

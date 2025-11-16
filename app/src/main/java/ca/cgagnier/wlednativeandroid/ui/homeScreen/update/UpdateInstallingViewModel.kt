@@ -3,7 +3,7 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen.update
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.service.api.DownloadState
@@ -36,7 +36,7 @@ class UpdateInstallingViewModel @Inject constructor(
     private var _state = MutableStateFlow(UpdateInstallingState())
     val state = _state.asStateFlow()
 
-    private var _device: MutableStateFlow<Device?> = MutableStateFlow(null)
+    private var _device: MutableStateFlow<StatefulDevice?> = MutableStateFlow(null)
     val device = _device.asStateFlow()
 
     private var _version: MutableStateFlow<VersionWithAssets?> = MutableStateFlow(null)
@@ -63,7 +63,7 @@ class UpdateInstallingViewModel @Inject constructor(
     }
 
     fun startUpdate(
-        device: Device,
+        device: StatefulDevice,
         version: VersionWithAssets,
         cacheDir: File,
     ) {

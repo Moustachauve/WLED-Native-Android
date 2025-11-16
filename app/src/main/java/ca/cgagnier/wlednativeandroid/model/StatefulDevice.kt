@@ -10,9 +10,9 @@ import ca.cgagnier.wlednativeandroid.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
-@Entity
+@Entity(tableName = "Device")
 @Parcelize
-data class Device(
+data class StatefulDevice(
     @PrimaryKey
     val address: String,
     val name: String,
@@ -107,8 +107,8 @@ data class Device(
         const val UNKNOWN_VALUE = "__unknown__"
         const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
-        fun getDefaultAPDevice(): Device {
-            return Device(
+        fun getDefaultAPDevice(): StatefulDevice {
+            return StatefulDevice(
                 address = DEFAULT_WLED_AP_IP,
                 name = "WLED AP Mode",
                 isCustomName = true,
@@ -119,8 +119,8 @@ data class Device(
             )
         }
 
-        fun getPreviewDevice(): Device {
-            return Device(
+        fun getPreviewDevice(): StatefulDevice {
+            return StatefulDevice(
                 "10.0.0.1",
                 "Preview Device",
                 isCustomName = false,

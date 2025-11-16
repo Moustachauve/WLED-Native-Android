@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceWebView
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState
 import ca.cgagnier.wlednativeandroid.ui.components.WebViewState
@@ -41,8 +41,8 @@ private const val TAG = "ui.DeviceDetail"
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DeviceDetail(
-    device: Device,
-    onItemEdit: (Device) -> Unit,
+    device: StatefulDevice,
+    onItemEdit: (StatefulDevice) -> Unit,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ) {
@@ -92,7 +92,7 @@ fun DeviceDetail(
 
 @Composable
 fun DeviceDetailAppBar(
-    device: Device,
+    device: StatefulDevice,
     canNavigateBack: Boolean,
     webViewState: WebViewState,
     navigateUp: () -> Unit,

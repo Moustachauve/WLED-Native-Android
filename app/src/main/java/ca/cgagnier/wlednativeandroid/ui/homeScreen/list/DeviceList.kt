@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
-import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,10 +47,10 @@ private const val TAG = "screen_DeviceList"
 
 @Composable
 fun DeviceList(
-    selectedDevice: Device?,
+    selectedDevice: StatefulDevice?,
     isWLEDCaptivePortal: Boolean = false,
-    onItemClick: (Device) -> Unit,
-    onItemEdit: (Device) -> Unit,
+    onItemClick: (StatefulDevice) -> Unit,
+    onItemEdit: (StatefulDevice) -> Unit,
     onAddDevice: () -> Unit,
     onShowHiddenDevices: () -> Unit,
     onRefresh: () -> Unit,
@@ -106,7 +106,7 @@ fun DeviceList(
                 } else {
                     if (isWLEDCaptivePortal) {
                         item {
-                            val device = Device.getDefaultAPDevice()
+                            val device = StatefulDevice.getDefaultAPDevice()
                             DeviceAPListItem(
                                 isSelected = device.address == selectedDevice?.address,
                                 onClick = { onItemClick(device) },
@@ -208,7 +208,7 @@ fun DeviceListAppBar(
 
 @Composable
 fun ConfirmDeleteDialog(
-    device: Device? = null,
+    device: StatefulDevice? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
