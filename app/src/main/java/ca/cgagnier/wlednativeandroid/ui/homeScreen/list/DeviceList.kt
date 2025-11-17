@@ -38,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,18 +49,19 @@ private const val TAG = "screen_DeviceList"
 
 @Composable
 fun DeviceList(
-    selectedDevice: StatefulDevice?,
+    selectedDevice: DeviceWithState?,
     isWLEDCaptivePortal: Boolean = false,
-    onItemClick: (StatefulDevice) -> Unit,
-    onItemEdit: (StatefulDevice) -> Unit,
+    onItemClick: (DeviceWithState) -> Unit,
+    onItemEdit: (DeviceWithState) -> Unit,
     onAddDevice: () -> Unit,
     onShowHiddenDevices: () -> Unit,
     onRefresh: () -> Unit,
     onOpenDrawer: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
 ) {
-    val devices by viewModel.devices.collectAsStateWithLifecycle()
-    val shouldShowDevicesAreHidden by viewModel.shouldShowDevicesAreHidden.collectAsStateWithLifecycle()
+    val devices = viewModel.devices
+    // TODO: fix this after migration to websockets
+    val shouldShowDevicesAreHidden = false
 
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
@@ -104,24 +107,25 @@ fun DeviceList(
                         )
                     }
                 } else {
-                    if (isWLEDCaptivePortal) {
-                        item {
-                            val device = StatefulDevice.getDefaultAPDevice()
-                            DeviceAPListItem(
-                                isSelected = device.address == selectedDevice?.address,
-                                onClick = { onItemClick(device) },
-                                modifier = Modifier.animateItem()
-                            )
-                        }
-                    }
-                    itemsIndexed(devices, key = { _, device -> device.address }) { _, device ->
+                    // TODO: Add support back for captive portal
+                    //if (isWLEDCaptivePortal) {
+                    //    item {
+                    //        val device = StatefulDevice.getDefaultAPDevice()
+                    //        DeviceAPListItem(
+                    //            isSelected = device.address == selectedDevice?.address,
+                    //            onClick = { onItemClick(device) },
+                    //            modifier = Modifier.animateItem()
+                    //        )
+                    //    }
+                    //}
+                    itemsIndexed(devices, key = { _, device -> device.device.macAddress }) { _, device ->
                         var isConfirmingDelete by remember { mutableStateOf(false) }
                         val swipeDismissState = rememberSwipeToDismissBoxState(
                             positionalThreshold = { distance -> distance * 0.3f },
                         )
                         DeviceListItem(
                             device = device,
-                            isSelected = device.address == selectedDevice?.address,
+                            isSelected = device.device.macAddress == selectedDevice?.device?.macAddress,
                             onClick = { onItemClick(device) },
                             swipeToDismissBoxState = swipeDismissState,
                             onDismiss = { direction ->
@@ -155,7 +159,7 @@ fun DeviceList(
                                     coroutineScope.launch {
                                         swipeDismissState.reset()
                                         isConfirmingDelete = false
-                                        viewModel.deleteDevice(device)
+                                        viewModel.deleteDevice(device.device)
                                     }
                                 },
                                 onDismiss = {
@@ -208,7 +212,7 @@ fun DeviceListAppBar(
 
 @Composable
 fun ConfirmDeleteDialog(
-    device: StatefulDevice? = null,
+    device: DeviceWithState? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {

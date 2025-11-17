@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import ca.cgagnier.wlednativeandroid.repository.AssetDao
+import ca.cgagnier.wlednativeandroid.repository.DeviceDao
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.DevicesDatabase
 import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceDao
+import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferences
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesSerializer
@@ -48,8 +50,14 @@ object AppContainer {
 
     @Provides
     @Singleton
-    fun provideDeviceDao(appDatabase: DevicesDatabase): StatefulDeviceDao {
+    fun provideStatefulDeviceDao(appDatabase: DevicesDatabase): StatefulDeviceDao {
         return appDatabase.statefulDeviceDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceDao(appDatabase: DevicesDatabase): DeviceDao {
+        return appDatabase.deviceDao()
     }
 
     @Provides
@@ -66,8 +74,8 @@ object AppContainer {
 
     @Provides
     @Singleton
-    fun provideDeviceRepository(deviceDao: StatefulDeviceDao): DeviceRepository {
-        return DeviceRepository(deviceDao)
+    fun provideDeviceRepository(deviceDao: StatefulDeviceDao): StatefulDeviceRepository {
+        return StatefulDeviceRepository(deviceDao)
     }
 
     @Provides
@@ -81,7 +89,7 @@ object AppContainer {
     @Provides
     @Singleton
     fun provideStateFactory(
-        deviceRepository: DeviceRepository, versionWithAssetsRepository: VersionWithAssetsRepository
+        deviceRepository: StatefulDeviceRepository, versionWithAssetsRepository: VersionWithAssetsRepository
     ): StateFactory {
         val releaseService = ReleaseService(versionWithAssetsRepository)
         return StateFactory(JsonApiRequestHandler(deviceRepository, releaseService))

@@ -52,7 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Branch
-import ca.cgagnier.wlednativeandroid.model.StatefulDevice
+import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceVisibleSwitch
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.update.UpdateDetailsDialog
@@ -62,7 +63,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DeviceEdit(
-    device: StatefulDevice,
+    device: DeviceWithState,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     viewModel: DeviceEditViewModel = hiltViewModel()
@@ -100,7 +101,7 @@ fun DeviceEdit(
                 .verticalScroll(rememberScrollState())
                 .padding(12.dp)) {
                 OutlinedTextField(
-                    value = device.address,
+                    value = device.device.address,
                     enabled = false,
                     onValueChange = {},
                     label = { Text(stringResource(R.string.ip_address_or_url)) },
@@ -108,14 +109,14 @@ fun DeviceEdit(
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-                CustomNameTextField(device) {
-                    viewModel.updateCustomName(device, it)
+                CustomNameTextField(device.device) {
+                    viewModel.updateCustomName(device.device, it)
                 }
                 DeviceVisibleSwitch(
                     modifier = Modifier.padding(top = 4.dp),
-                    isHidden = device.isHidden,
+                    isHidden = device.device.isHidden,
                     onCheckedChange = {
-                        viewModel.updateDeviceHidden(device, it)
+                        viewModel.updateDeviceHidden(device.device, it)
                     }
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -133,9 +134,10 @@ fun DeviceEdit(
                                     count = options.size
                                 ),
                                 onClick = {
-                                    viewModel.updateDeviceBranch(device, option.first, context)
+                                    viewModel.updateDeviceBranch(device.device, option.first, context)
                                 },
-                                selected = option.first == device.branch
+                                // TODO: Fix this after device migration
+                                selected = false // option.first == device.branch
                             ) {
                                 Text(text = option.second)
                             }
@@ -148,22 +150,23 @@ fun DeviceEdit(
                     Column(modifier = Modifier
                         .padding(12.dp)
                         .fillMaxWidth()) {
-                        if (device.hasUpdateAvailable()) {
-                            UpdateAvailable(
-                                device,
-                                seeUpdateDetails = {
-                                    viewModel.showUpdateDetails(device)
-                                }
-                            )
-                        } else {
-                            NoUpdateAvailable(
-                                device,
-                                isCheckingUpdates,
-                                checkForUpdate = {
-                                    viewModel.checkForUpdates(device, context)
-                                }
-                            )
-                        }
+                        // TODO: Fix updates with new device
+//                        if (device.hasUpdateAvailable()) {
+//                            UpdateAvailable(
+//                                device,
+//                                seeUpdateDetails = {
+//                                    viewModel.showUpdateDetails(device)
+//                                }
+//                            )
+//                        } else {
+//                            NoUpdateAvailable(
+//                                device,
+//                                isCheckingUpdates,
+//                                checkForUpdate = {
+//                                    viewModel.checkForUpdates(device, context)
+//                                }
+//                            )
+//                        }
                     }
                 }
             }
@@ -182,7 +185,7 @@ fun DeviceEdit(
                 viewModel.showUpdateDisclaimer(versionInstall)
             },
             onSkip = {
-                viewModel.skipUpdate(device, versionDetails)
+                viewModel.skipUpdate(device.device, versionDetails)
             }
         )
     }
@@ -210,10 +213,10 @@ fun DeviceEdit(
 
 @Composable
 private fun CustomNameTextField(
-    device: StatefulDevice,
+    device: Device,
     onValueChange: (String) -> Unit
 ) {
-    val deviceName = if (device.isCustomName) device.name else ""
+    val deviceName = device.customName ?: ""
     var inputText by remember { mutableStateOf(TextFieldValue(deviceName)) }
     OutlinedTextField(
         value = inputText,
@@ -242,7 +245,7 @@ private fun CustomNameTextField(
 @Composable
 fun DeviceEditAppBar(
     modifier: Modifier = Modifier,
-    device: StatefulDevice,
+    device: DeviceWithState,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ) {
@@ -269,13 +272,14 @@ fun DeviceEditAppBar(
 }
 
 @Composable
-fun NoUpdateAvailable(device: StatefulDevice, isCheckingUpdates: Boolean, checkForUpdate: () -> Unit) {
+fun NoUpdateAvailable(device: DeviceWithState, isCheckingUpdates: Boolean, checkForUpdate: () -> Unit) {
     Text(
         stringResource(R.string.your_device_is_up_to_date),
         style = MaterialTheme.typography.titleMedium
     )
     Text(
-        stringResource(R.string.version_v_num, device.version),
+        // TODO: Fix this device.version thing
+        stringResource(R.string.version_v_num, "" /*device.version*/),
         style = MaterialTheme.typography.bodyMedium
     )
     OutlinedButton(onClick = checkForUpdate) {
@@ -308,7 +312,7 @@ fun NoUpdateAvailable(device: StatefulDevice, isCheckingUpdates: Boolean, checkF
 }
 
 @Composable
-fun UpdateAvailable(device: StatefulDevice, seeUpdateDetails: () -> Unit) {
+fun UpdateAvailable(device: DeviceWithState, seeUpdateDetails: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             modifier = Modifier
@@ -322,8 +326,9 @@ fun UpdateAvailable(device: StatefulDevice, seeUpdateDetails: () -> Unit) {
                 stringResource(R.string.update_available),
                 style = MaterialTheme.typography.titleMedium
             )
+            // TODO: Fix this device.version thing
             Text(
-                stringResource(R.string.from_version_to_version, device.version, device.newUpdateVersionTagAvailable),
+                stringResource(R.string.from_version_to_version, "TODO" /*device.version*/, /*device.newUpdateVersionTagAvailable*/),
                 style = MaterialTheme.typography.bodyMedium
             )
             Button(

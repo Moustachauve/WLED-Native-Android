@@ -35,12 +35,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 
 @Composable
 fun UpdateInstallingDialog(
-    device: StatefulDevice,
+    device: DeviceWithState,
     version: VersionWithAssets,
     onDismiss: () -> Unit,
     viewModel: UpdateInstallingViewModel = hiltViewModel()
@@ -48,7 +49,7 @@ fun UpdateInstallingDialog(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    LaunchedEffect(device.address) {
+    LaunchedEffect(device.device.address) {
         viewModel.startUpdate(device, version, context.cacheDir)
     }
 
@@ -68,7 +69,7 @@ fun UpdateInstallingDialog(
 @Composable
 fun UpdateInstallingDialog(
     state: UpdateInstallingState,
-    device: StatefulDevice,
+    device: DeviceWithState,
     onDismiss: () -> Unit,
     onToggleErrorMessage: () -> Unit,
 ) {
@@ -263,11 +264,12 @@ fun UpdateInstallingDialogStepStartingPreview(
     @PreviewParameter(SampleStateStepProvider::class) state: UpdateInstallingState
 ) {
     WLEDNativeTheme(darkTheme = isSystemInDarkTheme()) {
-        UpdateInstallingDialog(
-            state = state,
-            device = StatefulDevice.getPreviewDevice(),
-            onDismiss = {},
-            onToggleErrorMessage = {}
-        )
+        // TODO: Fix this preview
+//        UpdateInstallingDialog(
+//            state = state,
+//            device = StatefulDevice.getPreviewDevice(),
+//            onDismiss = {},
+//            onToggleErrorMessage = {}
+//        )
     }
 }

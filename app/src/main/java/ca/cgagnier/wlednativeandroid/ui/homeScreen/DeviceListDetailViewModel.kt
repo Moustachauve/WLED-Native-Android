@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.NetworkConnectivityManager
@@ -34,7 +35,7 @@ private const val TAG = "DeviceListDetailViewModel"
 @HiltViewModel
 class DeviceListDetailViewModel @Inject constructor(
     application: Application,
-    private val repository: DeviceRepository,
+    private val repository: StatefulDeviceRepository,
     private val stateFactory: StateFactory,
     private val preferencesRepository: UserPreferencesRepository,
     networkManager: NetworkConnectivityManager

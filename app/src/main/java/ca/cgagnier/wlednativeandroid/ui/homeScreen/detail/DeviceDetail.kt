@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import ca.cgagnier.wlednativeandroid.ui.components.DeviceWebView
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState
 import ca.cgagnier.wlednativeandroid.ui.components.WebViewState
@@ -41,8 +42,8 @@ private const val TAG = "ui.DeviceDetail"
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DeviceDetail(
-    device: StatefulDevice,
-    onItemEdit: (StatefulDevice) -> Unit,
+    device: DeviceWithState,
+    onItemEdit: (DeviceWithState) -> Unit,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ) {
@@ -82,7 +83,7 @@ fun DeviceDetail(
                 }
             }
             DeviceWebView(
-                device,
+                device.device,
                 state = webViewState,
                 navigator = navigator
             )
@@ -92,7 +93,7 @@ fun DeviceDetail(
 
 @Composable
 fun DeviceDetailAppBar(
-    device: StatefulDevice,
+    device: DeviceWithState,
     canNavigateBack: Boolean,
     webViewState: WebViewState,
     navigateUp: () -> Unit,
@@ -135,14 +136,15 @@ fun DeviceDetailAppBar(
                     contentDescription = stringResource(R.string.refresh_page)
                 )
             }
-            if (!device.isAPMode()) {
+            // TODO: fix device isAPMode
+            //if (!device.isAPMode()) {
                 IconButton(onClick = editItem) {
                     Icon(
                         imageVector = Icons.Filled.Edit,
                         contentDescription = stringResource(R.string.edit_device)
                     )
                 }
-            }
+            //}
         }
     )
 }

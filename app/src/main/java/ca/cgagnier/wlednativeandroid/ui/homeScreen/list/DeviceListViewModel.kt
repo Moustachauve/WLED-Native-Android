@@ -5,12 +5,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.wledapi.JsonPost
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.StateChangeRequest
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +37,7 @@ class DeviceListViewModel @Inject constructor(
     private val repository: DeviceRepository,
     private val stateFactory: StateFactory,
     preferencesRepository: UserPreferencesRepository
-): ViewModel() {
+) : ViewModel() {
     private val showHiddenDevices = preferencesRepository.showHiddenDevices
     private val showOfflineDevicesLast = preferencesRepository.showOfflineDevicesLast
 
@@ -53,62 +55,42 @@ class DeviceListViewModel @Inject constructor(
             initialValue = DeviceListUiState()
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val devices: StateFlow<List<StatefulDevice>> = uiState.flatMapLatest { state ->
-        getDevicesFlow(state)
-    }.stateIn(
-        scope = viewModelScope,
-        started = WhileSubscribed(5000),
-        initialValue = runBlocking {
-            getDevicesFlow(uiState.first()).first()
-        }
+    // TODO: Load devices here and apply filters (hidden devices, offline devices last, ...)
+    val devices: List<DeviceWithState> = listOf(
+        DeviceWithState(
+            device = Device(
+                "abc",
+                "192.168.11.110",
+                false,
+                "original name",
+                "custom name"
+            )
+        )
     )
 
-    val shouldShowDevicesAreHidden =
-        devices.combine(showHiddenDevices) { devices, showHiddenDevices ->
-            if (devices.isEmpty() && !showHiddenDevices) {
-                repository.hasHiddenDevices()
-            } else {
-                false
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = WhileSubscribed(5000),
-            initialValue = false
-        )
-
-    private fun getDevicesFlow(state: DeviceListUiState) : Flow<List<StatefulDevice>> {
-        var devicesFlow =
-            if (state.showOfflineDevicesLast) repository.allDevicesOfflineLast else repository.allDevices
-        if (!state.showHiddenDevices) {
-            devicesFlow = devicesFlow.map { devices ->
-                devices.filter { device -> !device.isHidden }
-            }
-        }
-        return devicesFlow
+    fun toggleDevicePower(device: DeviceWithState, isOn: Boolean) {
+        // TODO: Redo this in websockets
+        //val deviceSetPost = JsonPost(isOn = isOn)
+        //viewModelScope.launch(Dispatchers.IO) {
+        //    stateFactory.getState(device.device).requestsManager.addRequest(
+        //        StateChangeRequest(device, deviceSetPost)
+        //    )
+        //}
     }
 
-    fun toggleDevicePower(device: StatefulDevice, isOn: Boolean) {
-        val deviceSetPost = JsonPost(isOn = isOn)
-        viewModelScope.launch(Dispatchers.IO) {
-            stateFactory.getState(device).requestsManager.addRequest(
-                StateChangeRequest(device, deviceSetPost)
-            )
-        }
+    fun setDeviceBrightness(device: DeviceWithState, brightness: Int) {
+        // TODO: Redo this in websockets
+        //val deviceSetPost = JsonPost(brightness = brightness)
+        //viewModelScope.launch(Dispatchers.IO) {
+        //    stateFactory.getState(device.device).requestsManager.addRequest(
+        //        StateChangeRequest(device, deviceSetPost)
+        //    )
+        //}
     }
 
-    fun setDeviceBrightness(device: StatefulDevice, brightness: Int) {
-        val deviceSetPost = JsonPost(brightness = brightness)
+    fun deleteDevice(device: Device) {
         viewModelScope.launch(Dispatchers.IO) {
-            stateFactory.getState(device).requestsManager.addRequest(
-                StateChangeRequest(device, deviceSetPost)
-            )
-        }
-    }
-
-    fun deleteDevice(device: StatefulDevice) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "Deleting device ${device.name} - ${device.address}")
+            Log.d(TAG, "Deleting device ${device.originalName} - ${device.address}")
             repository.delete(device)
         }
     }

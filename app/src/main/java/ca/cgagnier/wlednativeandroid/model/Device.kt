@@ -19,4 +19,7 @@ data class Device(
     val customName: String?,
 ): Parcelable {
 
+    fun getDeviceUrl(): String {
+        return "http://$address"
+    }
 }

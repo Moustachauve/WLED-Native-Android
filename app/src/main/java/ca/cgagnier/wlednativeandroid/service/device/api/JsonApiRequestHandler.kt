@@ -7,6 +7,7 @@ import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.wledapi.DeviceStateInfo
 import ca.cgagnier.wlednativeandroid.model.wledapi.State
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceRepository
 import ca.cgagnier.wlednativeandroid.service.api.DeviceApi
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.device.api.request.SoftwareUpdateRequest
@@ -24,7 +25,7 @@ import javax.inject.Inject
 
 
 class JsonApiRequestHandler @Inject constructor(
-    private var deviceRepository: DeviceRepository,
+    private var deviceRepository: StatefulDeviceRepository,
     private var releaseService: ReleaseService
 ) : RequestHandler() {
     private fun getJsonApi(device: StatefulDevice, timeout: Long = 10): DeviceApi {

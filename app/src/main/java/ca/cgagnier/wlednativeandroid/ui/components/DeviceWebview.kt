@@ -57,7 +57,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.R
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import ca.cgagnier.wlednativeandroid.ui.MainActivity
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Finished
 import ca.cgagnier.wlednativeandroid.ui.components.LoadingState.Loading
@@ -76,7 +78,7 @@ private const val TAG = "ui.components.DeviceWebView"
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DeviceWebView(
-    device: StatefulDevice,
+    device: Device,
     webViewViewModel: WebViewViewModel = viewModel(
         factory = WebViewViewModel.Factory(
             context = LocalContext.current
@@ -419,7 +421,7 @@ data class WebViewError(
 )
 
 fun downloadListener(
-    device: StatefulDevice,
+    device: Device,
     url: String,
     contentDisposition: String,
     mimetype: String,
@@ -435,7 +437,7 @@ fun downloadListener(
     @SuppressLint("SimpleDateFormat")
     val formatter = SimpleDateFormat("yyyyMMdd")
     val currentDate = formatter.format(Date())
-    val deviceName = URLEncoder.encode(device.name, "UTF-8")
+    val deviceName = URLEncoder.encode(device.originalName, "UTF-8")
     val fileName = URLUtil.guessFileName(url, contentDisposition, mimetype)
     val fullFilename = "${deviceName}_${currentDate}_${fileName}"
     request.setDestinationInExternalPublicDir(

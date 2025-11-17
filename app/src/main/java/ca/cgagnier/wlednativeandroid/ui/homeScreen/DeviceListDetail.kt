@@ -56,6 +56,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
@@ -82,8 +83,9 @@ fun DeviceListDetail(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val selectedDeviceAddress = navigator.currentDestination?.contentKey as? String ?: ""
-    val selectedDevice =
-        viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
+    // TODO: Handle selected device later
+    //val selectedDevice =
+    //    viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
 
     val showHiddenDevices by viewModel.showHiddenDevices.collectAsStateWithLifecycle()
     val isWLEDCaptivePortal by viewModel.isWLEDCaptivePortal.collectAsStateWithLifecycle()
@@ -115,19 +117,19 @@ fun DeviceListDetail(
         }
     }
 
-    val navigateToDeviceDetail: (StatefulDevice) -> Unit = { device: StatefulDevice ->
+    val navigateToDeviceDetail: (DeviceWithState) -> Unit = { device: DeviceWithState ->
         coroutineScope.launch {
             navigator.navigateTo(
                 pane = ListDetailPaneScaffoldRole.Detail,
-                contentKey = device.address
+                contentKey = device.device.macAddress
             )
         }
     }
-    val navigateToDeviceEdit = { device: StatefulDevice ->
+    val navigateToDeviceEdit = { device: DeviceWithState ->
         coroutineScope.launch {
             navigator.navigateTo(
                 pane = ListDetailPaneScaffoldRole.Extra,
-                contentKey = device.address
+                contentKey = device.device.macAddress
             )
         }
     }
@@ -173,7 +175,8 @@ fun DeviceListDetail(
                 listPane = {
                     AnimatedPane {
                         DeviceList(
-                            selectedDevice.value,
+                            // TODO: add selected device here
+                            null,
                             isWLEDCaptivePortal = isWLEDCaptivePortal,
                             onItemClick = navigateToDeviceDetail,
                             onAddDevice = addDevice,
@@ -197,34 +200,35 @@ fun DeviceListDetail(
                     }
                 }, detailPane = {
                     AnimatedPane {
-                        selectedDevice.value?.let { device ->
-                            DeviceDetail(
-                                device = device,
-                                onItemEdit = {
-                                    navigateToDeviceEdit(device)
-                                },
-                                canNavigateBack = navigator.canNavigateBack(),
-                                navigateUp = {
-                                    coroutineScope.launch {
-                                        navigator.navigateBack()
-                                    }
-                                }
-                            )
-                        } ?: SelectDeviceView()
+                        SelectDeviceView()
+//                        selectedDevice.value?.let { device ->
+//                            DeviceDetail(
+//                                device = device,
+//                                onItemEdit = {
+//                                    navigateToDeviceEdit(device)
+//                                },
+//                                canNavigateBack = navigator.canNavigateBack(),
+//                                navigateUp = {
+//                                    coroutineScope.launch {
+//                                        navigator.navigateBack()
+//                                    }
+//                                }
+//                            )
+//                        } ?: SelectDeviceView()
                     }
                 }, extraPane = {
                     AnimatedPane {
-                        selectedDevice.value?.let { device ->
-                            DeviceEdit(
-                                device = device,
-                                canNavigateBack = navigator.canNavigateBack(),
-                                navigateUp = {
-                                    coroutineScope.launch {
-                                        navigator.navigateBack()
-                                    }
-                                }
-                            )
-                        }
+//                        selectedDevice.value?.let { device ->
+//                            DeviceEdit(
+//                                device = device,
+//                                canNavigateBack = navigator.canNavigateBack(),
+//                                navigateUp = {
+//                                    coroutineScope.launch {
+//                                        navigator.navigateBack()
+//                                    }
+//                                }
+//                            )
+//                        }
                     }
                 }
             )

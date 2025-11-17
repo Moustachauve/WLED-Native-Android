@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.domain.use_case.ValidateAddress
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeviceAddViewModel @Inject constructor(
-    private val repository: DeviceRepository,
+    private val repository: StatefulDeviceRepository,
     private val validateAddress: ValidateAddress
 ) : ViewModel() {
 

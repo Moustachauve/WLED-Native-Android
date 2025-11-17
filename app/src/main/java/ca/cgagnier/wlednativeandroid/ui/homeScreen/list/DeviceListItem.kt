@@ -51,14 +51,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
+import ca.cgagnier.wlednativeandroid.ui.components.deviceBatteryPercentageImage
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
+import ca.cgagnier.wlednativeandroid.ui.components.deviceNetworkStrengthImage
 import ca.cgagnier.wlednativeandroid.ui.theme.DeviceTheme
 import kotlin.math.roundToInt
 
 @Composable
 fun DeviceListItem(
     modifier: Modifier = Modifier,
-    device: StatefulDevice,
+    device: DeviceWithState,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
     swipeToDismissBoxState: SwipeToDismissBoxState,
@@ -66,7 +69,10 @@ fun DeviceListItem(
     onPowerSwitchToggle: (isOn: Boolean) -> Unit = {},
     onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
-    var checked by remember(device.isPoweredOn) { mutableStateOf(device.isPoweredOn) }
+    val stateInfo by device.stateInfo
+    val isOnline by device.isWebsocketConnected
+
+    var checked by remember(stateInfo?.state?.isOn) { mutableStateOf(stateInfo?.state?.isOn ?: false) }
     val haptic = LocalHapticFeedback.current
 
     DeviceTheme(device) {
@@ -107,7 +113,11 @@ fun DeviceListItem(
                             }
                         )
                     }
-                    BrightnessSlider(device, onBrightnessChanged)
+                    BrightnessSlider(
+                        isOnline,
+                        stateInfo?.state?.brightness ?: 0,
+                        onBrightnessChanged
+                    )
                 }
             }
         }
@@ -116,14 +126,15 @@ fun DeviceListItem(
 
 @Composable
 private fun BrightnessSlider(
-    device: StatefulDevice,
+    isOnline: Boolean,
+    brightness: Int, // Receive the brightness value directly
     onBrightnessChanged: (brightness: Int) -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
-    var sliderPosition by remember(device.brightness) { mutableFloatStateOf(device.brightness.toFloat()) }
+    var sliderPosition by remember(brightness) { mutableFloatStateOf(brightness.toFloat()) }
     SliderWithLabel(
-        value = if (device.isOnline) sliderPosition else 0f,
-        enabled = device.isOnline,
+        value = if (isOnline) sliderPosition else 0f,
+        enabled = isOnline,
         onValueChange = {
             if (it.roundToInt() != sliderPosition.roundToInt()) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -140,7 +151,7 @@ private fun BrightnessSlider(
 @Composable
 private fun SwipeBox(
     modifier: Modifier = Modifier,
-    device: StatefulDevice,
+    device: DeviceWithState,
     swipeToDismissBoxState: SwipeToDismissBoxState,
     onDismiss: (SwipeToDismissBoxValue) -> Unit = {},
     content: @Composable () -> Unit
@@ -219,9 +230,11 @@ private fun SwipeBox(
 @Composable
 fun DeviceInfoTwoRows(
     modifier: Modifier = Modifier,
-    device: StatefulDevice,
+    device: DeviceWithState,
     nameMaxLines: Int = 2,
 ) {
+    val isOnline by device.isWebsocketConnected
+
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -230,17 +243,18 @@ fun DeviceInfoTwoRows(
                 maxLines = nameMaxLines,
                 overflow = TextOverflow.Ellipsis
             )
-            if (device.isRefreshing) {
-                val size =
-                    (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .padding(bottom = 2.dp)
-                        .width(size.dp)
-                        .height(size.dp),
-                )
-            }
+            // TODO: Evaluate if isRefreshing is still needed with websockets :)
+            // if (device.isRefreshing) {
+            //     val size =
+            //         (MaterialTheme.typography.titleSmall.lineHeight.value - 4)
+            //     CircularProgressIndicator(
+            //         modifier = Modifier
+            //             .padding(start = 10.dp)
+            //             .padding(bottom = 2.dp)
+            //             .width(size.dp)
+            //             .height(size.dp),
+            //     )
+            // }
         }
         Row(
             modifier = Modifier
@@ -249,7 +263,7 @@ fun DeviceInfoTwoRows(
             verticalAlignment = Alignment.Bottom
         ) {
             Text(
-                device.address,
+                device.device.address,
                 style = MaterialTheme.typography.labelMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -257,47 +271,20 @@ fun DeviceInfoTwoRows(
                     .weight(1f)
                     .width(IntrinsicSize.Max)
             )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { PlainTooltip {
-                    if (device.isOnline) {
-                        Text(stringResource(R.string.signal_strength, device.networkRssi))
-                    } else {
-                        Text(stringResource(R.string.signal_strength, stringResource(R.string.is_offline)))
-                    }
-                } },
-                state = rememberTooltipState()
-            ) {
-                Icon(
-                    painter = painterResource(device.getNetworkStrengthImage()),
-                    contentDescription = stringResource(R.string.network_status),
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .height(20.dp)
-                )
-            }
+            deviceNetworkStrengthImage(device)
+            deviceBatteryPercentageImage(device)
 
-            if (device.hasBattery) {
-                Icon(
-                    painter = painterResource(device.getBatteryPercentageImage()),
-                    contentDescription = stringResource(R.string.battery_percentage),
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .height(20.dp)
-                )
-            }
-
-
-            if (device.hasUpdateAvailable()) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_download_24),
-                    contentDescription = stringResource(R.string.network_status),
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .height(20.dp)
-                )
-            }
-            if (!device.isOnline) {
+            // TODO: Add support back for update indicator
+            //if (device.hasUpdateAvailable()) {
+            //    Icon(
+            //        painter = painterResource(R.drawable.baseline_download_24),
+            //        contentDescription = stringResource(R.string.network_status),
+            //        modifier = Modifier
+            //            .padding(start = 4.dp)
+            //            .height(20.dp)
+            //    )
+            //}
+            if (!isOnline) {
                 Text(
                     stringResource(R.string.is_offline),
                     style = MaterialTheme.typography.labelSmall,
@@ -305,7 +292,7 @@ fun DeviceInfoTwoRows(
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
-            if (device.isHidden) {
+            if (device.device.isHidden) {
                 Icon(
                     painter = painterResource(R.drawable.ic_baseline_visibility_off_24),
                     contentDescription = stringResource(R.string.description_back_button),

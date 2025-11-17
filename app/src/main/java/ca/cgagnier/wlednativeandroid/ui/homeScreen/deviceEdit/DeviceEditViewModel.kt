@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Branch
+import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
+import ca.cgagnier.wlednativeandroid.repository.StatefulDeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.VersionWithAssetsRepository
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
@@ -40,11 +42,10 @@ class DeviceEditViewModel @Inject constructor(
     private var _isCheckingUpdates = MutableStateFlow(false)
     val isCheckingUpdates = _isCheckingUpdates.asStateFlow()
 
-    fun updateCustomName(device: StatefulDevice, name: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun updateCustomName(device: Device, name: String) = viewModelScope.launch(Dispatchers.IO) {
         val isCustomName = name != ""
         val updatedDevice = device.copy(
-            name = name,
-            isCustomName = isCustomName
+            customName = name,
         )
 
         Log.d(TAG, "updateCustomName: $name, isCustom: $isCustomName")
@@ -52,8 +53,8 @@ class DeviceEditViewModel @Inject constructor(
         repository.update(updatedDevice)
     }
 
-    fun updateDeviceHidden(device: StatefulDevice, isHidden: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        Log.d(TAG, "updateDeviceHidden: ${device.name}, isHidden: $isHidden")
+    fun updateDeviceHidden(device: Device, isHidden: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        Log.d(TAG, "updateDeviceHidden: ${device.originalName}, isHidden: $isHidden")
         repository.update(
             device.copy(
                 isHidden = isHidden
@@ -61,13 +62,14 @@ class DeviceEditViewModel @Inject constructor(
         )
     }
 
-    fun updateDeviceBranch(device: StatefulDevice, branch: Branch, context: Context) = viewModelScope.launch(Dispatchers.IO) {
-        Log.d(TAG, "updateDeviceHidden: ${device.name}, updateChannel: $branch")
-        val updatedDevice = device.copy(
-            branch = branch
-        )
-        repository.update(updatedDevice)
-        checkForUpdates(updatedDevice, context)
+    fun updateDeviceBranch(device: Device, branch: Branch, context: Context) = viewModelScope.launch(Dispatchers.IO) {
+        Log.d(TAG, "updateDeviceHidden: ${device.originalName}, updateChannel: $branch")
+        // TODO: Fix this after device migration
+        //val updatedDevice = device.copy(
+        //    branch = branch
+        //)
+        //repository.update(updatedDevice)
+        // checkForUpdates(updatedDevice, context)
     }
 
     fun showUpdateDetails(device: StatefulDevice) = viewModelScope.launch(Dispatchers.IO) {
@@ -79,14 +81,15 @@ class DeviceEditViewModel @Inject constructor(
         _updateDetailsVersion.value = null
     }
 
-    fun skipUpdate(device: StatefulDevice, version: VersionWithAssets) = viewModelScope.launch(Dispatchers.IO) {
+    fun skipUpdate(device: Device, version: VersionWithAssets) = viewModelScope.launch(Dispatchers.IO) {
         Log.d(TAG, "Saving skipUpdateTag")
-        val updatedDevice = device.copy(
-            newUpdateVersionTagAvailable = "",
-            skipUpdateTag = version.version.tagName
-        )
-        repository.update(updatedDevice)
-        _updateDetailsVersion.value = null
+        // TODO: Fix this after device migration
+//        val updatedDevice = device.copy(
+//            newUpdateVersionTagAvailable = "",
+//            skipUpdateTag = version.version.tagName
+//        )
+//        repository.update(updatedDevice)
+//        _updateDetailsVersion.value = null
     }
 
     fun showUpdateDisclaimer(version: VersionWithAssets) {
@@ -106,21 +109,23 @@ class DeviceEditViewModel @Inject constructor(
     }
 
     fun checkForUpdates(device: StatefulDevice, context: Context) = viewModelScope.launch(Dispatchers.IO) {
-        _isCheckingUpdates.value = true
-        val updatedDevice = removeSkipVersion(device)
-        val releaseService = ReleaseService(versionWithAssetsRepository)
-        releaseService.refreshVersions(context.cacheDir)
-        stateFactory.getState(updatedDevice).requestsManager.addRequest(
-            RefreshRequest(updatedDevice, callback = {
-                _isCheckingUpdates.value = false
-            })
-        )
+        // TODO: Fix this after device migration
+//        _isCheckingUpdates.value = true
+//        val updatedDevice = removeSkipVersion(device)
+//        val releaseService = ReleaseService(versionWithAssetsRepository)
+//        releaseService.refreshVersions(context.cacheDir)
+//        stateFactory.getState(updatedDevice).requestsManager.addRequest(
+//            RefreshRequest(updatedDevice, callback = {
+//                _isCheckingUpdates.value = false
+//            })
+//        )
     }
 
-    private suspend fun removeSkipVersion(device: StatefulDevice): StatefulDevice {
-        val updatedDevice = device.copy(skipUpdateTag = "")
-        repository.update(updatedDevice)
-        return updatedDevice
-    }
+   // private suspend fun removeSkipVersion(device: Device): Device {
+        // TODO: Fix this after device migration
+//        val updatedDevice = device.copy(skipUpdateTag = "")
+//        repository.update(updatedDevice)
+//        return updatedDevice
+    //}
 
 }

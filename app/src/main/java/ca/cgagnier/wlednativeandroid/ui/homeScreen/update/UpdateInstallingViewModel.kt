@@ -11,6 +11,7 @@ import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
 import ca.cgagnier.wlednativeandroid.service.device.api.request.SoftwareUpdateRequest
 import ca.cgagnier.wlednativeandroid.service.update.DeviceUpdateService
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,38 +64,39 @@ class UpdateInstallingViewModel @Inject constructor(
     }
 
     fun startUpdate(
-        device: StatefulDevice,
+        device: DeviceWithState,
         version: VersionWithAssets,
         cacheDir: File,
     ) {
         if (updateStarted) {
-            Log.w(TAG, "Update already started, ignoring startUpdate for ${device.name}")
+            Log.w(TAG, "Update already started, ignoring startUpdate for ${device.device.originalName}")
             return
         }
         updateStarted = true
-        Log.i(TAG, "startUpdate for device ${device.name}")
-        _device.update { device }
-        _version.update { version }
-        _state.update { previousState ->
-            previousState.copy(
-                canDismiss = true,
-                step = UpdateInstallingStep.Starting
-            )
-        }
-
-        val updateService = DeviceUpdateService(device, version, cacheDir)
-        if (!updateService.couldDetermineAsset()) {
-            _state.update { previousState ->
-                previousState.copy(
-                    canDismiss = true,
-                    step = UpdateInstallingStep.NoCompatibleVersion,
-                    assetName = updateService.getAssetName()
-                )
-            }
-            return
-        }
-
-        downloadAsset(updateService)
+        Log.i(TAG, "startUpdate for device ${device.device.originalName}")
+        // TODO: Fix this update with the new device
+//        _device.update { device }
+//        _version.update { version }
+//        _state.update { previousState ->
+//            previousState.copy(
+//                canDismiss = true,
+//                step = UpdateInstallingStep.Starting
+//            )
+//        }
+//
+//        val updateService = DeviceUpdateService(device, version, cacheDir)
+//        if (!updateService.couldDetermineAsset()) {
+//            _state.update { previousState ->
+//                previousState.copy(
+//                    canDismiss = true,
+//                    step = UpdateInstallingStep.NoCompatibleVersion,
+//                    assetName = updateService.getAssetName()
+//                )
+//            }
+//            return
+//        }
+//
+//        downloadAsset(updateService)
     }
 
     private fun downloadAsset(
@@ -205,7 +207,8 @@ class UpdateInstallingViewModel @Inject constructor(
             version = version.version.tagName.drop(1),
             newUpdateVersionTagAvailable = ""
         )
-        deviceRepository.update(updatedDevice)
+        // TODO: Fix this with new devices
+        //deviceRepository.update(updatedDevice)
         stateFactory.getState(device).requestsManager.addRequest(RefreshRequest(device))
     }
 
