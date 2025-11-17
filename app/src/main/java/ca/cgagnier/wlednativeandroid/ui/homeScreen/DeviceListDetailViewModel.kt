@@ -42,9 +42,6 @@ class DeviceListDetailViewModel @Inject constructor(
 ): AndroidViewModel(application) {
     val isWLEDCaptivePortal = networkManager.isWLEDCaptivePortal
 
-    private var isPolling by mutableStateOf(false)
-    private var job: Job? = null
-
     val showHiddenDevices = preferencesRepository.showHiddenDevices
         .stateIn(
             viewModelScope,
@@ -72,54 +69,6 @@ class DeviceListDetailViewModel @Inject constructor(
         }
 
         return repository.findLiveDeviceByAddress(address)
-    }
-
-    fun startRefreshDevicesLoop() {
-        if (isPolling) {
-            return
-        }
-        isPolling = true
-        // If there's an existing job that's not registered, kill it.
-        job?.cancel()
-        Log.i(TAG, "Starting refresh devices loop")
-        job = viewModelScope.launch(Dispatchers.IO) {
-            while (isPolling && isActive) {
-                Log.i(TAG, "Looping refreshes")
-                refreshDevices(silent = true)
-                delay(10000)
-            }
-            // If we left the loop, the job either got cancelled or is not active anymore.
-            // Let's make sure the state is set correctly.
-            stopRefreshDevicesLoop()
-        }
-    }
-
-    fun stopRefreshDevicesLoop() {
-        Log.i(TAG, "Stopping refresh devices loop")
-        job?.cancel()
-        isPolling = false
-        job = null
-    }
-
-    fun refreshDevices(silent: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.i(TAG, "Refreshing devices")
-            val devices = repository.getAllDevices()
-            Log.d(TAG, "devices found: ${devices.size}")
-            for (device in devices) {
-                refreshDevice(device, silent)
-            }
-        }
-    }
-
-    private fun refreshDevice(device: StatefulDevice, silent: Boolean) {
-        Log.d(TAG, "Refreshing device ${device.name} - ${device.address}")
-        stateFactory.getState(device).requestsManager.addRequest(
-            RefreshRequest(
-                device,
-                silentRefresh = silent,
-            )
-        )
     }
 
     private fun startDiscoveryService() {

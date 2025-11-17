@@ -102,11 +102,9 @@ fun DeviceListDetail(
             if (event == Lifecycle.Event.ON_RESUME) {
                 Log.i(TAG, "== ON RESUME ==")
                 viewModel.startDiscoveryServiceTimed()
-                viewModel.startRefreshDevicesLoop()
             }
             if (event == Lifecycle.Event.ON_PAUSE) {
                 Log.i(TAG, "== ON PAUSE ==")
-                viewModel.stopRefreshDevicesLoop()
                 viewModel.stopDiscoveryService()
             }
         }
@@ -184,7 +182,6 @@ fun DeviceListDetail(
                                 viewModel.toggleShowHiddenDevices()
                             },
                             onRefresh = {
-                                viewModel.refreshDevices(silent = false)
                                 viewModel.startDiscoveryServiceTimed()
                             },
                             onItemEdit = {
@@ -201,6 +198,7 @@ fun DeviceListDetail(
                 }, detailPane = {
                     AnimatedPane {
                         SelectDeviceView()
+                        // TODO: Fix this
 //                        selectedDevice.value?.let { device ->
 //                            DeviceDetail(
 //                                device = device,
@@ -218,6 +216,7 @@ fun DeviceListDetail(
                     }
                 }, extraPane = {
                     AnimatedPane {
+                        // TODO: Fix this
 //                        selectedDevice.value?.let { device ->
 //                            DeviceEdit(
 //                                device = device,
