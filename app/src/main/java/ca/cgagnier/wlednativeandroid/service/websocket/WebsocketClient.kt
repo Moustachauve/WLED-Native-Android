@@ -21,7 +21,8 @@ import kotlin.math.pow
 
 class WebsocketClient(device: Device) {
 
-    private val deviceState: DeviceWithState = DeviceWithState(device)
+    val deviceState: DeviceWithState = DeviceWithState(device)
+
     private var webSocket: WebSocket? = null
     private val client: OkHttpClient = OkHttpClient.Builder()
         .pingInterval(10, TimeUnit.SECONDS)

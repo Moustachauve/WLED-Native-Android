@@ -58,8 +58,9 @@ fun DeviceList(
     onRefresh: () -> Unit,
     onOpenDrawer: () -> Unit,
     viewModel: DeviceListViewModel = hiltViewModel(),
+    deviceWebsocketListViewModel: DeviceWebsocketListViewModel = hiltViewModel(),
 ) {
-    val devices = viewModel.devices
+    val devices by deviceWebsocketListViewModel.devicesWithState.collectAsStateWithLifecycle()
     // TODO: fix this after migration to websockets
     val shouldShowDevicesAreHidden = false
 
