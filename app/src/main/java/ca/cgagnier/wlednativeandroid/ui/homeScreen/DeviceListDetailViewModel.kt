@@ -15,6 +15,7 @@ import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.NetworkConnectivityManager
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
+import ca.cgagnier.wlednativeandroid.service.websocket.DeviceWithState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,18 +59,6 @@ class DeviceListDetailViewModel @Inject constructor(
 
     private val _isAddDeviceBottomSheetVisible = MutableStateFlow(false)
     val isAddDeviceBottomSheetVisible: StateFlow<Boolean> = _isAddDeviceBottomSheetVisible
-
-    fun getDeviceByAddress(address: String): Flow<StatefulDevice?> {
-        Log.d(TAG, "Getting device by address $address")
-
-        if (address == StatefulDevice.DEFAULT_WLED_AP_IP) {
-            return flow {
-                emit(StatefulDevice.getDefaultAPDevice())
-            }
-        }
-
-        return repository.findLiveDeviceByAddress(address)
-    }
 
     private fun startDiscoveryService() {
         Log.i(TAG, "Start device discovery")

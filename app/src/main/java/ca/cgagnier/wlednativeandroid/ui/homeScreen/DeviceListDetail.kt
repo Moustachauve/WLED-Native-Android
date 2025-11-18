@@ -42,6 +42,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +62,7 @@ import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
+import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceWebsocketListViewModel
 import kotlinx.coroutines.launch
 
 private const val TAG = "screen_DeviceListDetail"
@@ -71,6 +73,7 @@ fun DeviceListDetail(
     modifier: Modifier = Modifier,
     openSettings: () -> Unit,
     viewModel: DeviceListDetailViewModel = hiltViewModel(),
+    deviceWebsocketListViewModel: DeviceWebsocketListViewModel = hiltViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
@@ -82,10 +85,11 @@ fun DeviceListDetail(
         rememberListDetailPaneScaffoldNavigator<Any>(scaffoldDirective = customScaffoldDirective)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    val selectedDeviceAddress = navigator.currentDestination?.contentKey as? String ?: ""
-    // TODO: Handle selected device later
-    //val selectedDevice =
-    //    viewModel.getDeviceByAddress(selectedDeviceAddress).collectAsStateWithLifecycle(null)
+    val devices by deviceWebsocketListViewModel.devicesWithState.collectAsStateWithLifecycle()
+    val selectedDeviceMacAddress = navigator.currentDestination?.contentKey as? String
+    val selectedDevice = remember(devices, selectedDeviceMacAddress) {
+        devices.firstOrNull { it.device.macAddress == selectedDeviceMacAddress }
+    }
 
     val showHiddenDevices by viewModel.showHiddenDevices.collectAsStateWithLifecycle()
     val isWLEDCaptivePortal by viewModel.isWLEDCaptivePortal.collectAsStateWithLifecycle()
@@ -97,6 +101,8 @@ fun DeviceListDetail(
         skipPartiallyExpanded = true
     )
 
+    // TODO: Check if these life cycle events could be replaced by a custom hook or by
+    //  moving it to a lifecycle aware viewModel or something? To investigate :)
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -173,8 +179,7 @@ fun DeviceListDetail(
                 listPane = {
                     AnimatedPane {
                         DeviceList(
-                            // TODO: add selected device here
-                            null,
+                            selectedDevice,
                             isWLEDCaptivePortal = isWLEDCaptivePortal,
                             onItemClick = navigateToDeviceDetail,
                             onAddDevice = addDevice,
@@ -198,36 +203,34 @@ fun DeviceListDetail(
                 }, detailPane = {
                     AnimatedPane {
                         SelectDeviceView()
-                        // TODO: Fix this
-//                        selectedDevice.value?.let { device ->
-//                            DeviceDetail(
-//                                device = device,
-//                                onItemEdit = {
-//                                    navigateToDeviceEdit(device)
-//                                },
-//                                canNavigateBack = navigator.canNavigateBack(),
-//                                navigateUp = {
-//                                    coroutineScope.launch {
-//                                        navigator.navigateBack()
-//                                    }
-//                                }
-//                            )
-//                        } ?: SelectDeviceView()
+                        selectedDevice?.let { device ->
+                            DeviceDetail(
+                                device = device,
+                                onItemEdit = {
+                                    navigateToDeviceEdit(device)
+                                },
+                                canNavigateBack = navigator.canNavigateBack(),
+                                navigateUp = {
+                                    coroutineScope.launch {
+                                        navigator.navigateBack()
+                                    }
+                                }
+                            )
+                        } ?: SelectDeviceView()
                     }
                 }, extraPane = {
                     AnimatedPane {
-                        // TODO: Fix this
-//                        selectedDevice.value?.let { device ->
-//                            DeviceEdit(
-//                                device = device,
-//                                canNavigateBack = navigator.canNavigateBack(),
-//                                navigateUp = {
-//                                    coroutineScope.launch {
-//                                        navigator.navigateBack()
-//                                    }
-//                                }
-//                            )
-//                        }
+                        selectedDevice?.let { device ->
+                            DeviceEdit(
+                                device = device,
+                                canNavigateBack = navigator.canNavigateBack(),
+                                navigateUp = {
+                                    coroutineScope.launch {
+                                        navigator.navigateBack()
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             )
