@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
@@ -334,10 +334,9 @@ fun DeviceTheme(
     // }
     DynamicMaterialTheme(
         seedColor = Color(device.color),
+        isDark = darkTheme,
         style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,
-        animate = true,
-        isExtendedFidelity = false,
-        useDarkTheme = darkTheme
+        animate = true
     ) {
         content()
     }

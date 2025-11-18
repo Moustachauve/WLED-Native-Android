@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.protobuf)
@@ -7,7 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.compose.compiler)
-    id("org.jetbrains.kotlin.kapt")
     id("kotlin-parcelize")
 
     // Illumidel specific
@@ -15,29 +16,20 @@ plugins {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ca.cgagnier.wlednativeandroid"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 40
-        versionName = "5.0.0"
-        resourceConfigurations += listOf("en", "fr")
+        targetSdk = 36
+        versionCode = 41
+        versionName = "5.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf(
-                    "room.schemaLocation" to "$projectDir/schemas",
-                    "room.incremental" to "true",
-                )
-            }
-        }
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
+    androidResources {
+        localeFilters += listOf("en", "fr")
     }
 
     buildFeatures {
@@ -45,15 +37,15 @@ android {
         dataBinding = true
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             ndk {
                 debugSymbolLevel = "FULL"
             }
@@ -63,15 +55,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
+        }
     }
     namespace = "ca.cgagnier.wlednativeandroid"
 }
 
-kapt {
-    correctErrorTypes = true
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 dependencies {
@@ -126,8 +121,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit2.kotlin.coroutines.adapter)
     implementation(libs.semver4j)
-    kapt(libs.hilt.compiler)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.compose.material.icons)
+    ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     ksp(libs.moshi.kotlin.codegen)
     testImplementation(libs.junit)

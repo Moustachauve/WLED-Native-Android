@@ -63,6 +63,7 @@ fun DeviceListItem(
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
     swipeToDismissBoxState: SwipeToDismissBoxState,
+    onDismiss: (SwipeToDismissBoxValue) -> Unit,
     onPowerSwitchToggle: (isOn: Boolean) -> Unit = {},
     onBrightnessChanged: (brightness: Int) -> Unit = {},
 ) {
@@ -76,7 +77,8 @@ fun DeviceListItem(
         SwipeBox(
             modifier = modifier,
             device = device,
-            swipeToDismissBoxState = swipeToDismissBoxState
+            swipeToDismissBoxState = swipeToDismissBoxState,
+            onDismiss = onDismiss,
         ) {
             SelectableCard(
                 modifier = Modifier
@@ -141,6 +143,7 @@ private fun SwipeBox(
     modifier: Modifier = Modifier,
     device: Device,
     swipeToDismissBoxState: SwipeToDismissBoxState,
+    onDismiss: (SwipeToDismissBoxValue) -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
@@ -153,6 +156,7 @@ private fun SwipeBox(
     SwipeToDismissBox(
         modifier = modifier,
         state = swipeToDismissBoxState,
+        onDismiss = onDismiss,
         backgroundContent = {
             val color by animateColorAsState(
                 when (swipeToDismissBoxState.targetValue) {
