@@ -10,6 +10,7 @@ import ca.cgagnier.wlednativeandroid.model.Asset
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.StatefulDevice
 import ca.cgagnier.wlednativeandroid.model.Version
+import ca.cgagnier.wlednativeandroid.repository.migrations.DbMigration7To8
 
 @Database(
     entities = [
@@ -27,7 +28,7 @@ import ca.cgagnier.wlednativeandroid.model.Version
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 7, to = 8, spec = DbMigration7To8::class),
     ]
 )
 @TypeConverters(Converters::class)
