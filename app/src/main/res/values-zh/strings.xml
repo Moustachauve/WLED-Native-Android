@@ -11,8 +11,8 @@
     <string name="please_enter_value">请输入值</string>
     <string name="please_enter_valid_value">请输入有效的值</string>
     <string name="cancel">取消</string>
-    <string name="default_device_name">(新设备)</string>
-    <string name="is_offline">(离线)</string>
+    <string name="default_device_name">（新设备）</string>
+    <string name="is_offline">（离线）</string>
     <string name="update_available">有可用的更新</string>
     <string name="network_status">网络状态</string>
     <string name="signal_strength">信号强度： <xliff:g example="-62" id="strength">%1$s</xliff:g></string>
@@ -22,7 +22,7 @@
     <string name="edit_device_with_name">编辑设备 - <xliff:g example="WLED" id="device_name">%1$s</xliff:g></string>
     <string name="device_is_visible">设备可见</string>
     <string name="device_is_hidden">设备隐藏</string>
-    <string name="hidden_status">(隐藏)</string>
+    <string name="hidden_status">（隐藏）</string>
     <string name="you_dont_have_any_visible_devices">你没有任何可见的设备</string>
     <string name="awkward_akemi_character">尴尬的吉祥物 Akemi</string>
     <string name="settings">设置</string>
